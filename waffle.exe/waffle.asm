@@ -21,11 +21,9 @@ hStdErr		dd	?	;¿ØÖÆÌ¨´íÎó¾ä±ú
 dwBytesRead	dd	?
 dwBytesWrite	dd	?
 
-uszBuf		dw	100 dup (?)
+uszBuf		dw	MAX_PATH dup (?)
 		.const
 uszTitle	dw	"Waffle v0.10",0
-usz0Dh		dw	0dh
-uszBOM		dw	0FEFFh
 uszTest		dw	"ABC",0
 uszTest2	dw	"DEF",0
 uszFmt		dw	"%08X",0
@@ -37,15 +35,19 @@ include		_CmdLine.asm
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 start:
 		invoke	_SetConsole,addr uszTitle
-lop:
-		Cout	offset uszTest,3
-		Cout	offset usz0Dh,1
-		invoke	Sleep,1000
-		Cout	offset uszTest2,3
-		Cout	offset usz0Dh,1
-		invoke	Sleep,1000
-		jmp	lop
-		invoke	Sleep,5000
+		invoke	_argc
+		mov	ebx,eax
+		invoke	wsprintf,addr uszBuf,addr uszFmt,eax
+		invoke	lstrlen,addr uszBuf
+		Coutn	uszBuf,eax
+		Creturn
+		.while	ebx
+			dec	ebx
+			invoke	_argv,ebx,addr uszBuf,sizeof uszBuf
+			invoke	lstrlen,addr uszBuf
+			Coutn	uszBuf,eax
+			Creturn
+		.endw
 		ret
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 		end	start

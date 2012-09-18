@@ -1,6 +1,7 @@
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ; Sample code for < Win32ASM Programming 3rd Edition>
 ; by 罗云彬, http://www.win32asm.com.cn
+; Edited by Excalibur, Support Unicode, Add return value for _argv
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ; _CmdLine.asm
 ; 命令行参数分析的通用子程序
@@ -9,7 +10,7 @@
 ; _argv ---> 取某个命令行参数
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ;
-;
+		.code
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 CHAR_BLANK	equ	20h	;定义空格
 CHAR_DELI	equ	'"'	;定义分隔符
@@ -17,10 +18,9 @@ CHAR_DELI	equ	'"'	;定义分隔符
 ; 取命令行参数个数 (arg count)
 ; 参数个数必定大于等于 1, 参数 1 为当前执行文件名
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-_argc		proc
+_argc		proc	uses ebx esi edi
 		local	@dwArgc
 
-		pushad
 		mov	@dwArgc,0
 		invoke	GetCommandLine
 		mov	esi,eax
@@ -29,36 +29,69 @@ _argc_loop:
 ;********************************************************************
 ; 忽略参数之间的空格
 ;********************************************************************
-		lodsb
-		or	al,al
-		jz	_argc_end
-		cmp	al,CHAR_BLANK
-		jz	_argc_loop
+		if	UNICODE eq TRUE
+			lodsw
+			or	ax,ax
+			jz	_argc_end
+			cmp	ax,CHAR_BLANK
+			jz	_argc_loop
+
+		else
+			lodsb
+			or	al,al
+			jz	_argc_end
+			cmp	al,CHAR_BLANK
+			jz	_argc_loop
+		endif
 ;********************************************************************
 ; 一个参数开始
 ;********************************************************************
-		dec	esi
+		if	UNICODE eq TRUE
+			dec	esi
+			dec	esi
+		else
+			dec	esi
+		endif
 		inc	@dwArgc
 _argc_loop1:
-		lodsb
-		or	al,al
-		jz	_argc_end
-		cmp	al,CHAR_BLANK
-		jz	_argc_loop		;参数结束
-		cmp	al,CHAR_DELI
-		jnz	_argc_loop1		;继续处理参数内容
+		if	UNICODE eq TRUE
+			lodsw
+			or	ax,ax
+			jz	_argc_end
+			cmp	ax,CHAR_BLANK
+			jz	_argc_loop		;参数结束
+			cmp	ax,CHAR_DELI
+			jnz	_argc_loop1		;继续处理参数内容
+
+		else
+			lodsb
+			or	al,al
+			jz	_argc_end
+			cmp	al,CHAR_BLANK
+			jz	_argc_loop		;参数结束
+			cmp	al,CHAR_DELI
+			jnz	_argc_loop1		;继续处理参数内容
+		endif
 ;********************************************************************
 ; 如果一个参数中的一部分有空格,则用 " " 包括
 ;********************************************************************
 		@@:
-		lodsb
-		or	al,al
-		jz	_argc_end
-		cmp	al,CHAR_DELI
-		jnz	@B
-		jmp	_argc_loop1
+		if	UNICODE eq TRUE
+			lodsw
+			or	ax,ax
+			jz	_argc_end
+			cmp	ax,CHAR_DELI
+			jnz	@B
+			jmp	_argc_loop1
+		else
+			lodsb
+			or	al,al
+			jz	_argc_end
+			cmp	al,CHAR_DELI
+			jnz	@B
+			jmp	_argc_loop1
+		endif
 _argc_end:
-		popad
 		mov	eax,@dwArgc
 		ret
 
@@ -68,10 +101,9 @@ _argc		endp
 ;  argv 0 = 执行文件名
 ;  argv 1 = 参数1 ...
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-_argv		proc	_dwArgv,_lpReturn,_dwSize
+_argv		proc	uses ebx esi edi _dwArgv,_lpReturn,_dwSize
 		local	@dwArgv,@dwFlag
 
-		pushad
 		inc	_dwArgv
 		mov	@dwArgv,0
 		mov	edi,_lpReturn
@@ -83,16 +115,30 @@ _argv_loop:
 ;********************************************************************
 ; 忽略参数之间的空格
 ;********************************************************************
-		lodsb
-		or	al,al
-		jz	_argv_end
-		cmp	al,CHAR_BLANK
-		jz	_argv_loop
+		if	UNICODE eq TRUE
+			lodsw
+			or	ax,ax
+			jz	_argv_end
+			cmp	ax,CHAR_BLANK
+			jz	_argv_loop
+
+		else
+			lodsb
+			or	al,al
+			jz	_argv_end
+			cmp	al,CHAR_BLANK
+			jz	_argv_loop
+		endif
 ;********************************************************************
 ; 一个参数开始
 ; 如果和要求的参数符合,则开始复制到返回缓冲区
 ;********************************************************************
-		dec	esi
+		if	UNICODE eq TRUE
+			dec	esi
+			dec	esi
+		else
+			dec	esi
+		endif
 		inc	@dwArgv
 		mov	@dwFlag,FALSE
 		mov	eax,_dwArgv
@@ -101,40 +147,75 @@ _argv_loop:
 		mov	@dwFlag,TRUE
 		@@:
 _argv_loop1:
-		lodsb
-		or	al,al
-		jz	_argv_end
-		cmp	al,CHAR_BLANK
-		jz	_argv_loop		;参数结束
-		cmp	al,CHAR_DELI
-		jz	_argv_loop2
-		cmp	_dwSize,1
-		jle	@F
-		cmp	@dwFlag,TRUE
-		jne	@F
-		stosb
-		dec	_dwSize
+		if	UNICODE eq TRUE
+			lodsw
+			or	ax,ax
+			jz	_argv_end
+			cmp	ax,CHAR_BLANK
+			jz	_argv_loop		;参数结束
+			cmp	ax,CHAR_DELI
+			jz	_argv_loop2
+			cmp	_dwSize,2
+			jle	@F
+			cmp	@dwFlag,TRUE
+			jne	@F
+			stosw
+			dec	_dwSize
+			dec	_dwSize
+		else
+			lodsb
+			or	al,al
+			jz	_argv_end
+			cmp	al,CHAR_BLANK
+			jz	_argv_loop		;参数结束
+			cmp	al,CHAR_DELI
+			jz	_argv_loop2
+			cmp	_dwSize,1
+			jle	@F
+			cmp	@dwFlag,TRUE
+			jne	@F
+			stosb
+			dec	_dwSize
+		endif
 		@@:
 		jmp	_argv_loop1		;继续处理参数内容
 
 _argv_loop2:
-		lodsb
-		or	al,al
-		jz	_argv_end
-		cmp	al,CHAR_DELI
-		jz	_argv_loop1
-		cmp	_dwSize,1
-		jle	@F
-		cmp	@dwFlag,TRUE
-		jne	@F
-		stosb
-		dec	_dwSize
+		if	UNICODE eq TRUE
+			lodsw
+			or	ax,ax
+			jz	_argv_end
+			cmp	ax,CHAR_DELI
+			jz	_argv_loop1
+			cmp	_dwSize,2
+			jle	@F
+			cmp	@dwFlag,TRUE
+			jne	@F
+			stosw
+			dec	_dwSize
+			dec	_dwSize
+		else
+			lodsb
+			or	al,al
+			jz	_argv_end
+			cmp	al,CHAR_DELI
+			jz	_argv_loop1
+			cmp	_dwSize,1
+			jle	@F
+			cmp	@dwFlag,TRUE
+			jne	@F
+			stosb
+			dec	_dwSize
+		endif
 		@@:
 		jmp	_argv_loop2
 _argv_end:
-		xor	al,al
-		stosb
-		popad
+		xor	eax,eax
+		if	UNICODE eq TRUE
+			stosw
+		else
+			stosb
+		endif
 		ret
 
 _argv		endp
