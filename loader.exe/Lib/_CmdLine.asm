@@ -29,7 +29,7 @@ _argc_loop:
 ;********************************************************************
 ; 忽略参数之间的空格
 ;********************************************************************
-		if	UNICODE eq TRUE
+		ifdef	UNICODE
 			lodsw
 			or	ax,ax
 			jz	_argc_end
@@ -46,7 +46,7 @@ _argc_loop:
 ;********************************************************************
 ; 一个参数开始
 ;********************************************************************
-		if	UNICODE eq TRUE
+		ifdef	UNICODE
 			dec	esi
 			dec	esi
 		else
@@ -54,7 +54,7 @@ _argc_loop:
 		endif
 		inc	@dwArgc
 _argc_loop1:
-		if	UNICODE eq TRUE
+		ifdef	UNICODE
 			lodsw
 			or	ax,ax
 			jz	_argc_end
@@ -76,7 +76,7 @@ _argc_loop1:
 ; 如果一个参数中的一部分有空格,则用 " " 包括
 ;********************************************************************
 		@@:
-		if	UNICODE eq TRUE
+		ifdef	UNICODE
 			lodsw
 			or	ax,ax
 			jz	_argc_end
@@ -115,7 +115,7 @@ _argv_loop:
 ;********************************************************************
 ; 忽略参数之间的空格
 ;********************************************************************
-		if	UNICODE eq TRUE
+		ifdef	UNICODE
 			lodsw
 			or	ax,ax
 			jz	_argv_end
@@ -133,7 +133,7 @@ _argv_loop:
 ; 一个参数开始
 ; 如果和要求的参数符合,则开始复制到返回缓冲区
 ;********************************************************************
-		if	UNICODE eq TRUE
+		ifdef	UNICODE
 			dec	esi
 			dec	esi
 		else
@@ -147,7 +147,7 @@ _argv_loop:
 		mov	@dwFlag,TRUE
 		@@:
 _argv_loop1:
-		if	UNICODE eq TRUE
+		ifdef	UNICODE
 			lodsw
 			or	ax,ax
 			jz	_argv_end
@@ -181,7 +181,7 @@ _argv_loop1:
 		jmp	_argv_loop1		;继续处理参数内容
 
 _argv_loop2:
-		if	UNICODE eq TRUE
+		ifdef	UNICODE
 			lodsw
 			or	ax,ax
 			jz	_argv_end
@@ -211,7 +211,7 @@ _argv_loop2:
 		jmp	_argv_loop2
 _argv_end:
 		xor	eax,eax
-		if	UNICODE eq TRUE
+		ifdef	UNICODE
 			stosw
 		else
 			stosb

@@ -1,10 +1,7 @@
 ifndef	UNICODE
-	.err	@FileName only works in Unicode environment.
+	.err	<@FileName only works in Unicode environment.>
 endif
-if	UNICODE ne TRUE
-	.err	@FileName only works in Unicode environment.
-endif
-;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+;********************************************************************
 ;对关键词dw进行重定义,使其可以像db一样定义Unicode字符串
 		option renamekeyword:<dw>=dw_
 dw		macro	lbl:LABEL,parms:VARARG
@@ -34,7 +31,38 @@ dw		macro	lbl:LABEL,parms:VARARG
 			endm
 		lbl	dw_	wstr
 		endm
+;********************************************************************
+;设置Console
+		.data?
+hStdIn		dd	?	;控制台输入句柄
+hStdOut		dd	?	;控制台输出句柄
+hStdErr		dd	?	;控制台错误句柄
+dwBytesRead	dd	?
+dwBytesWrite	dd	?
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+		.code
+;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+_SetConsole	proc	uses ebx edi esi,_lpTitle
+
+		invoke	SetConsoleTitle,_lpTitle
+		invoke	GetStdHandle,STD_INPUT_HANDLE
+		mov	hStdIn,eax
+		invoke	GetStdHandle,STD_OUTPUT_HANDLE
+		mov	hStdOut,eax
+		invoke	GetStdHandle,STD_ERROR_HANDLE
+		mov	hStdErr,eax
+		invoke	GetConsoleMode,hStdOut,addr dwBytesWrite
+		.if	eax
+			push	WriteConsole
+			pop	_Cout
+		.else
+			push	WriteFile
+			pop	_Cout
+			invoke	WriteFile,hStdOut,addr uszBOM,2,addr dwBytesWrite,NULL
+		.endif
+		ret
+_SetConsole	endp
+;********************************************************************
 ;判断是否重定向,选择适当的输出方式
 _ProtoCout	typedef	proto	:dword,:dword,:dword,:dword,:dword
 _ApiCout	typedef	ptr	_ProtoCout
@@ -94,24 +122,3 @@ Coutn		macro	uszString,nChar
 		endm
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Creturn		textequ	<Cout	uszCrLf>
-;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-_SetConsole	proc	uses ebx edi esi,_lpTitle
-
-		invoke	SetConsoleTitle,_lpTitle
-		invoke	GetStdHandle,STD_INPUT_HANDLE
-		mov	hStdIn,eax
-		invoke	GetStdHandle,STD_OUTPUT_HANDLE
-		mov	hStdOut,eax
-		invoke	GetStdHandle,STD_ERROR_HANDLE
-		mov	hStdErr,eax
-		invoke	GetConsoleMode,hStdOut,addr dwBytesWrite
-		.if	eax
-			push	WriteConsole
-			pop	_Cout
-		.else
-			push	WriteFile
-			pop	_Cout
-			invoke	WriteFile,hStdOut,addr uszBOM,2,addr dwBytesWrite,NULL
-		.endif
-		ret
-_SetConsole	endp
