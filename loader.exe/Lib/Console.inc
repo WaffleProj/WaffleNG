@@ -1,6 +1,7 @@
 ifndef	UNICODE
 	.err	<@FileName only works in Unicode environment.>
 endif
+ifdef	__JWASM__
 ;********************************************************************
 ;对关键词dw进行重定义,使其可以像db一样定义Unicode字符串
 		option renamekeyword:<dw>=dw_
@@ -31,6 +32,7 @@ dw		macro	lbl:LABEL,parms:VARARG
 			endm
 		lbl	dw_	wstr
 		endm
+endif
 ;********************************************************************
 ;设置Console
 		.data?
@@ -39,6 +41,13 @@ hStdOut		dd	?	;控制台输出句柄
 hStdErr		dd	?	;控制台错误句柄
 dwBytesRead	dd	?
 dwBytesWrite	dd	?
+
+_ProtoCout	typedef	proto	:dword,:dword,:dword,:dword,:dword
+_ApiCout	typedef	ptr	_ProtoCout
+_Cout		_ApiCout ?
+		.const
+uszBOM		dw	0FEFFh,0
+uszCrLf		dw	0dh,0ah,0
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 		.code
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -64,17 +73,6 @@ _SetConsole	proc	uses ebx edi esi,_lpTitle
 _SetConsole	endp
 ;********************************************************************
 ;判断是否重定向,选择适当的输出方式
-_ProtoCout	typedef	proto	:dword,:dword,:dword,:dword,:dword
-_ApiCout	typedef	ptr	_ProtoCout
-;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-		.data?
-_Cout		_ApiCout ?
-		.const
-uszBOM		dw	0FEFFh,0
-uszCrLf		dw	0dh,0ah,0
-;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-		.code
-;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Cout		macro	uszString
 
 		push	NULL

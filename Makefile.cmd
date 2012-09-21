@@ -120,8 +120,9 @@ Help:
 	set	DebugLink=
 	set	ExtraLink=
 	if	"%target%" == "x86"	(
-		if	"%debug%" == "on" set DebugML=/Zi
+		if	"%debug%" == "on" set DebugML=/Zi /Zd
 		if	"%debug%" == "on" set DebugLink=/DEBUG /DEBUGTYPE:CV
+		if	"%debug%" == "on" set DebugJWLink=DEBUG codeview
 		if	"%output%" == "dll" set ExtraLink=/Dll
 		if	"%output%" == "native" set ExtraLink=/driver /base:0x10000 /align:32
 		set	BinExtName=exe
@@ -131,8 +132,9 @@ Help:
 		if	"%output%" == "console" set SubSystem=console
 		if	"%output%" == "native" set SubSystem=native
 	) else (
-		if	"%debug%" == "on" set DebugML=/Zi
+		if	"%debug%" == "on" set DebugML=/Zi /Zd
 		if	"%debug%" == "on" set DebugLink=/DEBUG /DEBUGTYPE:CV
+		if	"%debug%" == "on" set DebugJWLink=DEBUG codeview
 		if	"%output%" == "dll" set ExtraLink=/Dll
 		if	"%output%" == "native" set ExtraLink=/driver /base:0x10000 /align:32
 		set	BinExtName=exe
@@ -148,7 +150,7 @@ Help:
 	set	JWASM=%DebugML% /nologo /c /Cp /coff
 	set	CL=
 	
-	set	JWLINK=OPTION quiet FORMAT window pe RUNTIME %SubSystem% NAME %FileDir%\Bin\%FileName%.%BinExtName%
+	set	JWLINK=OPTION quiet FORMAT window pe RUNTIME %SubSystem% NAME %FileDir%\Bin\%FileName%.%BinExtName% %DebugJWLink%
 	set	LINK=%DebugLink% %ExtraLink% /nologo /subsystem:%SubSystem% /out:%FileDir%\Bin\%FileName%.%BinExtName%
 	
 	set	WRC=

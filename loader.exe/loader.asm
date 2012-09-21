@@ -11,6 +11,7 @@ include		winnt.inc
 includelib	kernel32.lib
 includelib	user32.lib
 
+include		Unicode.inc
 include		Console.inc
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ; Êý¾Ý¶Î
@@ -22,15 +23,15 @@ hFile		dd	?
 hMapFile	dd	?
 lpFile		dd	?
 		.const
-uszTitle	dw	"Waffle v0.10",0
-uszHelp		dw	"This is a help.",0
-uszError	dw	"error",0
-uszFmt		dw	"%08X",0
+uszTitle	ustr	("Waffle v0.10",0)
+uszHelp		ustr	("This is a help.",0)
+uszError	ustr	("error",0)
+uszFmt		ustr	("%08X",0)
 
-uszDosSign	dw	"Dos Sign:",0
-uszNTHead	dw	"NT Head:",0
-uszNTSign	dw	"NT Sign:",0
-uszNTTarget	dw	"NT Target:",0
+uszDosSign	ustr	("Dos Sign:",0)
+uszNTHead	ustr	("NT Head:",0)
+uszNTSign	ustr	("NT Sign:",0)
+uszNTTarget	ustr	("NT Target:",0)
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ; ´úÂë¶Î
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -38,7 +39,8 @@ uszNTTarget	dw	"NT Target:",0
 include		_CmdLine.asm
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 start:
-		invoke	_SetConsole,0;addr uszTitle
+		invoke	_argv,1,addr uszBuf,sizeof uszBuf
+		invoke	_SetConsole,addr uszTitle
 		invoke	_argc
 		.if	eax == 1
 			Cout	uszHelp

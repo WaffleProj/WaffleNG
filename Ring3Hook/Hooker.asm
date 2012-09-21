@@ -193,17 +193,20 @@ _NewMessageBoxA	proc
 ;[ebp]		原调用EBP
 ;[ebp+4]	Hook调用压入的函数地址
 ;[ebp+8]	原调用地址
-;[ebp+12] etc	原调用压入的第一个参数
+;[ebp+12]	原调用的第一个参数
+;[ebp+16]	原调用的第二个参数
+;[ebp+20]	原调用的第三个参数
+;[ebp+24]	原调用的第四个参数
 		
 		push	ebp
 		mov	ebp,esp		
 		
 		;push	_P4
-		push	[ebp+12]
+		push	[ebp+24]
 		push	offset szDll
 		push	offset szMessageBox
 		;push	_P1
-		push	[ebp+24]
+		push	[ebp+12]
 		call	lpOri
 		
 		pop	ebp
