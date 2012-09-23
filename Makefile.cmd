@@ -53,7 +53,7 @@ Help:
 :_Err
 	pause
 	goto	ExitFunction
-:_Success	
+:_Success
 	call :BuildCountInc %FileDir%\BUILD
 	echo	Finish.
 	call	:Sleep 5000

@@ -39,9 +39,15 @@ uszNTTarget	ustr	("NT Target:",0)
 include		_CmdLine.asm
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 start:
-		invoke	_argv,1,addr uszBuf,sizeof uszBuf
 		invoke	_SetConsole,addr uszTitle
 		invoke	_argc
+		mov	ebx,eax
+		.while	ebx
+			invoke	_argp,ebx
+			invoke	MessageBox,0,eax,0,0
+			dec	ebx
+		.endw
+		invoke	ExitProcess,0
 		.if	eax == 1
 			Cout	uszHelp
 		.elseif	eax == 2
@@ -54,6 +60,7 @@ start:
 			mov	lpFile,eax
 			mov	ebx,eax
 			.if	!ebx
+				Cout	uszError
 				invoke	ExitProcess,0
 			.endif
 			

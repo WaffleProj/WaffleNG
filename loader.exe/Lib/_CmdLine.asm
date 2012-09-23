@@ -1,7 +1,7 @@
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ; Sample code for < Win32ASM Programming 3rd Edition>
 ; by 罗云彬, http://www.win32asm.com.cn
-; Edited by Excalibur, Support Unicode, Add return value for _argv
+; Edited by Excalibur, Support Unicode, Get the point
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ; _CmdLine.asm
 ; 命令行参数分析的通用子程序
@@ -35,7 +35,6 @@ _argc_loop:
 			jz	_argc_end
 			cmp	ax,CHAR_BLANK
 			jz	_argc_loop
-
 		else
 			lodsb
 			or	al,al
@@ -62,7 +61,6 @@ _argc_loop1:
 			jz	_argc_loop		;参数结束
 			cmp	ax,CHAR_DELI
 			jnz	_argc_loop1		;继续处理参数内容
-
 		else
 			lodsb
 			or	al,al
@@ -121,7 +119,6 @@ _argv_loop:
 			jz	_argv_end
 			cmp	ax,CHAR_BLANK
 			jz	_argv_loop
-
 		else
 			lodsb
 			or	al,al
@@ -220,3 +217,100 @@ _argv_end:
 
 _argv		endp
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; 返回指定位置的命令行参数地址
+;  argp 0 = 执行文件名
+;  argp 1 = 参数1 ...
+;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+_argp		proc	uses ebx esi edi _dwArgp
+		local	@dwArgp
+
+		xor	eax,eax
+		mov	@dwArgp,eax
+		mov	ecx,_dwArgp
+		inc	ecx
+		invoke	GetCommandLine
+		mov	esi,eax
+		cld
+_argp_loop:
+;********************************************************************
+; 忽略参数之间的空格
+;********************************************************************
+		ifdef	UNICODE
+			lodsw
+			or	ax,ax
+			jz	_argp_end
+			cmp	ax,CHAR_BLANK
+			jz	_argp_loop
+		else
+			lodsb
+			or	al,al
+			jz	_argp_end
+			cmp	al,CHAR_BLANK
+			jz	_argp_loop
+		endif
+;********************************************************************
+; 一个参数开始
+;********************************************************************
+		ifdef	UNICODE
+			dec	esi
+			dec	esi
+		else
+			dec	esi
+		endif
+		inc	@dwArgp
+		.if	ecx ==	@dwArgp
+			jmp	_argp_end
+		.endif
+;********************************************************************
+; 读取字符
+;********************************************************************
+		ifdef	UNICODE
+			.while	TRUE
+				lodsw
+				cmp	ax,CHAR_BLANK
+				jz	_argp_loop
+				.if	ax ==	CHAR_DELI
+					inc	eax
+					.while	ax
+						.break	.if ax == CHAR_DELI
+						lodsw
+					.endw
+				.endif
+				.break	.if ax == NULL
+			.endw
+		else
+			.while	TRUE
+				lodsb
+				cmp	al,CHAR_BLANK
+				jz	_argp_loop
+				.if	al ==	CHAR_DELI
+					inc	eax
+					.while	al
+						.break	.if al == CHAR_DELI
+						lodsb
+					.endw
+				.endif
+				.break	.if al == NULL
+			.endw
+		endif
+;********************************************************************
+; 结束
+;********************************************************************
+_argp_end:
+		ifdef	UNICODE
+			.if	ax
+				mov	eax,esi
+			.else
+				xor	eax,eax
+			.endif
+		else
+			.if	al
+				mov	eax,esi
+			.else
+				xor	eax,eax
+			.endif
+
+		endif
+		ret
+
+_argp		endp
