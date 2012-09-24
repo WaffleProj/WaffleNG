@@ -36,7 +36,8 @@ _GetPEMagic	proc	_lpuszTarget
 				.if	eax
 					push	-1
 				.else
-					push	[ebx].OptionalHeader.Magic
+					movzx	eax,[ebx].OptionalHeader.Magic
+					push	eax
 				.endif
 			.endif
 		.endif
