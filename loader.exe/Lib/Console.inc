@@ -48,6 +48,11 @@ _Cout		_ApiCout ?
 		.const
 uszBOM		dw	0FEFFh,0
 uszCrLf		dw	0dh,0ah,0
+uszPressAnyKeyToContinue dw	'P','r','e','s','s',' ','s','o','m','e',' ','k','e','y','s',' ','t','o',' ','c','o','n','t','i','n','u','e','.','.','.',0
+ifdef	_WINDOWS_
+	ENABLE_INSERT_MODE	equ	0020h
+	ENABLE_EXTENDED_FLAGS	equ	0080h
+endif
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 		.code
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -69,11 +74,12 @@ _SetConsole	proc	uses ebx edi esi,_lpTitle
 			pop	_Cout
 			invoke	WriteFile,hStdOut,addr uszBOM,2,addr dwBytesWrite,NULL
 		.endif
+		invoke	SetConsoleMode,hStdIn,ENABLE_INSERT_MODE or ENABLE_EXTENDED_FLAGS
 		ret
 _SetConsole	endp
 ;********************************************************************
 ;判断是否重定向,选择适当的输出方式
-Cout		macro	uszString
+Cout		macro	lpuszString
 
 		push	NULL
 		push	offset dwBytesWrite
@@ -81,14 +87,18 @@ Cout		macro	uszString
 		mov	ecx,WriteConsole
 		mov	edx,WriteFile
 		.if	eax == ecx
-			push	(sizeof uszString - 2) / 2
+			invoke	lstrlen,lpuszString
+			push	eax
 		.elseif	eax == edx
-			push	sizeof uszString - 2
+			invoke	lstrlen,lpuszString
+			mov	ecx,2
+			mul	ecx
+			push	eax
 		.else
 			;.err	[Line:@Line] ConsoleRediect is undefined.
 			push	NULL
 		.endif
-		push	offset uszString
+		push	lpuszString
 		push	hStdOut
 		call	_Cout
 		endm
@@ -119,4 +129,13 @@ Coutn		macro	uszString,nChar
 		call	_Cout
 		endm
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-Creturn		textequ	<Cout	uszCrLf>
+Creturn		textequ	<Cout	offset uszCrLf>
+;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Cpause		macro
+		mov	eax,_Cout
+		.if	eax == WriteConsole
+			Cout	offset uszPressAnyKeyToContinue
+			invoke	ReadConsole,hStdIn,addr dwBytesRead,1,NULL,NULL
+			Creturn
+		.endif
+		endm

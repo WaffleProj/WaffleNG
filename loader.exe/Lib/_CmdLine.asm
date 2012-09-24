@@ -16,7 +16,7 @@ CHAR_BLANK	equ	20h	;定义空格
 CHAR_DELI	equ	'"'	;定义分隔符
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ; 取命令行参数个数 (arg count)
-; 参数个数必定大于等于 1, 参数 1 为当前执行文件名
+; 参数个数大于等于 0, 参数 0 为当前执行文件名
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 _argc		proc	uses ebx esi edi
 		local	@dwArgc
@@ -91,6 +91,7 @@ _argc_loop1:
 		endif
 _argc_end:
 		mov	eax,@dwArgc
+		dec	eax
 		ret
 
 _argc		endp

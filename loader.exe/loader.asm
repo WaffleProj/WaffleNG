@@ -2,9 +2,10 @@
 		.model flat,stdcall
 		option casemap:none
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-; Include 文件定义
+; 头文件定义
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 UNICODE		equ	TRUE
+_WIN32_WINNT	equ	0501h
 
 include		windows.inc
 include		winnt.inc
@@ -12,91 +13,96 @@ includelib	kernel32.lib
 includelib	user32.lib
 
 include		Unicode.inc
-include		Console.inc
+;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+; 常量定义
+;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ; 数据段
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>		
 		.data?
 uszBuf		dw	MAX_PATH dup (?)
 
-hFile		dd	?
-hMapFile	dd	?
-lpFile		dd	?
+nArgc		dd	?
+nTargetArgc	dd	?
 		.const
 uszTitle	ustr	("Waffle v0.10",0)
-uszHelp		ustr	("This is a help.",0)
-uszError	ustr	("error",0)
+uszHelp		ustr	("Waffle v0.10, Sep 23 2012, Windows API Filtering Layer",0dh,0ah)
+uszHelp2	ustr	("(c) 2012 Excalibur. All rights reserved.",0dh,0ah)
+uszHelp3	ustr	("Blah blah blah.",0dh,0ah,0dh,0ah)
+uszHelp4	ustr	("usage: loader [ options ] target_full_path [ arguments ]",0dh,0ah,0)
+
 uszFmt		ustr	("%08X",0)
 
-uszDosSign	ustr	("Dos Sign:",0)
-uszNTHead	ustr	("NT Head:",0)
-uszNTSign	ustr	("NT Sign:",0)
-uszNTTarget	ustr	("NT Target:",0)
+uszX86		ustr	("X86",0dh,0ah,0)
+uszX64		ustr	("X64 does not yet support. Sorry",21h,0dh,0ah,0)
+
+uszErrConsoleInit ustr	("Console failed to initialize.",0dh,0ah,0)
+uszErrOpenTarget ustr	("Cannnot open target.",0dh,0ah,0)
+uszErrUnrecognizedTarget ustr	("Unrecognized target.",0dh,0ah,0)
+uszErrUnrecognizedOption ustr	("Unrecognized option.",0dh,0ah,0)
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ; 代码段
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 		.code
+include		Console.inc
+
 include		_CmdLine.asm
+include		PECheck.asm
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 start:
 		invoke	_SetConsole,addr uszTitle
-		invoke	_argc
-		mov	ebx,eax
-		.while	ebx
-			invoke	_argp,ebx
-			invoke	MessageBox,0,eax,0,0
-			dec	ebx
-		.endw
-		invoke	ExitProcess,0
-		.if	eax == 1
-			Cout	uszHelp
-		.elseif	eax == 2
-			invoke	_argv,1,addr uszBuf,sizeof uszBuf
-			invoke	CreateFile,addr uszBuf,GENERIC_READ,NULL,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL
-			mov	hFile,eax
-			invoke	CreateFileMapping,eax,NULL,PAGE_READONLY,NULL,NULL,NULL
-			mov	hMapFile,eax
-			invoke	MapViewOfFile,eax,FILE_MAP_READ,NULL,NULL,NULL
-			mov	lpFile,eax
-			mov	ebx,eax
-			.if	!ebx
-				Cout	uszError
-				invoke	ExitProcess,0
-			.endif
-			
-			assume	ebx:ptr IMAGE_DOS_HEADER
-			Cout	uszDosSign
-			invoke	wsprintf,addr uszBuf,addr uszFmt,[ebx].e_magic
-			invoke	lstrlen,addr uszBuf
-			Coutn	uszBuf,eax
-			Creturn
-
-			Cout	uszNTHead
-			invoke	wsprintf,addr uszBuf,addr uszFmt,[ebx].e_lfanew
-			invoke	lstrlen,addr uszBuf
-			Coutn	uszBuf,eax
-			Creturn
-			
-			mov	eax,[ebx].e_lfanew
-			add	eax,lpFile
-			mov	ebx,eax
-			assume	ebx:ptr IMAGE_NT_HEADERS
-			
-			Cout	uszNTSign
-			invoke	wsprintf,addr uszBuf,addr uszFmt,[ebx].Signature
-			invoke	lstrlen,addr uszBuf
-			Coutn	uszBuf,eax
-			Creturn
-			
-			Cout	uszNTTarget
-			movzx	eax,[ebx].OptionalHeader.Magic
-			invoke	wsprintf,addr uszBuf,addr uszFmt,[ebx].OptionalHeader.Magic
-			invoke	lstrlen,addr uszBuf
-			Coutn	uszBuf,eax
-			Creturn
-			assume	ebx:nothing
+		.if	!eax
+			invoke	MessageBox,0,addr uszErrConsoleInit,0,0
+			invoke	ExitProcess,0
+		.endif
+		invoke	_argc		;无参数 显示帮助
+		.if	!eax
+			Cout	offset uszHelp
+			Cpause
 		.else
-			Cout	uszError
+			mov	nArgc,eax
+			xor	eax,eax
+			mov	nTargetArgc,eax
+			.while	TRUE	;处理每个参数
+				inc	nTargetArgc
+				invoke	_argv,nTargetArgc,addr uszBuf,sizeof uszBuf
+				mov	esi,offset uszBuf
+				lodsw
+				.if	eax ==	'/'	;如果以'/'开头则判断选项
+					lodsw
+					.if	eax ==	'h'
+						Cout	offset uszHelp
+						Cpause
+						.break
+					.elseif	eax ==	'd'
+					.else
+						Cout	offset uszErrUnrecognizedOption
+						.break
+					.endif
+				.else				;否则认为是目标文件
+					invoke	_GetPEMagic,addr uszBuf
+					.if	eax == 0
+						Cout	offset uszErrOpenTarget
+					.elseif	eax == 0000010Bh
+						Cout	offset uszX86
+						inc	nTargetArgc		;获得命令行
+						invoke	_argp,nTargetArgc
+						mov	nTargetArgc,eax
+						Cout	nTargetArgc
+					.elseif	eax == 0000020Bh
+						Cout	offset uszX64
+					.else
+						Cout	offset uszErrUnrecognizedTarget
+					.endif
+					.break
+				.endif
+				mov	eax,nTargetArgc
+				.if	eax == nArgc
+					Cout	offset uszErrUnrecognizedTarget
+					invoke	ExitProcess,0
+				.endif
+			.endw
 		.endif
 		invoke	ExitProcess,0
 		ret
