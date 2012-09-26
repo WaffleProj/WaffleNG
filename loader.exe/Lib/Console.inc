@@ -56,6 +56,19 @@ endif
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 		.code
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+_CtrlHandler	proc	_dwCtrlType
+
+		pushad
+		mov	eax,_dwCtrlType
+		.if	eax == CTRL_C_EVENT || eax == CTRL_BREAK_EVENT || eax == CTRL_CLOSE_EVENT
+			invoke	ExitProcess,0
+		.endif
+		popad
+		mov	eax,TRUE
+		ret
+
+_CtrlHandler	endp
+;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 _SetConsole	proc	uses ebx edi esi,_lpTitle
 
 		invoke	SetConsoleTitle,_lpTitle
@@ -74,6 +87,7 @@ _SetConsole	proc	uses ebx edi esi,_lpTitle
 			pop	_Cout
 			invoke	WriteFile,hStdOut,addr uszBOM,2,addr dwBytesWrite,NULL
 		.endif
+		invoke	SetConsoleCtrlHandler,addr _CtrlHandler,TRUE
 		invoke	SetConsoleMode,hStdIn,ENABLE_INSERT_MODE or ENABLE_EXTENDED_FLAGS
 		ret
 _SetConsole	endp

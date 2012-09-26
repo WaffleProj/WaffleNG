@@ -1,6 +1,6 @@
 		.code
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-_InjectDllX86	proc	uses ebx esi edi _lpuszTarget,_lpuszDll,_lpuszArgument
+_InjectDll	proc	uses ebx esi edi _lpuszTarget,_lpuszDll,_lpuszArgument
 		local	@stStartUp:STARTUPINFO
 		local	@stProcessInfo:PROCESS_INFORMATION
 		local	@lpDllName
@@ -29,7 +29,7 @@ _InjectDllX86	proc	uses ebx esi edi _lpuszTarget,_lpuszDll,_lpuszArgument
 		push	sizeof @stStartUp
 		pop	@stStartUp.cb
 		invoke	GetStartupInfo,addr @stStartUp
-		invoke	CreateProcess,_lpuszTarget,@lpuszTargetAndArgu,NULL,NULL,FALSE,CREATE_SUSPENDED,0,NULL,addr @stStartUp,addr @stProcessInfo
+		invoke	CreateProcess,_lpuszTarget,@lpuszTargetAndArgu,NULL,NULL,TRUE,CREATE_SUSPENDED,0,NULL,addr @stStartUp,addr @stProcessInfo
 		invoke	VirtualAllocEx,@stProcessInfo.hProcess,NULL,MAX_PATH,MEM_COMMIT,PAGE_READWRITE
 		.if	eax
 			mov	@lpDllName,eax
@@ -37,10 +37,9 @@ _InjectDllX86	proc	uses ebx esi edi _lpuszTarget,_lpuszDll,_lpuszArgument
 			invoke	CreateRemoteThread,@stProcessInfo.hProcess,NULL,0,LoadLibraryW,@lpDllName,0,NULL
 			invoke	CloseHandle,eax
 		.endif
-		;invoke	Sleep,1000
-		invoke	ResumeThread,@stProcessInfo.hThread
-		invoke	CloseHandle,@stProcessInfo.hProcess
 		invoke	GlobalFree,@lpuszTargetAndArgu
+		mov	eax,@stProcessInfo.hProcess
+		mov	edx,@stProcessInfo.hThread
 		
 		ret
-_InjectDllX86	endp
+_InjectDll	endp
