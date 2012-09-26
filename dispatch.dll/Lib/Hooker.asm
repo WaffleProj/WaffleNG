@@ -1,23 +1,6 @@
-		.386
-		.model flat, stdcall
-		option casemap :none
-;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-; Include 文件定义
-;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-include		windows.inc
-include		user32.inc
-includelib	user32.lib
-include		kernel32.inc
-includelib	kernel32.lib
 USE_HOOK_DISPATCHER	equ	1
-;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-		.data?
-hInstance	dd	?
-lpOri		dd	?
 		.const
-szDll		db	'user32.dll',0
-szMessageBox	db	'MessageBoxA',0
-;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+bOriginalCode	db	90h,90h,90h,90h,90h,8Bh,0FFh
 		.code
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 _HotPatching	proc	uses ebx edi esi,_lpszDllName,_lpszProc,_lpNew,_lplpOri
@@ -50,7 +33,7 @@ _HotPatching	proc	uses ebx edi esi,_lpszDllName,_lpszProc,_lpNew,_lplpOri
 			mov	@lpOldProc,eax
 			mov	ebx,_lplpOri
 			mov	[ebx],eax
-			add	dword ptr [ebx],2
+			add	dword ptr [ebx],2	;返回值已经绕过了函数头部
 		.endif
 ;********************************************************************
 ;判断是否可以Hot-Patching
@@ -65,9 +48,7 @@ _HotPatching	proc	uses ebx edi esi,_lpszDllName,_lpszProc,_lpNew,_lplpOri
 ;55		push	ebp		Addr+1
 ;8BEC		mov	ebp,esp		Addr+3
 ;********************************************************************
-		.const
-bOriginalCode	db	90h,90h,90h,90h,90h,8Bh,0FFh
-		.code
+;bOriginalCode	db	90h,90h,90h,90h,90h,8Bh,0FFh
 		mov	eax,@lpOldProc
 		lea	esi,[eax-5]
 		mov	edi,offset bOriginalCode
@@ -187,8 +168,7 @@ _UnPatching	proc	uses ebx edi esi,_lpszDllName,_lpszProc
 
 _UnPatching	endp
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-ifdef		USE_HOOK_DISPATCHER
-_NewMessageBoxA	proc
+_Dispatcher	proc
 ; 堆栈示意	ebp=载入时的esp
 ;[ebp]		原调用EBP
 ;[ebp+4]	Hook调用压入的函数地址
@@ -203,51 +183,14 @@ _NewMessageBoxA	proc
 		
 		;push	_P4
 		push	[ebp+24]
-		push	offset szDll
-		push	offset szMessageBox
+		push	0
+		push	[ebp+16]
 		;push	_P1
 		push	[ebp+12]
-		call	lpOri
+		call	lpMessageBoxA
 		
 		pop	ebp
 		add	esp,4+4+4*4	;Hook调用地址+原调用地址+参数
 		push	[esp-4-4*4]	;压入原调用地址
 		ret
-_NewMessageBoxA	endp
-else
-_NewMessageBoxA	proc	_P1,_P2,_P3,_P4
-
-		push	_P4
-		push	offset szDll
-		push	offset szMessageBox
-		push	_P1
-
-		call	lpOri
-		ret
-		
-_NewMessageBoxA	endp	
-endif	
-;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-_Main		proc	uses ebx esi edi _lParam
-		
-		invoke	_HotPatching,offset szDll,offset szMessageBox,_NewMessageBoxA,offset lpOri
-		ret
-
-_Main		endp
-;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-DllEntry	proc	_hInstance,_dwReason,_dwReserved
-		local	@dwThreadID
-
-		.if	_dwReason == DLL_PROCESS_ATTACH
-			push	_hInstance
-			pop	hInstance
-			invoke	CreateThread,NULL,0,offset _Main,NULL,\
-				NULL,addr @dwThreadID
-			invoke	CloseHandle,eax
-		.endif
-		mov	eax,TRUE
-		ret
-
-DllEntry	Endp
-;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-		End	DllEntry
+_Dispatcher	endp

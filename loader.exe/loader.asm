@@ -38,7 +38,7 @@ uszHelp2	ustr	("(c) 2012 Excalibur. All rights reserved.",0dh,0ah)
 uszHelp3	ustr	("Blah blah blah.",0dh,0ah,0dh,0ah)
 uszHelp4	ustr	("usage: loader [ options ] target_full_path [ arguments ]",0dh,0ah,0)
 
-uszFmt		ustr	("%08X",0)
+uszFmt		ustr	("0x%X",0)
 
 uszX86		ustr	("Target: x86",0dh,0ah,0)
 uszX86Dll	ustr	("x86\dispatch.dll",0)
@@ -58,6 +58,8 @@ uszErrUnrecognizedMessage ustr	("E0011 Unrecognized Message.",0dh,0ah,0)
 TM_FIRSTMESSAGE		equ	TM_RESUMEMAINTHREAD
 TM_RESUMEMAINTHREAD	equ	WM_USER + 1
 TM_LASTMESSAGE		equ	TM_RESUMEMAINTHREAD
+
+uszDll		ustr	("d3d9.dll",0)
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ; ´úÂë¶Î
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -69,6 +71,7 @@ include		PECheck.asm
 include		Inject.asm
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 start:
+		invoke	LoadLibrary,addr uszDll
 		invoke	_SetConsole,addr uszTitle		;ÉèÖÃConsole¾ä±ú
 		.if	!eax
 			invoke	MessageBox,0,addr uszErrConsoleInit,0,0
