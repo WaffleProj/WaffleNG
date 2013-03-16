@@ -1,0 +1,65 @@
+NotYet	FindFirstFileA
+Later	FindNextFileA
+	
+N	GetWindowsDirectoryA
+Y	SetCurrentDirectoryA
+	
+Y	CreateDirectoryA
+Later	RemoveDirectoryA
+	
+Y	CreateFileA
+Later	MoveFileA
+Later	CopyFileA
+Y	DeleteFileA
+N	CreateFileMappingA
+Y	GetFileAttributesA
+Later	SetFileAttributesA
+	
+Later	CreateProcessA
+*	GetStartupInfoA
+	
+N	CreateEventA
+N	CreateMutexA
+N	OpenMutexA
+	
+N	CreateWaitableTimerA
+Y	LoadLibraryA
+	
+Later	LCMapStringA
+Later	GetStringTypeA
+	
+Later	GetEnvironmentVariableA
+Later	GetEnvironmentStrings
+Later	FreeEnvironmentStringsA
+
+N	GetComputerNameA
+Y	GetCommandLineA
+N	GetLogicalDriveStringsA
+Later	GetVolumeInformationA
+N	GetDriveTypeA
+N	GetVersionExA
+
+Y	GetModuleFileNameA
+Y	GetModuleHandleA
+;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+Y	SetWindowTextA
+	PostMessageA
+	SendMessageA
+	CreateWindowExA
+	DefWindowProcA
+	PeekMessageA
+	DispatchMessageA
+	SystemParametersInfoA
+	FindWindowA
+	LoadIconA
+	LoadCursorA
+	RegisterClassExA
+	wsprintfA
+	CallWindowProcA
+	GetWindowTextA
+	SetWindowLongA
+	DialogBoxParamA
+	GetDlgItemTextA
+	SendDlgItemMessageA
+	SetDlgItemTextA
+Y	MessageBoxA

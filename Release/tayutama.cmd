@@ -1,0 +1,1 @@
+x86\loader "E:\Galgame\Lump of Sugar\タユタマ\tayutama.exe"

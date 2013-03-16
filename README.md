@@ -1,4 +1,4 @@
 Mojibake
 ========
 
-Mojibake
+Another Locale Switcher
