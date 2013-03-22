@@ -3,6 +3,8 @@
 #include <shellapi.h>
 #include "loader.h"
 
+#include <stdio.h>
+
 VOID WINAPI Main()
 {
     TCHAR szPath[MAX_PATH];
@@ -32,7 +34,7 @@ VOID WINAPI Main()
     LPVOID lpFile = MapViewOfFile(hMapFile,FILE_MAP_READ,0,0,0);
     if (!lpFile)
     {
-        MessageBox(0,TEXT("[0001]Cannnot read the file."),0,0);
+        printf("[0001]Cannnot read the file.\n");
         ExitProcess(0);
         return;
     }
@@ -70,21 +72,38 @@ VOID WINAPI Main()
         lstrcpy(szDllFull,szPath);
         lstrcat(szDllFull,TEXT("\\core.dll"));
 
-        HANDLE hThread = InjectDll(szTarget,lpszArgument,szDirectory,szDllFull);
+        PROCESS_INFORMATION stProcessInfo = InjectDll(szTarget,lpszArgument,szDirectory,szDllFull);
+        
+        CONTEXT stContext;
+        RtlZeroMemory(&stContext,sizeof(stContext));
+        stContext.ContextFlags = CONTEXT_FULL;
+        GetThreadContext(stProcessInfo.hThread,&stContext);
         
         while (TRUE)
         {
             GetMessage(&stMSG,0,TM_FIRSTMESSAGE,TM_LASTMESSAGE);
-            if (stMSG.message == TM_RESUMEMAINTHREAD)
+            if (stMSG.message == TM_SETMAINIP)
             {
-                ResumeThread(hThread);
-                CloseHandle(hThread);
+                CONTEXT stNewContext;
+                RtlZeroMemory(&stNewContext,sizeof(stNewContext));
+                stNewContext.ContextFlags = CONTEXT_FULL;
+                GetThreadContext(stProcessInfo.hThread,&stNewContext);
+                stNewContext.Eip = stMSG.lParam;
+                SetThreadContext(stProcessInfo.hThread,&stNewContext);
+                ResumeThread(stProcessInfo.hThread);
+            }
+            else if (stMSG.message == TM_RESUMETMAINIP)
+            {
+                SuspendThread(stProcessInfo.hThread);
+                SetThreadContext(stProcessInfo.hThread,&stContext);
+                ResumeThread(stProcessInfo.hThread);
+                CloseHandle(stProcessInfo.hThread);
                 break;
             }
         }
         break;
     case IMAGE_NT_OPTIONAL_HDR64_MAGIC:
-        MessageBox(0,TEXT("[FFFF]At this moment we can not load PE64 file."),0,0);
+        printf("[FFFF]At this moment we can not load PE64 file.\n");
         break;
     }
 

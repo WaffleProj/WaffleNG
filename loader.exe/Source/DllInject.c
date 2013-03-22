@@ -2,7 +2,7 @@
 #include <windows.h>
 #include "..\loader.h"
 
-HANDLE WINAPI InjectDll(LPCTSTR lpszTarget, LPTSTR lpszArgument, LPCTSTR lpszDirectory, LPCTSTR lpszDllFull)
+PROCESS_INFORMATION WINAPI InjectDll(LPCTSTR lpszTarget, LPTSTR lpszArgument, LPCTSTR lpszDirectory, LPCTSTR lpszDllFull)
 {
     STARTUPINFO stStartUp;
     PROCESS_INFORMATION stProcessInfo;
@@ -18,7 +18,6 @@ HANDLE WINAPI InjectDll(LPCTSTR lpszTarget, LPTSTR lpszArgument, LPCTSTR lpszDir
         HANDLE hThread = CreateRemoteThread(stProcessInfo.hProcess,NULL,0,(LPTHREAD_START_ROUTINE)lpLoadLibrary,lpszRemoteDll,0,NULL);
         CloseHandle(hThread);
     }
-    CloseHandle(stProcessInfo.hProcess);
     
-    return stProcessInfo.hThread;
+    return stProcessInfo;
 }

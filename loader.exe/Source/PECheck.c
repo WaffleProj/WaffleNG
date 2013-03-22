@@ -2,6 +2,8 @@
 #include <windows.h>
 #include "..\loader.h"
 
+#include <stdio.h>
+
 WORD WINAPI GetPEMagic(LPVOID lpFile)
 {
     WORD Magic = 0;
@@ -11,15 +13,18 @@ WORD WINAPI GetPEMagic(LPVOID lpFile)
         if (lpNtHeader->Signature == IMAGE_NT_SIGNATURE)                                        //由DOS头部决定PE文件头部的位置
         {
             if (lpNtHeader->FileHeader.Characteristics & IMAGE_FILE_DLL)
-                MessageBox(0,TEXT("[0004]This file is a dll."),0,0);                            //DLL文件
+                printf("[0004]This file is a dll.\n");
+                //DLL文件
             else
                 Magic = lpNtHeader->OptionalHeader.Magic;
         }
         else
-            MessageBox(0,TEXT("[0003]This PE file is targeting another platform."),0,0);        //DOS或OS/2的PE文件
+            printf("[0003]This PE file is targeting another platform.\n");
+            //DOS或OS/2的PE文件
     }
     else
-        MessageBox(0,TEXT("[0002]This is not a legal PE file."),0,0);                           //不明文件种类
+        printf("[0002]This is not a legal PE file.\n");
+        //不明文件种类
     
     return Magic;
 }

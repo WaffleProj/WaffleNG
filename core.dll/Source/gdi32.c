@@ -20,9 +20,8 @@ HFONT WINAPI NewCreateFontA(
 ){
     LPVOID lpuszFace = AnsiToUnicode(lpszFace);
     HFONT Result = CreateFont(nHeight,nWidth,nEscapement,nOrientation,fnWeight,fdwItalic,fdwUnderline,fdwStrikeOut,fdwCharSet,fdwOutputPrecision,fdwClipPrecision,fdwQuality,fdwPitchAndFamily,lpuszFace);
-    DWORD LastError = GetLastError();
-    HeapFree(hHeap,0,lpuszFace);
-    SetLastError(LastError);
+
+    KeepLastErrorAndFree(lpuszFace);
     return Result;
 }
 
@@ -35,8 +34,7 @@ BOOL WINAPI NewTextOutA(
 ){
     LPVOID lpuszString = AnsiToUnicode(lpString);
     BOOL Result = TextOut(hdc,nXStart,nYStart,lpuszString,cchString);
-    DWORD LastError = GetLastError();
-    HeapFree(hHeap,0,lpuszString);
-    SetLastError(LastError);
+
+    KeepLastErrorAndFree(lpuszString);
     return Result;
 }

@@ -32,7 +32,7 @@ i686-w64-mingw32-gcc	-c -o ..\Release\CmdLine.o Source\CmdLine.c
 i686-w64-mingw32-gcc	-c -o ..\Release\PECheck.o Source\PECheck.c
 i686-w64-mingw32-gcc	-c -o ..\Release\DllInject.o Source\DllInject.c
 
-jwlink	OPTION quiet FORMAT window pe RUNTIME windows NAME ..\Release\x86\loader.exe FILE ..\Release\loader.obj,..\Release\loader.o,..\Release\CmdLine.o,..\Release\PECheck.o,..\Release\DllInject.o
+jwlink	OPTION quiet FORMAT window pe RUNTIME console NAME ..\Release\x86\loader.exe FILE ..\Release\loader.obj,..\Release\loader.o,..\Release\CmdLine.o,..\Release\PECheck.o,..\Release\DllInject.o
 del	*.err 2>nul
 del	..\Release\*.obj 2>nul
 del	..\Release\*.o 2>nul
@@ -41,12 +41,12 @@ cd..
 cd	core.dll
 set	include=%CD%\Source;%toolchain%\include;%sdk%\include;%mingw%\include
 jwasm	/nologo /c /Cp /coff /Fo ..\Release\core.obj core.asm
-i686-w64-mingw32-gcc	-c -o ..\Release\dllmain.o dllmain.c
+i686-w64-mingw32-gcc	-c -o ..\Release\core.o core.c
 i686-w64-mingw32-gcc	-c -o ..\Release\kernel32.o Source\kernel32.c
 i686-w64-mingw32-gcc	-c -o ..\Release\user32.o Source\user32.c
 i686-w64-mingw32-gcc	-c -o ..\Release\gdi32.o Source\gdi32.c
 
-jwlink	OPTION quiet FORMAT window pe dll RUNTIME windows NAME ..\Release\x86\core.dll FILE ..\Release\core.obj,..\Release\dllmain.o,..\Release\kernel32.o,..\Release\user32.o,..\Release\gdi32.o
+jwlink	OPTION quiet FORMAT window pe dll RUNTIME windows NAME ..\Release\x86\core.dll FILE ..\Release\core.obj,..\Release\core.o,..\Release\kernel32.o,..\Release\user32.o,..\Release\gdi32.o
 del	*.err 2>nul
 del	..\Release\*.obj 2>nul
 del	..\Release\*.o 2>nul

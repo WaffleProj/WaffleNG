@@ -104,7 +104,7 @@ _HotPatch	proc	uses ebx edi esi,_lpstHook
 		cld
 		repe	cmpsb
 		.if	!ZERO?
-			invoke	MessageBox,0,[ebx].lpszFunction,[ebx].lpszModule,0
+			;invoke	MessageBox,0,[ebx].lpszFunction,[ebx].lpszModule,0
 		.endif
 ;********************************************************************
 ;修改分页保护属性:R E->RWE

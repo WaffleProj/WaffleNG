@@ -1,19 +1,22 @@
 #ifndef __MOJIBAKE_CORE_H_
 #define __MOJIBAKE_CORE_H_
+#include "..\mojibake.h"
 
-#define _In_
-#define _In_opt_
-#define _Out_
-#define _Out_opt_
-
-#define	TM_RESUMEMAINTHREAD	WM_USER + 1
-#define	CP_SHIFT_JIS 932
+#define	CP_SHIFT_JIS    932
+#define LOCALE_JA_JP    0x0411
 
 extern	HINSTANCE	hDLL;
+
 extern	HANDLE		hHeap;
-extern	UINT		NewCodePage;
-extern	UINT		OldCodePage;
+extern	UINT		NewACP;
+extern	UINT		OldACP;
+extern	UINT		NewOEMCP;
+extern	UINT		OldOEMCP;
+extern	LCID		NewLocale;
+extern	LCID		OldLocale;
+
 extern	HGLOBAL		lpszCommandLineA;
+extern	UINT            ParentTid;
 
 typedef struct {
     LPVOID lpDispatch;
@@ -28,8 +31,14 @@ typedef struct {
     LPCSTR lpszModule;
 } HOOK_TABLE_OBJECT;
 
+extern HOOK_TABLE_OBJECT		stGetCPInfo;
 extern HOOK_TABLE_OBJECT		stMultiByteToWideChar;
 extern HOOK_TABLE_OBJECT		stWideCharToMultiByte;
+
+typedef BOOL (WINAPI *lpGetCPInfo)(
+  _In_   UINT CodePage,
+  _Out_  LPCPINFO lpCPInfo
+);
 
 typedef int (WINAPI *lpMultiByteToWideChar)(
   _In_       UINT CodePage,
@@ -57,6 +66,7 @@ extern "C" {
 
 int WINAPI _SetHook(HOOK_TABLE_HEAD_OBJECT * stHookTable);
 LPVOID WINAPI AnsiToUnicode(LPCSTR lpszText);
+VOID WINAPI KeepLastErrorAndFree(LPVOID lpMem);
 
 #ifdef __cplusplus
 };

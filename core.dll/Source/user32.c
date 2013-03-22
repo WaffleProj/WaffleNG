@@ -12,8 +12,11 @@ int WINAPI NewMessageBoxExA(
     LPVOID lpuszText = AnsiToUnicode(lpText);
     LPVOID lpuszCaption = AnsiToUnicode(lpCaption);
     int Result = MessageBoxEx(hWnd,lpuszText,lpuszCaption,uType,wLanguageId);
+
+    DWORD LastError = GetLastError();
     HeapFree(hHeap,0,lpuszText);
     HeapFree(hHeap,0,lpuszCaption);
+    SetLastError(LastError);
     return Result;
 }
 
@@ -24,8 +27,7 @@ BOOL WINAPI NewSetWindowTextA(
 ){
     LPVOID lpuszString = AnsiToUnicode(lpString);
     BOOL Result = SetWindowText(hWnd,lpuszString);
-    DWORD LastError = GetLastError();
-    HeapFree(hHeap,0,lpuszString);
-    SetLastError(LastError);
+
+    KeepLastErrorAndFree(lpuszString);
     return Result;
 }
