@@ -11,11 +11,19 @@ includelib	gdi32.lib
 includelib	shlwapi.lib
 include		Hook.inc
 DllMain		proto	:HINSTANCE,:DWORD,:LPVOID
+__DEBUG__	equ	TRUE
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ; Êý¾Ý¶Î
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+if		__DEBUG__
 		.data?
-
+hDebug		dd	?
+stCS		CRITICAL_SECTION	<?>
+		.const
+szDebug		db	"DebugOutput.log",0
+szCrLf		db	0dh,0ah,0
+endif
+;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 		.const
 szKernel32	db	"Kernel32.dll",0
 szUser32	db	"User32.dll",0
@@ -43,6 +51,7 @@ stHookTable	HOOK_TABLE_BEGIN	_HookDispatch
 "WideCharToMultiByte"		HOOK_TABLE	"Kernel32",8
 
 ;CharLower
+"CreateWindowA"			HOOK_TABLE	"User32",11
 ;"MessageBoxExA"			HOOK_TABLE	"User32",5
 ;OemToCharA
 "SetWindowTextA"		HOOK_TABLE	"User32",2

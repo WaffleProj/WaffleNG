@@ -24,7 +24,7 @@ HANDLE WINAPI NewCreateFileA(
 ){
 	LPVOID lpuszFileName = AnsiToUnicode(lpFileName);
 	HANDLE Result = CreateFile(lpuszFileName,dwDesiredAccess,dwShareMode,lpSecurityAttributes,dwCreationDisposition,dwFlagsAndAttributes,hTemplateFile);
-
+	//MessageBox(0,lpuszFileName,0,0);
 	KeepLastErrorAndFree(lpuszFileName);
 	return Result;
 }

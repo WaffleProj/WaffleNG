@@ -29,6 +29,17 @@ _HookDispatch	proc
 			
 			mov	eax,[edi].lpOldFunction
 			.if	eax == dword ptr [ebp+4]
+				if	__DEBUG__
+				push	ebx
+				mov	ebx,esp
+				invoke	EnterCriticalSection,addr stCS
+				invoke	SetFilePointer,hDebug,0,NULL,FILE_END
+				invoke	lstrlen,[edi].lpszFunction
+				invoke	WriteFile,hDebug,[edi].lpszFunction,eax,ebx,NULL
+				invoke	WriteFile,hDebug,addr szCrLf,2,ebx,NULL
+				invoke	LeaveCriticalSection,addr stCS
+				pop	ebx
+				endif
 				popad
 				;add	esp,4
 				mov	esp,ebp
@@ -154,6 +165,12 @@ _HotPatch	endp
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 _SetHook	proc	uses ebx edi esi _lpTable
 		local	@lpDispatch
+		
+		if	__DEBUG__
+		invoke	InitializeCriticalSection,addr stCS
+		invoke	CreateFile,addr szDebug,GENERIC_WRITE,FILE_SHARE_READ,NULL,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,NULL
+		mov	hDebug,eax
+		endif
 		
 		mov	edi,_lpTable
 		assume	edi:ptr HOOK_TABLE_HEAD_OBJECT
