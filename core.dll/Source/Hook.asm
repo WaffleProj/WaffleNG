@@ -87,6 +87,7 @@ _HotPatch	proc	uses ebx edi esi,_lpstHook
 		invoke	GetModuleHandle,[ebx].lpszModule
 		invoke	GetProcAddress,eax,[ebx].lpszFunction
 		.if	!eax
+			invoke	MessageBox,0,[ebx].lpszFunction,0,0
 			mov	eax,ERROR_INVALID_FUNCTION
 			ret
 		.else

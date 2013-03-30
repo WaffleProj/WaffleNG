@@ -4,14 +4,10 @@
 #include "core.h"
 
 HINSTANCE	hDLL;
-
 HANDLE		hHeap;
-UINT		NewACP;
-UINT		OldACP;
-UINT		NewOEMCP;
-UINT		OldOEMCP;
-LCID		NewLocale;
-LCID		OldLocale;
+
+ENVIRONMENT_BLOCK	stOldEnvir;
+ENVIRONMENT_BLOCK	stNewEnvir;
 
 HGLOBAL		lpszCommandLineA;
 UINT            ParentTid;
@@ -23,7 +19,7 @@ LPVOID WINAPI AnsiToUnicode(
     {
         int intText = lstrlenA(lpszText) + 1;
         LPVOID lpuszText = HeapAlloc(hHeap,HEAP_ZERO_MEMORY,2*intText);
-        MultiByteToWideChar(NewACP,0,lpszText,-1,lpuszText,intText);
+        MultiByteToWideChar(stNewEnvir.ACP,0,lpszText,-1,lpuszText,intText);
         return lpuszText;
     }
     else
@@ -41,7 +37,7 @@ VOID WINAPI KeepLastErrorAndFree(
 
 DWORD WINAPI SetThreadEnvironment()
 {
-    SetThreadLocale(NewLocale);
+    SetThreadLocale(stNewEnvir.ThreadLocale);
     MessageBox(0,0,0,0);
     PostThreadMessage(ParentTid,TM_RESUMETMAINIP,0,0);
     while (TRUE);
@@ -53,12 +49,12 @@ DWORD WINAPI InitLibrary(
 ){
     //∂¡»°≥Ã–Ú≈‰÷√
     //CryptCATAdminCalcHashFromFileHandle
-    OldACP = GetACP();
-    NewACP = CP_SHIFT_JIS;
-    OldOEMCP = GetOEMCP();
-    NewOEMCP = CP_SHIFT_JIS;
-    OldLocale = GetThreadLocale();
-    NewLocale = LOCALE_JA_JP;
+    stOldEnvir.ACP = GetACP();
+    stNewEnvir.ACP = CP_SHIFT_JIS;
+    stOldEnvir.OEMCP = GetOEMCP();
+    stNewEnvir.OEMCP = CP_SHIFT_JIS;
+    stOldEnvir.ThreadLocale = GetThreadLocale();
+    stNewEnvir.ThreadLocale = LOCALE_JA_JP;
     hHeap = HeapCreate(0,0,0);
     
     TCHAR szEnvirVar[32];
@@ -69,7 +65,7 @@ DWORD WINAPI InitLibrary(
     LPTSTR lpszCommandLineW = GetCommandLineW();
     int intSize = 4*lstrlenW(lpszCommandLineW);
     lpszCommandLineA = GlobalAlloc(GPTR,intSize);
-    WideCharToMultiByte(NewACP,0,lpszCommandLineW,-1,lpszCommandLineA,intSize,NULL,NULL);
+    WideCharToMultiByte(stNewEnvir.ACP,0,lpszCommandLineW,-1,lpszCommandLineA,intSize,NULL,NULL);
 
     _SetHook(&stHookTable);
 

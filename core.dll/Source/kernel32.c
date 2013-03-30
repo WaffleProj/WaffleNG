@@ -57,8 +57,8 @@ HANDLE WINAPI NewFindFirstFileA(
 	lpFindFileData->nFileSizeLow = FindFileData.nFileSizeLow;
 	lpFindFileData->dwReserved0 = FindFileData.dwReserved0;
 	lpFindFileData->dwReserved1 = FindFileData.dwReserved1;
-	WideCharToMultiByte(NewACP,0,FindFileData.cFileName,-1,lpFindFileData->cFileName,sizeof(lpFindFileData->cFileName),NULL,NULL);
-	WideCharToMultiByte(NewACP,0,FindFileData.cAlternateFileName,-1,lpFindFileData->cAlternateFileName,sizeof(lpFindFileData->cAlternateFileName),NULL,NULL);
+	WideCharToMultiByte(stNewEnvir.ACP,0,FindFileData.cFileName,-1,lpFindFileData->cFileName,sizeof(lpFindFileData->cFileName),NULL,NULL);
+	WideCharToMultiByte(stNewEnvir.ACP,0,FindFileData.cAlternateFileName,-1,lpFindFileData->cAlternateFileName,sizeof(lpFindFileData->cAlternateFileName),NULL,NULL);
 
 	HeapFree(hHeap,0,lpuszFileName);
 	SetLastError(LastError);
@@ -82,8 +82,8 @@ BOOL WINAPI NewFindNextFileA(
 	lpFindFileData->nFileSizeLow = FindFileData.nFileSizeLow;
 	lpFindFileData->dwReserved0 = FindFileData.dwReserved0;
 	lpFindFileData->dwReserved1 = FindFileData.dwReserved1;
-	WideCharToMultiByte(NewACP,0,FindFileData.cFileName,-1,lpFindFileData->cFileName,sizeof(lpFindFileData->cFileName),NULL,NULL);
-	WideCharToMultiByte(NewACP,0,FindFileData.cAlternateFileName,-1,lpFindFileData->cAlternateFileName,sizeof(lpFindFileData->cAlternateFileName),NULL,NULL);
+	WideCharToMultiByte(stNewEnvir.ACP,0,FindFileData.cFileName,-1,lpFindFileData->cFileName,sizeof(lpFindFileData->cFileName),NULL,NULL);
+	WideCharToMultiByte(stNewEnvir.ACP,0,FindFileData.cAlternateFileName,-1,lpFindFileData->cAlternateFileName,sizeof(lpFindFileData->cAlternateFileName),NULL,NULL);
 
 	SetLastError(LastError);
 	return Result;
@@ -91,7 +91,7 @@ BOOL WINAPI NewFindNextFileA(
 
 UINT WINAPI NewGetACP(void)
 {
-	return NewACP;
+	return stNewEnvir.ACP;
 }
 
 LPSTR WINAPI NewGetCommandLineA(void)   //由于这个函数直接返回指针无需释放,所以只能这么做
@@ -104,7 +104,7 @@ BOOL WINAPI NewGetCPInfo(
   _Out_  LPCPINFO lpCPInfo
 ){
 	if  (!CodePage)
-		CodePage = NewACP;
+		CodePage = stNewEnvir.ACP;
 
 	return ((lpGetCPInfo)stGetCPInfo.lpOldFunction)(CodePage,lpCPInfo);
 }
@@ -131,7 +131,7 @@ DWORD WINAPI NewGetModuleFileNameA(
 	GetModuleFileName(hModule,lpuszFilename,nSize);
 
 	DWORD LastError = GetLastError();
-	WideCharToMultiByte(NewACP,0,lpuszFilename,-1,lpFilename,nSize,NULL,NULL);
+	WideCharToMultiByte(stNewEnvir.ACP,0,lpuszFilename,-1,lpFilename,nSize,NULL,NULL);
 	HeapFree(hHeap,0,lpuszFilename);
 	SetLastError(LastError);
 	return lstrlenA(lpFilename);
@@ -145,32 +145,6 @@ HMODULE WINAPI NewGetModuleHandleA(
 
 	KeepLastErrorAndFree(lpuszModuleName);
 	return Result;
-}
-
-DWORD WINAPI K32GetModuleFileNameExW(
-  _In_      HANDLE hProcess,
-  _In_opt_  HMODULE hModule,
-  _Out_     LPWSTR lpFilename,
-  _In_      DWORD nSize
-); //补上定义
-
-DWORD WINAPI NewK32GetModuleFileNameExA(
-  _In_      HANDLE hProcess,
-  _In_opt_  HMODULE hModule,
-  _Out_     LPSTR lpFilename,
-  _In_      DWORD nSize
-){
-	LPVOID lpuszFilename = 0;
-	if  (lpFilename)
-		lpuszFilename = HeapAlloc(hHeap,HEAP_ZERO_MEMORY,4*nSize);
-
-	K32GetModuleFileNameExW(hProcess,hModule,lpuszFilename,nSize);
-
-	DWORD LastError = GetLastError();
-	WideCharToMultiByte(NewACP,0,lpuszFilename,-1,lpFilename,nSize,NULL,NULL);
-	HeapFree(hHeap,0,lpuszFilename);
-	SetLastError(LastError);
-	return lstrlenA(lpFilename);
 }
 
 HMODULE WINAPI NewLoadLibraryA(
@@ -204,7 +178,7 @@ int WINAPI NewMultiByteToWideChar(
   _In_       int cchWideChar
 ){
 	if  (!CodePage)
-		CodePage = NewACP;
+		CodePage = stNewEnvir.ACP;
 
 	return ((lpMultiByteToWideChar)stMultiByteToWideChar.lpOldFunction)(CodePage,dwFlags,lpMultiByteStr,cbMultiByte,lpWideCharStr,cchWideChar);
 }
@@ -241,7 +215,7 @@ int WINAPI NewWideCharToMultiByte(
   _Out_opt_  LPBOOL lpUsedDefaultChar
 ){
 	if  (!CodePage)
-		CodePage = NewACP;
+		CodePage = stNewEnvir.ACP;
 
 	return ((lpWideCharToMultiByte)stWideCharToMultiByte.lpOldFunction)(CodePage,dwFlags,lpWideCharStr,cchWideChar,lpMultiByteStr,cbMultiByte,lpDefaultChar,lpUsedDefaultChar);
 }

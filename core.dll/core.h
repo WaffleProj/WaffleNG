@@ -5,15 +5,17 @@
 #define	CP_SHIFT_JIS    932
 #define LOCALE_JA_JP    0x0411
 
-extern	HINSTANCE	hDLL;
+typedef struct {
+    UINT ACP;
+    UINT OEMCP;
+    LCID ThreadLocale;
+} ENVIRONMENT_BLOCK;
 
+extern	HINSTANCE	hDLL;
 extern	HANDLE		hHeap;
-extern	UINT		NewACP;
-extern	UINT		OldACP;
-extern	UINT		NewOEMCP;
-extern	UINT		OldOEMCP;
-extern	LCID		NewLocale;
-extern	LCID		OldLocale;
+
+extern	ENVIRONMENT_BLOCK	stOldEnvir;
+extern	ENVIRONMENT_BLOCK	stNewEnvir;
 
 extern	HGLOBAL		lpszCommandLineA;
 extern	UINT            ParentTid;

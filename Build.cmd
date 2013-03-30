@@ -45,8 +45,9 @@ i686-w64-mingw32-gcc	-c -o ..\Release\core.o core.c
 i686-w64-mingw32-gcc	-c -o ..\Release\kernel32.o Source\kernel32.c
 i686-w64-mingw32-gcc	-c -o ..\Release\user32.o Source\user32.c
 i686-w64-mingw32-gcc	-c -o ..\Release\gdi32.o Source\gdi32.c
+i686-w64-mingw32-gcc	-c -o ..\Release\psapi.o Source\psapi.c
 
-jwlink	OPTION quiet FORMAT window pe dll RUNTIME windows NAME ..\Release\x86\core.dll FILE ..\Release\core.obj,..\Release\core.o,..\Release\kernel32.o,..\Release\user32.o,..\Release\gdi32.o
+jwlink	OPTION quiet FORMAT window pe dll RUNTIME windows NAME ..\Release\x86\core.dll FILE ..\Release\core.obj,..\Release\core.o,..\Release\kernel32.o,..\Release\user32.o,..\Release\gdi32.o,..\Release\psapi.o
 del	*.err 2>nul
 del	..\Release\*.obj 2>nul
 del	..\Release\*.o 2>nul

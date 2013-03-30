@@ -9,6 +9,7 @@ includelib	user32.lib
 includelib	kernel32.lib
 includelib	gdi32.lib
 includelib	shlwapi.lib
+includelib	psapi.lib
 include		Hook.inc
 DllMain		proto	:HINSTANCE,:DWORD,:LPVOID
 __DEBUG__	equ	TRUE
@@ -28,6 +29,7 @@ endif
 szKernel32	db	"Kernel32.dll",0
 szUser32	db	"User32.dll",0
 szGdi32		db	"Gdi32.dll",0
+szPsapi		db	"Psapi.dll"
 		.data
 externdef	stHookTable:HOOK_TABLE_HEAD_OBJECT
 stHookTable	HOOK_TABLE_BEGIN	_HookDispatch
@@ -42,7 +44,6 @@ stHookTable	HOOK_TABLE_BEGIN	_HookDispatch
 "GetFileAttributesA"		HOOK_TABLE	"Kernel32",1
 "GetModuleFileNameA"		HOOK_TABLE	"Kernel32",3
 "GetModuleHandleA"		HOOK_TABLE	"Kernel32",1
-"K32GetModuleFileNameExA"	HOOK_TABLE	"Kernel32",4
 "LoadLibraryA"			HOOK_TABLE	"Kernel32",1
 "LoadLibraryExA"		HOOK_TABLE	"Kernel32",3
 "MultiByteToWideChar"		HOOK_TABLE	"Kernel32",6
@@ -58,6 +59,8 @@ stHookTable	HOOK_TABLE_BEGIN	_HookDispatch
 
 "CreateFontA"			HOOK_TABLE	"Gdi32",14
 "TextOutA"			HOOK_TABLE	"Gdi32",5
+
+"GetModuleFileNameExA"		HOOK_TABLE	"Psapi",4
 		HOOK_TABLE_END
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 ; ДњТыЖЮ
