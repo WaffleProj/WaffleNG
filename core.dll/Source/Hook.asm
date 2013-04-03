@@ -1,5 +1,7 @@
 		.const
 bOriginalCode	db	90h,90h,90h,90h,90h,8Bh,0FFh
+szCanNotFind	db	"Can't Find",0
+szInvaildMemory	db	"Invaild Memory",0
 		.code
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 _CodeLoader	proc
@@ -87,7 +89,7 @@ _HotPatch	proc	uses ebx edi esi,_lpstHook
 		invoke	GetModuleHandle,[ebx].lpszModule
 		invoke	GetProcAddress,eax,[ebx].lpszFunction
 		.if	!eax
-			invoke	MessageBox,0,[ebx].lpszFunction,0,0
+			invoke	MessageBox,addr szCanNotFind,[ebx].lpszFunction,0,0
 			mov	eax,ERROR_INVALID_FUNCTION
 			ret
 		.else
@@ -116,7 +118,7 @@ _HotPatch	proc	uses ebx edi esi,_lpstHook
 		cld
 		repe	cmpsb
 		.if	!ZERO?
-			;invoke	MessageBox,0,[ebx].lpszFunction,[ebx].lpszModule,0
+			invoke	MessageBox,addr szInvaildMemory,[ebx].lpszFunction,[ebx].lpszModule,0
 		.endif
 ;********************************************************************
 ;修改分页保护属性:R E->RWE

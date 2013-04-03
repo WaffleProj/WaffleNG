@@ -1,1 +1,0 @@
-x86\loader "testcase.exe"

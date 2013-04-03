@@ -38,7 +38,7 @@ VOID WINAPI KeepLastErrorAndFree(
 DWORD WINAPI SetThreadEnvironment()
 {
     SetThreadLocale(stNewEnvir.ThreadLocale);
-    MessageBox(0,0,0,0);
+    MessageBox(0,TEXT("Please attach"),0,0);
     PostThreadMessage(ParentTid,TM_RESUMETMAINIP,0,0);
     while (TRUE);
     return 0;
@@ -47,6 +47,7 @@ DWORD WINAPI SetThreadEnvironment()
 DWORD WINAPI InitLibrary(
   _In_  LPVOID lpParameter
 ){
+    hHeap = HeapCreate(0,0,0);
     //∂¡»°≥Ã–Ú≈‰÷√
     //CryptCATAdminCalcHashFromFileHandle
     stOldEnvir.ACP = GetACP();
@@ -55,7 +56,6 @@ DWORD WINAPI InitLibrary(
     stNewEnvir.OEMCP = CP_SHIFT_JIS;
     stOldEnvir.ThreadLocale = GetThreadLocale();
     stNewEnvir.ThreadLocale = LOCALE_JA_JP;
-    hHeap = HeapCreate(0,0,0);
     
     TCHAR szEnvirVar[32];
     GetEnvironmentVariable(TEXT("ParentTID"),szEnvirVar,sizeof(szEnvirVar));

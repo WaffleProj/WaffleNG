@@ -36,6 +36,7 @@ typedef struct {
 extern HOOK_TABLE_OBJECT		stGetCPInfo;
 extern HOOK_TABLE_OBJECT		stMultiByteToWideChar;
 extern HOOK_TABLE_OBJECT		stWideCharToMultiByte;
+extern HOOK_TABLE_OBJECT		stSendMessageA;
 
 typedef BOOL (WINAPI *lpGetCPInfo)(
   _In_   UINT CodePage,
@@ -60,6 +61,13 @@ typedef int (WINAPI *lpWideCharToMultiByte)(
   _In_       int cbMultiByte,
   _In_opt_   LPCSTR lpDefaultChar,
   _Out_opt_  LPBOOL lpUsedDefaultChar
+);
+
+typedef LRESULT (WINAPI *lpSendMessageA)(
+  _In_  HWND hWnd,
+  _In_  UINT Msg,
+  _In_  WPARAM wParam,
+  _In_  LPARAM lParam
 );
 
 #ifdef __cplusplus

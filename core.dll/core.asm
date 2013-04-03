@@ -52,9 +52,10 @@ stHookTable	HOOK_TABLE_BEGIN	_HookDispatch
 "WideCharToMultiByte"		HOOK_TABLE	"Kernel32",8
 
 ;CharLower
-"CreateWindowA"			HOOK_TABLE	"User32",11
-;"MessageBoxExA"			HOOK_TABLE	"User32",5
+"CreateWindowExA"		HOOK_TABLE	"User32",12
+"MessageBoxExA"			HOOK_TABLE	"User32",5
 ;OemToCharA
+"SendMessageA"			HOOK_TABLE	"User32",4
 "SetWindowTextA"		HOOK_TABLE	"User32",2
 
 "CreateFontA"			HOOK_TABLE	"Gdi32",14
