@@ -11,12 +11,14 @@ LRESULT WINAPI NewCallWindowProcA(
 ){
     if  (Msg == WM_SETTEXT)
     {
-        LPVOID lpuszString = AnsiToUnicode((LPVOID)lParam);
-        LPVOID lpszString = ProgramCPToWindowsCP((LPVOID)lParam);
-        //MessageBox(0,lpuszString,TEXT("NewCallWindowProcA"),0);
-        LRESULT Result = ((lpCallWindowProcA)stCallWindowProcA.lpOldFunction)(lpPrevWndFunc,hWnd,Msg,wParam,(LPARAM)lpszString);
+        LRESULT Result = ((lpCallWindowProcA)stCallWindowProcA.lpOldFunction)(lpPrevWndFunc,hWnd,Msg,wParam,lParam);
     
         DWORD LastError = GetLastError();
+        int sizeString = DefWindowProcA(hWnd,WM_GETTEXTLENGTH,0,0);
+        sizeString++;
+        LPVOID lpszString = HeapAlloc(hHeap,HEAP_ZERO_MEMORY,sizeString);
+        DefWindowProcA(hWnd,WM_GETTEXT,sizeString,(LPARAM)lpszString);
+        LPVOID lpuszString = AnsiToUnicode(lpszString);
         DefWindowProc(hWnd,WM_SETTEXT,0,(LPARAM)lpuszString);
         HeapFree(hHeap,0,lpuszString);
         HeapFree(hHeap,0,lpszString);
@@ -82,6 +84,7 @@ LRESULT WINAPI NewSendMessageA(
   _In_  WPARAM wParam,
   _In_  LPARAM lParam
 ){
+/*
     if  (Msg == WM_SETTEXT)
     {
         LPVOID lpuszString = AnsiToUnicode((LPVOID)lParam);
@@ -93,8 +96,9 @@ LRESULT WINAPI NewSendMessageA(
     }
     else
     {
+*/
         return ((lpSendMessageA)stSendMessageA.lpOldFunction)(hWnd,Msg,wParam,lParam);
-    }    
+//    }
 }
 
 BOOL WINAPI NewSetWindowTextA(
