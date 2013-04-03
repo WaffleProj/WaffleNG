@@ -2,6 +2,33 @@
 #include <windows.h>
 #include "..\core.h"
 
+LRESULT WINAPI NewCallWindowProcA(
+  _In_  WNDPROC lpPrevWndFunc,
+  _In_  HWND hWnd,
+  _In_  UINT Msg,
+  _In_  WPARAM wParam,
+  _In_  LPARAM lParam
+){
+    if  (Msg == WM_SETTEXT)
+    {
+        LPVOID lpuszString = AnsiToUnicode((LPVOID)lParam);
+        LPVOID lpszString = ProgramCPToWindowsCP((LPVOID)lParam);
+        //MessageBox(0,lpuszString,TEXT("NewCallWindowProcA"),0);
+        LRESULT Result = ((lpCallWindowProcA)stCallWindowProcA.lpOldFunction)(lpPrevWndFunc,hWnd,Msg,wParam,(LPARAM)lpszString);
+    
+        DWORD LastError = GetLastError();
+        DefWindowProc(hWnd,WM_SETTEXT,0,(LPARAM)lpuszString);
+        HeapFree(hHeap,0,lpuszString);
+        HeapFree(hHeap,0,lpszString);
+        SetLastError(LastError);
+        return Result;
+    }
+    else
+    {
+        return ((lpCallWindowProcA)stCallWindowProcA.lpOldFunction)(lpPrevWndFunc,hWnd,Msg,wParam,lParam);
+    }    
+}
+
 HWND WINAPI NewCreateWindowExA(
   _In_      DWORD dwExStyle,
   _In_opt_  LPCSTR lpClassName,

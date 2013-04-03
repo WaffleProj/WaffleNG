@@ -26,6 +26,22 @@ LPVOID WINAPI AnsiToUnicode(
        return 0;
 }
 
+LPVOID WINAPI ProgramCPToWindowsCP(
+  _In_  LPCSTR lpszText
+){
+    if  (lpszText)
+    {
+        int intText = lstrlenA(lpszText) + 1;
+        LPVOID lpuszText = HeapAlloc(hHeap,HEAP_ZERO_MEMORY,2*intText);
+        LPVOID lpszNewText = HeapAlloc(hHeap,HEAP_ZERO_MEMORY,2*intText);
+        MultiByteToWideChar(stNewEnvir.ACP,0,lpszText,-1,lpuszText,intText);
+        WideCharToMultiByte(stOldEnvir.ACP,0,lpuszText,-1,lpszNewText,intText,NULL,FALSE);
+        return lpszNewText;
+    }
+    else
+       return 0;
+}
+
 VOID WINAPI KeepLastErrorAndFree(
   _In_  LPVOID lpMem
 ){

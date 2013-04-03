@@ -37,6 +37,7 @@ extern HOOK_TABLE_OBJECT		stGetCPInfo;
 extern HOOK_TABLE_OBJECT		stMultiByteToWideChar;
 extern HOOK_TABLE_OBJECT		stWideCharToMultiByte;
 extern HOOK_TABLE_OBJECT		stSendMessageA;
+extern HOOK_TABLE_OBJECT		stCallWindowProcA;
 
 typedef BOOL (WINAPI *lpGetCPInfo)(
   _In_   UINT CodePage,
@@ -70,12 +71,21 @@ typedef LRESULT (WINAPI *lpSendMessageA)(
   _In_  LPARAM lParam
 );
 
+typedef LRESULT (WINAPI *lpCallWindowProcA)(
+  _In_  WNDPROC lpPrevWndFunc,
+  _In_  HWND hWnd,
+  _In_  UINT Msg,
+  _In_  WPARAM wParam,
+  _In_  LPARAM lParam
+);
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 int WINAPI _SetHook(HOOK_TABLE_HEAD_OBJECT * stHookTable);
 LPVOID WINAPI AnsiToUnicode(LPCSTR lpszText);
+LPVOID WINAPI ProgramCPToWindowsCP(LPCSTR lpszText);
 VOID WINAPI KeepLastErrorAndFree(LPVOID lpMem);
 
 #ifdef __cplusplus
