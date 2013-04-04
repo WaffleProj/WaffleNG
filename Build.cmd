@@ -3,7 +3,7 @@ set	toolchain=D:\JWasm
 set	mingw=D:\mingw32\i686-w64-mingw32
 set	sdk=D:\SDK\v7.1
 
-set	path=%toolchain%\bin;%mingw%\..\bin;%sdk%\bin;%windir%\System32
+set	path=%toolchain%\bin;%mingw%\..\bin;%windir%\System32
 set	lib=%toolchain%\lib;%sdk%\lib;%mingw%\lib
 
 md	Release 2>nul
@@ -23,9 +23,10 @@ del	..\Release\*.obj 2>nul
 cd..
 :notestcase
 
+goto	noloader
 cd	loader.exe
 taskkill /f /im loader.exe >nul 2>nul
-set	include=%CD%\Source;%toolchain%\include;%sdk%\include;%mingw%\include
+set	include=%CD%\Source;%toolchain%\include;%mingw%\include
 jwasm	/nologo /c /Cp /coff  /Fo ..\Release\loader.obj loader.asm
 i686-w64-mingw32-gcc	-c -o ..\Release\loader.o loader.c
 i686-w64-mingw32-gcc	-c -o ..\Release\CmdLine.o Source\CmdLine.c
@@ -37,9 +38,10 @@ del	*.err 2>nul
 del	..\Release\*.obj 2>nul
 del	..\Release\*.o 2>nul
 cd..
+:noloader
 
 cd	core.dll
-set	include=%CD%\Source;%toolchain%\include;%sdk%\include;%mingw%\include
+set	include=%CD%\Source;%toolchain%\include;%mingw%\include
 jwasm	/nologo /c /Cp /coff /Fo ..\Release\core.obj core.asm
 i686-w64-mingw32-gcc	-c -o ..\Release\core.o core.c
 i686-w64-mingw32-gcc	-c -o ..\Release\kernel32.o Source\kernel32.c
