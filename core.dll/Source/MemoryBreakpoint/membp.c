@@ -2,20 +2,13 @@
 #include <windows.h>
 #include <WinNT.h>
 #include <psapi.h>
+#include "membp.h"
 
 #pragma comment(lib, "kernel32.lib")
-#pragma comment(lib, "user32.lib")
 #pragma comment(lib, "psapi.lib")
 
-typedef int (WINAPI *LPMESSAGEBOXA)(
-  _In_opt_  HWND hWnd,
-  _In_opt_  LPCSTR lpText,
-  _In_opt_  LPCSTR lpCaption,
-  _In_      UINT uType
-);
-
 HMODULE WINAPI CopyLibrary(
-  _In_  LPTSTR lpszDllName
+  _In_  LPSTR lpszDllName
 ){
     HANDLE hProcess;
     HMODULE hModule;
@@ -30,7 +23,7 @@ HMODULE WINAPI CopyLibrary(
 
     //Get dll base address and size
     hProcess = GetCurrentProcess();
-    hModule = LoadLibrary(lpszDllName);
+    hModule = LoadLibraryA(lpszDllName);
     if  (!hModule)
         return NULL;
     GetModuleInformation(hProcess,hModule,&stModuleInfo,sizeof(stModuleInfo));
@@ -117,31 +110,3 @@ LPVOID WINAPI GetProcAddr(
     return NULL;
 }
 
-int CALLBACK WinMain(
-  _In_  HINSTANCE hInstance,
-  _In_  HINSTANCE hPrevInstance,
-  _In_  LPSTR lpCmdLine,
-  _In_  int nCmdShow
-){
-    LPMESSAGEBOXA lpMessageBoxA;
-    HMODULE hDll;
-
-    hDll = CopyLibrary(TEXT("User32.dll"));
-    //hDll = LoadLibrary(TEXT("User32.dll"));
-    
-
-    //Call new MessageBoxA
-    lpMessageBoxA = (LPMESSAGEBOXA)GetProcAddr(hDll,"MessageBoxA");
-    lpMessageBoxA(0,"Test Message","Dll Copy Example",0);
-
-    #if UINTPTR_MAX == 0x00000000FFFFFFFF
-    lpMessageBoxA = (LPMESSAGEBOXA)GetProcAddr(hDll,(LPVOID)0x07F7);    //Win7 SP1 Ultimate 32
-    #elif UINTPTR_MAX == 0xFFFFFFFFFFFFFFFF
-    lpMessageBoxA = (LPMESSAGEBOXA)GetProcAddr(hDll,(LPVOID)0x07FB);    //Win7 SP1 Ultimate 64
-    #el
-    #error "Environment not 32 or 64-bit."
-    #endif
-    lpMessageBoxA(0,"Test Message","Dll Copy Example",0);
-
-    return 0;
-}

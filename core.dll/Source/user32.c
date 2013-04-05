@@ -58,6 +58,22 @@ HWND WINAPI NewCreateWindowExA(
     return Result;
 }
 
+int WINAPI NewMessageBoxA(
+  _In_opt_  HWND hWnd,
+  _In_opt_  LPCSTR lpText,
+  _In_opt_  LPCSTR lpCaption,
+  _In_      UINT uType
+){
+    LPVOID lpuszText = AnsiToUnicode(lpText);
+    LPVOID lpuszCaption = AnsiToUnicode(lpCaption);
+    int Result = MessageBox(hWnd,lpuszText,lpuszCaption,uType);
+
+    DWORD LastError = GetLastError();
+    HeapFree(hHeap,0,lpuszText);
+    HeapFree(hHeap,0,lpuszCaption);
+    SetLastError(LastError);
+    return Result;
+}
 
 int WINAPI NewMessageBoxExA(
   _In_opt_  HWND hWnd,
@@ -76,7 +92,6 @@ int WINAPI NewMessageBoxExA(
     SetLastError(LastError);
     return Result;
 }
-
 
 LRESULT WINAPI NewSendMessageA(
   _In_  HWND hWnd,
