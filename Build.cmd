@@ -23,7 +23,7 @@ del	..\Release\*.obj 2>nul
 cd..
 :notestcase
 
-goto	noloader
+::goto	noloader
 cd	loader.exe
 taskkill /f /im loader.exe >nul 2>nul
 set	include=%CD%\Source;%toolchain%\include;%mingw%\include

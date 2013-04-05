@@ -7,6 +7,8 @@
 
 VOID WINAPI Main()
 {
+    PVOID OldValue;
+
     TCHAR szPath[MAX_PATH];
     GetModuleFileName(NULL,szPath,sizeof(szPath)/sizeof(TCHAR));
     int i;
@@ -29,7 +31,9 @@ VOID WINAPI Main()
         GetOpenFileName(&stOpenFile);
     }
 
+    Wow64DisableWow64FsRedirection(&OldValue);
     HANDLE hFile = CreateFile(szTarget,GENERIC_READ,0,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL);
+    Wow64RevertWow64FsRedirection(OldValue);
     HANDLE hMapFile = CreateFileMapping(hFile,NULL,PAGE_READONLY,0,0,NULL);
     LPVOID lpFile = MapViewOfFile(hMapFile,FILE_MAP_READ,0,0,0);
     if (!lpFile)
@@ -48,9 +52,9 @@ VOID WINAPI Main()
     CloseHandle(hMapFile);
     CloseHandle(hFile);         //关闭文件才能CreateProcess
 
-    switch (Magic)
+    //IMAGE_NT_OPTIONAL_HDR_MAGIC
+    if  (Magic == IMAGE_NT_OPTIONAL_HDR_MAGIC)
     {
-    case IMAGE_NT_OPTIONAL_HDR32_MAGIC:;
         MSG stMSG;
         PeekMessage(&stMSG,0,0,0,PM_NOREMOVE);
     
@@ -101,11 +105,9 @@ VOID WINAPI Main()
                 break;
             }
         }
-        break;
-    case IMAGE_NT_OPTIONAL_HDR64_MAGIC:
-        printf("[FFFF]At this moment we can not load PE64 file.\n");
-        break;
     }
+    else
+        printf("[FFFF]At this moment we can not load PE64 file.\n");
 
     ExitProcess(0);
     return;

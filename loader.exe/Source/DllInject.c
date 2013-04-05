@@ -4,12 +4,15 @@
 
 PROCESS_INFORMATION WINAPI InjectDll(LPCTSTR lpszTarget, LPTSTR lpszArgument, LPCTSTR lpszDirectory, LPCTSTR lpszDllFull)
 {
+    PVOID OldValue;
     STARTUPINFO stStartUp;
     PROCESS_INFORMATION stProcessInfo;
 
     stStartUp.cb = sizeof(stStartUp);
     GetStartupInfo(&stStartUp);
+    Wow64DisableWow64FsRedirection(&OldValue);
     CreateProcess(lpszTarget,lpszArgument,NULL,NULL,TRUE,CREATE_SUSPENDED,0,lpszDirectory,&stStartUp,&stProcessInfo);
+    Wow64RevertWow64FsRedirection(OldValue);
     LPVOID lpszRemoteDll = VirtualAllocEx(stProcessInfo.hProcess,NULL,MAX_PATH*sizeof(TCHAR),MEM_COMMIT,PAGE_READWRITE);
     if (lpszRemoteDll)
     {
