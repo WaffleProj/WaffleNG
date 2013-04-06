@@ -20,11 +20,7 @@ extern	ENVIRONMENT_BLOCK	stNewEnvir;
 extern	HGLOBAL		lpszCommandLineA;
 extern	UINT            ParentTid;
 
-typedef struct {
-    LPVOID lpDispatch;
-} HOOK_TABLE_HEAD_OBJECT;
-
-extern HOOK_TABLE_HEAD_OBJECT		stHookTable;
+extern LPVOID		stHookTable[];
 
 typedef struct {
     LPVOID lpNewFunction;
@@ -83,7 +79,7 @@ typedef LRESULT (WINAPI *lpCallWindowProcA)(
 extern "C" {
 #endif
 
-int WINAPI _SetHook(HOOK_TABLE_HEAD_OBJECT * stHookTable);
+int WINAPI _SetHook(LPVOID stHookTable[]);
 LPVOID WINAPI AnsiToUnicode(LPCSTR lpszText);
 LPVOID WINAPI ProgramCPToWindowsCP(LPCSTR lpszText);
 VOID WINAPI KeepLastErrorAndFree(LPVOID lpMem);

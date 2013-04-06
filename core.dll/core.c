@@ -3,15 +3,6 @@
 #include <shlwapi.h>
 #include "core.h"
 
-HINSTANCE	hDLL;
-HANDLE		hHeap;
-
-ENVIRONMENT_BLOCK	stOldEnvir;
-ENVIRONMENT_BLOCK	stNewEnvir;
-
-HGLOBAL		lpszCommandLineA;
-UINT            ParentTid;
-
 LPVOID WINAPI AnsiToUnicode(
   _In_  LPCSTR lpszText
 ){
@@ -83,7 +74,7 @@ DWORD WINAPI InitLibrary(
     lpszCommandLineA = GlobalAlloc(GPTR,intSize);
     WideCharToMultiByte(stNewEnvir.ACP,0,lpszCommandLineW,-1,lpszCommandLineA,intSize,NULL,NULL);
 
-    _SetHook(&stHookTable);
+    SetHook(stHookTable);
 
     PostThreadMessage(ParentTid,TM_SETMAINIP,0,(LPARAM)SetThreadEnvironment);
     return 0;

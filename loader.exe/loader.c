@@ -5,9 +5,12 @@
 
 #include <stdio.h>
 
+CONTEXT stContext,stNewContext; //Avoid ___chkstk_ms
+
 VOID WINAPI Main()
 {
     PVOID OldValue;
+    char szTest[4096];
 
     TCHAR szPath[MAX_PATH];
     GetModuleFileName(NULL,szPath,sizeof(szPath)/sizeof(TCHAR));
@@ -78,7 +81,7 @@ VOID WINAPI Main()
 
         PROCESS_INFORMATION stProcessInfo = InjectDll(szTarget,lpszArgument,szDirectory,szDllFull);
         
-        CONTEXT stContext;
+        //CONTEXT stContext;
         RtlZeroMemory(&stContext,sizeof(stContext));
         stContext.ContextFlags = CONTEXT_FULL;
         GetThreadContext(stProcessInfo.hThread,&stContext);
@@ -88,11 +91,15 @@ VOID WINAPI Main()
             GetMessage(&stMSG,0,TM_FIRSTMESSAGE,TM_LASTMESSAGE);
             if (stMSG.message == TM_SETMAINIP)
             {
-                CONTEXT stNewContext;
+                //CONTEXT stNewContext;
                 RtlZeroMemory(&stNewContext,sizeof(stNewContext));
                 stNewContext.ContextFlags = CONTEXT_FULL;
                 GetThreadContext(stProcessInfo.hThread,&stNewContext);
+                #if defined(_WIN64)
+                stNewContext.Rip = stMSG.lParam;
+                #else
                 stNewContext.Eip = stMSG.lParam;
+                #endif  // defined(_WIN64)
                 SetThreadContext(stProcessInfo.hThread,&stNewContext);
                 ResumeThread(stProcessInfo.hThread);
             }

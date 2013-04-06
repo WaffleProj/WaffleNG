@@ -2,6 +2,8 @@
 #define __MOJIBAKE_LOADER_H_
 #include "..\mojibake.h"
 
+extern HANDLE hStdOut;
+
 #ifdef __cplusplus
 extern "C" {
 #endif

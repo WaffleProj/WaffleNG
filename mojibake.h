@@ -22,6 +22,13 @@ VOID WINAPI RtlZeroMemory(
   _In_  SIZE_T Length
 );
 
+#undef  RtlMoveMemory
+VOID WINAPI RtlMoveMemory(
+  _In_  VOID UNALIGNED *Destination,
+  _In_  const VOID UNALIGNED *Source,
+  _In_  SIZE_T Length
+);
+
 #ifdef __cplusplus
 };
 #endif
