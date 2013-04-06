@@ -8,7 +8,7 @@ set include=%cpp%\include;%sdk%\include
 set lib=%cpp%\lib;%sdk%\lib
 cl /nologo /c /MT /D_USING_V110_SDK71_ main.c
 cl /nologo /c /MT /D_USING_V110_SDK71_ membp.c
-link /nologo /subsystem:windows,5.02 /out:Bin\membp_x86.exe main.obj membp.obj
+link /nologo /subsystem:windows,5.01 /out:Bin\membp_x86.exe main.obj membp.obj
 
 echo	Building for x64...
 set path=%cpp%\bin\amd64;%sdk%\bin\x64;%cpp%\..\Common7\IDE;%windir%\System32

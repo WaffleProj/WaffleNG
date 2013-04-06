@@ -110,3 +110,29 @@ LPVOID WINAPI GetProcAddr(
     return NULL;
 }
 
+LONG CALLBACK BreakpointHandler(
+  _In_  PEXCEPTION_POINTERS ExceptionInfo
+){
+    CHAR szBuf[256];
+    CHAR szExceptionRecord[512];
+    int i;
+
+    lpwsprintfA(szExceptionRecord,"ExceptionRecord->ExceptionCode = %08x\nExceptionRecord->ExceptionFlags = %08x\nExceptionRecord->ExceptionRecord = %016I64X\nExceptionRecord->ExceptionAddress = %016I64X\nExceptionRecord->NumberParameters = %08x",ExceptionInfo->ExceptionRecord->ExceptionCode,ExceptionInfo->ExceptionRecord->ExceptionFlags,(UINT64)(ExceptionInfo->ExceptionRecord->ExceptionRecord),(UINT64)(ExceptionInfo->ExceptionRecord->ExceptionAddress),ExceptionInfo->ExceptionRecord->NumberParameters);
+    for (i = 0; i < ExceptionInfo->ExceptionRecord->NumberParameters; i++)
+    {
+        lpwsprintfA(szBuf,"\nExceptionRecord->ExceptionInformation[%u] = %016I64X",i,(UINT64)(ExceptionInfo->ExceptionRecord->ExceptionInformation[i]));
+        lstrcatA(szExceptionRecord,szBuf);
+    }
+    lpMessageBoxA(0,szExceptionRecord,"BreakpointHandler",0);
+
+    if  (stMessageBoxA.lpOldFunction == ExceptionInfo->ExceptionRecord->ExceptionAddress)
+    {
+        #if defined(_WIN64)
+        ExceptionInfo->ContextRecord->Rip = (SIZE_T)NewMessageBoxA;
+        #else
+        ExceptionInfo->ContextRecord->Eip = (SIZE_T)NewMessageBoxA;
+        #endif  // defined(_WIN64)
+        return EXCEPTION_CONTINUE_EXECUTION;
+    }
+    return EXCEPTION_CONTINUE_SEARCH;
+}
