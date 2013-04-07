@@ -2,6 +2,7 @@
 #include <windows.h>
 #include "core.h"
 #include "Source\membp.h"
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 
 HINSTANCE   hDLL;
 HANDLE      hHeap;
@@ -23,9 +24,8 @@ HOOK_TABLE_OBJECT		stWideCharToMultiByte;
 HOOK_TABLE_OBJECT		stSendMessageA;
 HOOK_TABLE_OBJECT		stCallWindowProcA;
 
-LPMESSAGEBOXA lpMessageBoxA;
-LPWSPRINTFA lpwsprintfA;
-HMODULE hDll;
+LPMESSAGEBOXA _MessageBoxA;
+LPWSPRINTFA   _wsprintfA;
 HOOK_TABLE_OBJECT stMessageBoxA = {HookedMessageBoxA,NULL,"MessageBoxA","User32.dll"};
 
 int WINAPI HookedMessageBoxA(
@@ -35,24 +35,22 @@ int WINAPI HookedMessageBoxA(
   _In_      UINT uType
 ){
 
-    return lpMessageBoxA(hWnd,"MessageBoxA has been hooked","Dll Copy Example",uType);
+    return _MessageBoxA(hWnd,"MessageBoxA has been hooked","Dll Copy Example",uType);
 }
 
 int WINAPI SetHook(LPVOID stHookTable[])
 {
     DWORD flOldProtect;
-    PVOID hBreakpoint;
-    DWORD DividedZero = 0;
 
-    hDll = CopyLibrary("User32.dll");
-    lpMessageBoxA = (LPMESSAGEBOXA)GetProcAddr(hDll,"MessageBoxA");
-    lpwsprintfA = (LPWSPRINTFA)GetProcAddr(hDll,"wsprintfA");
+    HMODULE hCopyLibrary = CopyLibrary(TEXT("User32.dll"));
+    _MessageBoxA = GetFunctionAddressA(hCopyLibrary,"MessageBoxA");
+    _wsprintfA = GetFunctionAddressA(hCopyLibrary,"wsprintfA");
 
     stMessageBoxA.lpOldFunction = GetProcAddress(GetModuleHandle(TEXT("User32.dll")),"MessageBoxA");
     VirtualProtect(stMessageBoxA.lpOldFunction,1,PAGE_READONLY,&flOldProtect);
-    hBreakpoint = AddVectoredExceptionHandler(TRUE,(PVECTORED_EXCEPTION_HANDLER)BreakpointHandler);
+    PVOID hBreakpoint = AddVectoredExceptionHandler(TRUE,BreakpointHandler);
 
-    lpMessageBoxA(0,"lpMessageBoxA","Dll Copy Example",0);
+    _MessageBoxA(0,"lpMessageBoxA","Dll Copy Example",0);
     MessageBoxA(0,"MessageBoxA","Dll Copy Example",0);
 
     VirtualProtect(stMessageBoxA.lpOldFunction,1,flOldProtect,&flOldProtect);

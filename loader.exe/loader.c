@@ -1,16 +1,19 @@
 #define  UNICODE
 #include <windows.h>
 #include <shellapi.h>
-#include "loader.h"
-
 #include <stdio.h>
+#include "loader.h"
+#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 
-CONTEXT stContext,stNewContext; //Avoid ___chkstk_ms
+LPWOW64DISABLEWOW64FSREDIRECTION lpWow64DisableWow64FsRedirection;
+LPWOW64REVERTWOW64FSREDIRECTION lpWow64RevertWow64FsRedirection;
 
 VOID WINAPI Main()
 {
     PVOID OldValue;
-    char szTest[4096];
+    HMODULE hKernel32 = GetModuleHandle(TEXT("kernel32.dll"));
+    lpWow64DisableWow64FsRedirection = (LPVOID)GetProcAddress(hKernel32,"Wow64DisableWow64FsRedirection");
+    lpWow64RevertWow64FsRedirection = (LPVOID)GetProcAddress(hKernel32,"Wow64RevertWow64FsRedirection");
 
     TCHAR szPath[MAX_PATH];
     GetModuleFileName(NULL,szPath,sizeof(szPath)/sizeof(TCHAR));
@@ -18,15 +21,14 @@ VOID WINAPI Main()
     for(i = lstrlen(szPath); szPath[i] != '\\'; i--);
     szPath[i] = '\0';
 
-    TCHAR szTarget[MAX_PATH];
+    TCHAR szTarget[MAX_PATH] = {};
     if (argc() > 1)
     {
         argv(2,(LPTSTR)&szTarget,sizeof(szTarget));
     }
     else
     {
-        OPENFILENAME stOpenFile;
-        RtlZeroMemory(&stOpenFile,sizeof(stOpenFile));
+        OPENFILENAME stOpenFile = {};
         stOpenFile.lStructSize = sizeof(stOpenFile);
         stOpenFile.lpstrFile = szTarget;
         stOpenFile.nMaxFile = sizeof(szTarget)/sizeof(TCHAR);
@@ -34,9 +36,11 @@ VOID WINAPI Main()
         GetOpenFileName(&stOpenFile);
     }
 
-    Wow64DisableWow64FsRedirection(&OldValue);
+    if (lpWow64DisableWow64FsRedirection)
+        lpWow64DisableWow64FsRedirection(&OldValue);
     HANDLE hFile = CreateFile(szTarget,GENERIC_READ,0,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL);
-    Wow64RevertWow64FsRedirection(OldValue);
+    if (lpWow64RevertWow64FsRedirection)
+        lpWow64RevertWow64FsRedirection(OldValue);
     HANDLE hMapFile = CreateFileMapping(hFile,NULL,PAGE_READONLY,0,0,NULL);
     LPVOID lpFile = MapViewOfFile(hMapFile,FILE_MAP_READ,0,0,0);
     if (!lpFile)
@@ -81,8 +85,7 @@ VOID WINAPI Main()
 
         PROCESS_INFORMATION stProcessInfo = InjectDll(szTarget,lpszArgument,szDirectory,szDllFull);
         
-        //CONTEXT stContext;
-        RtlZeroMemory(&stContext,sizeof(stContext));
+        CONTEXT stContext = {};
         stContext.ContextFlags = CONTEXT_FULL;
         GetThreadContext(stProcessInfo.hThread,&stContext);
         
@@ -91,8 +94,7 @@ VOID WINAPI Main()
             GetMessage(&stMSG,0,TM_FIRSTMESSAGE,TM_LASTMESSAGE);
             if (stMSG.message == TM_SETMAINIP)
             {
-                //CONTEXT stNewContext;
-                RtlZeroMemory(&stNewContext,sizeof(stNewContext));
+                CONTEXT stNewContext = {};
                 stNewContext.ContextFlags = CONTEXT_FULL;
                 GetThreadContext(stProcessInfo.hThread,&stNewContext);
                 #if defined(_WIN64)

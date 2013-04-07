@@ -2,7 +2,16 @@
 #define __MOJIBAKE_LOADER_H_
 #include "..\mojibake.h"
 
-extern HANDLE hStdOut;
+typedef BOOL (WINAPI *LPWOW64DISABLEWOW64FSREDIRECTION)(
+  _Out_  PVOID *OldValue
+);
+
+typedef BOOL (WINAPI *LPWOW64REVERTWOW64FSREDIRECTION)(
+  _In_  PVOID OldValue
+);
+
+extern LPWOW64DISABLEWOW64FSREDIRECTION lpWow64DisableWow64FsRedirection;
+extern LPWOW64REVERTWOW64FSREDIRECTION lpWow64RevertWow64FsRedirection;
 
 #ifdef __cplusplus
 extern "C" {

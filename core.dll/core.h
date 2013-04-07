@@ -29,18 +29,12 @@ typedef struct {
     LPCSTR lpszModule;
 } HOOK_TABLE_OBJECT;
 
-extern HOOK_TABLE_OBJECT		stGetCPInfo;
-extern HOOK_TABLE_OBJECT		stMultiByteToWideChar;
-extern HOOK_TABLE_OBJECT		stWideCharToMultiByte;
-extern HOOK_TABLE_OBJECT		stSendMessageA;
-extern HOOK_TABLE_OBJECT		stCallWindowProcA;
-
-typedef BOOL (WINAPI *lpGetCPInfo)(
+typedef BOOL (WINAPI *LPGETCPINFO)(
   _In_   UINT CodePage,
   _Out_  LPCPINFO lpCPInfo
 );
 
-typedef int (WINAPI *lpMultiByteToWideChar)(
+typedef int (WINAPI *LPMULTIBYTETOWIDECHAR)(
   _In_       UINT CodePage,
   _In_       DWORD dwFlags,
   _In_       LPCSTR lpMultiByteStr,
@@ -49,7 +43,7 @@ typedef int (WINAPI *lpMultiByteToWideChar)(
   _In_       int cchWideChar
 );
 
-typedef int (WINAPI *lpWideCharToMultiByte)(
+typedef int (WINAPI *LPWIDECHARTOMULTIBYTE)(
   _In_       UINT CodePage,
   _In_       DWORD dwFlags,
   _In_       LPCWSTR lpWideCharStr,
@@ -60,14 +54,14 @@ typedef int (WINAPI *lpWideCharToMultiByte)(
   _Out_opt_  LPBOOL lpUsedDefaultChar
 );
 
-typedef LRESULT (WINAPI *lpSendMessageA)(
+typedef LRESULT (WINAPI *LPSENDMESSAGEA)(
   _In_  HWND hWnd,
   _In_  UINT Msg,
   _In_  WPARAM wParam,
   _In_  LPARAM lParam
 );
 
-typedef LRESULT (WINAPI *lpCallWindowProcA)(
+typedef LRESULT (WINAPI *LPCALLWINDOWPROCA)(
   _In_  WNDPROC lpPrevWndFunc,
   _In_  HWND hWnd,
   _In_  UINT Msg,
@@ -75,11 +69,33 @@ typedef LRESULT (WINAPI *lpCallWindowProcA)(
   _In_  LPARAM lParam
 );
 
+typedef int (WINAPI *LPMESSAGEBOXA)(
+  _In_opt_  HWND hWnd,
+  _In_opt_  LPCSTR lpText,
+  _In_opt_  LPCSTR lpCaption,
+  _In_      UINT uType
+);
+
+typedef int (__cdecl *LPWSPRINTFA)(
+  _Out_  LPSTR lpOut,
+  _In_   LPCSTR lpFmt,
+  _In_    ...
+);
+
+extern HOOK_TABLE_OBJECT                stGetCPInfo;
+extern HOOK_TABLE_OBJECT                stMultiByteToWideChar;
+extern HOOK_TABLE_OBJECT                stWideCharToMultiByte;
+extern HOOK_TABLE_OBJECT                stSendMessageA;
+extern HOOK_TABLE_OBJECT                stCallWindowProcA;
+extern HOOK_TABLE_OBJECT                stMessageBoxA;
+extern LPMESSAGEBOXA                    _MessageBoxA;
+extern LPWSPRINTFA                      _wsprintfA;
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-int WINAPI _SetHook(LPVOID stHookTable[]);
+int WINAPI SetHook(LPVOID stHookTable[]);
 LPVOID WINAPI AnsiToUnicode(LPCSTR lpszText);
 LPVOID WINAPI ProgramCPToWindowsCP(LPCSTR lpszText);
 VOID WINAPI KeepLastErrorAndFree(LPVOID lpMem);

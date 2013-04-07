@@ -2,33 +2,15 @@
 #define __MEMBP_H_
 #include "..\core.h"
 
-typedef int (WINAPI *LPMESSAGEBOXA)(
-  _In_opt_  HWND hWnd,
-  _In_opt_  LPCSTR lpText,
-  _In_opt_  LPCSTR lpCaption,
-  _In_      UINT uType
-);
-
-typedef int (__cdecl *LPWSPRINTFA)(
-  _Out_  LPSTR lpOut,
-  _In_   LPCSTR lpFmt,
-  _In_    ...
-);
-
-extern LPMESSAGEBOXA lpMessageBoxA;
-extern LPWSPRINTFA lpwsprintfA;
-extern HMODULE hDll;
-extern HOOK_TABLE_OBJECT stMessageBoxA;
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 HMODULE WINAPI CopyLibrary(
-  _In_  LPSTR lpszDllName
+  _In_  LPTSTR lpszDllName
 );
 
-LPVOID WINAPI GetProcAddr(
+LPVOID WINAPI GetFunctionAddressA(
   _In_  HMODULE hDll,
   _In_  LPSTR lpszFuncName
 );
@@ -42,6 +24,10 @@ int WINAPI HookedMessageBoxA(
   _In_opt_  LPCSTR lpText,
   _In_opt_  LPCSTR lpCaption,
   _In_      UINT uType
+);
+
+HMODULE WINAPI GetModuleAddressW(
+  _In_  LPCWSTR lpszModule
 );
 
 #ifdef __cplusplus

@@ -11,7 +11,7 @@ LRESULT WINAPI NewCallWindowProcA(
 ){
     if  (Msg == WM_SETTEXT)
     {
-        LRESULT Result = ((lpCallWindowProcA)stCallWindowProcA.lpOldFunction)(lpPrevWndFunc,hWnd,Msg,wParam,lParam);
+        LRESULT Result = ((LPCALLWINDOWPROCA)stCallWindowProcA.lpOldFunction)(lpPrevWndFunc,hWnd,Msg,wParam,lParam);
     
         DWORD LastError = GetLastError();
         int sizeString = DefWindowProcA(hWnd,WM_GETTEXTLENGTH,0,0);
@@ -27,7 +27,7 @@ LRESULT WINAPI NewCallWindowProcA(
     }
     else
     {
-        return ((lpCallWindowProcA)stCallWindowProcA.lpOldFunction)(lpPrevWndFunc,hWnd,Msg,wParam,lParam);
+        return ((LPCALLWINDOWPROCA)stCallWindowProcA.lpOldFunction)(lpPrevWndFunc,hWnd,Msg,wParam,lParam);
     }    
 }
 
@@ -112,7 +112,7 @@ LRESULT WINAPI NewSendMessageA(
     else
     {
 */
-        return ((lpSendMessageA)stSendMessageA.lpOldFunction)(hWnd,Msg,wParam,lParam);
+        return ((LPSENDMESSAGEA)stSendMessageA.lpOldFunction)(hWnd,Msg,wParam,lParam);
 //    }
 }
 

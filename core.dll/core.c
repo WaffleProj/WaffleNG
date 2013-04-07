@@ -2,6 +2,8 @@
 #include <windows.h>
 #include <shlwapi.h>
 #include "core.h"
+#include "Source\membp.h"
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 
 LPVOID WINAPI AnsiToUnicode(
   _In_  LPCSTR lpszText
@@ -45,7 +47,7 @@ VOID WINAPI KeepLastErrorAndFree(
 DWORD WINAPI SetThreadEnvironment()
 {
     SetThreadLocale(stNewEnvir.ThreadLocale);
-    MessageBox(0,TEXT("Please attach"),0,0);
+    //MessageBox(0,TEXT("Please attach"),0,0);
     PostThreadMessage(ParentTid,TM_RESUMETMAINIP,0,0);
     while (TRUE);
     return 0;
@@ -67,7 +69,7 @@ DWORD WINAPI InitLibrary(
     TCHAR szEnvirVar[32];
     GetEnvironmentVariable(TEXT("ParentTID"),szEnvirVar,sizeof(szEnvirVar));
     SetEnvironmentVariable(TEXT("ParentTID"),NULL);
-    StrToIntEx(szEnvirVar,STIF_SUPPORT_HEX,&ParentTid);
+    StrToIntEx(szEnvirVar,STIF_SUPPORT_HEX,(int *)&ParentTid);
 
     LPTSTR lpszCommandLineW = GetCommandLineW();
     int intSize = 4*lstrlenW(lpszCommandLineW);
@@ -92,7 +94,6 @@ BOOL WINAPI DllMain(
             HANDLE hThread = CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)InitLibrary,NULL,0,NULL);
             CloseHandle(hThread);
             break;
-
         case DLL_THREAD_ATTACH:
             break;
 
