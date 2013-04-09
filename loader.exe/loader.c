@@ -92,31 +92,18 @@ VOID WINAPI Main()
         while (TRUE)
         {
             GetMessage(&stMSG,0,TM_FIRSTMESSAGE,TM_LASTMESSAGE);
-            if (stMSG.message == TM_SETMAINIP)
+            if (stMSG.message == TM_GETTID)
             {
-                CONTEXT stNewContext = {};
-                stNewContext.ContextFlags = CONTEXT_FULL;
-                GetThreadContext(stProcessInfo.hThread,&stNewContext);
-                #if defined(_WIN64)
-                stNewContext.Rip = stMSG.lParam;
-                #else
-                stNewContext.Eip = stMSG.lParam;
-                #endif  // defined(_WIN64)
-                SetThreadContext(stProcessInfo.hThread,&stNewContext);
-                ResumeThread(stProcessInfo.hThread);
-            }
-            else if (stMSG.message == TM_RESUMETMAINIP)
-            {
-                SuspendThread(stProcessInfo.hThread);
-                SetThreadContext(stProcessInfo.hThread,&stContext);
-                ResumeThread(stProcessInfo.hThread);
-                CloseHandle(stProcessInfo.hThread);
+                HANDLE hThread = CreateRemoteThread(stProcessInfo.hProcess,NULL,0,(LPTHREAD_START_ROUTINE)stMSG.lParam,(LPVOID)((SIZE_T)(stProcessInfo.dwThreadId)),0,NULL);
+                CloseHandle(hThread);
                 break;
             }
         }
     }
     else
+    {
         printf("[FFFF]At this moment we can not load PE64 file.\n");
+    }
 
     ExitProcess(0);
     return;

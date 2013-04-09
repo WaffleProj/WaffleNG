@@ -1,9 +1,9 @@
 #define  UNICODE
 #include <windows.h>
 #include <psapi.h>
-#include "..\core.h"
+#include "..\..\core.h"
 
-DWORD WINAPI NewGetModuleFileNameExA(
+DWORD WINAPI DetourGetModuleFileNameExA(
   _In_      HANDLE hProcess,
   _In_opt_  HMODULE hModule,
   _Out_     LPSTR lpFilename,

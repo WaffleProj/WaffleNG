@@ -1,8 +1,8 @@
 #define  UNICODE
 #include <windows.h>
-#include "..\core.h"
+#include "..\..\core.h"
 
-BOOL WINAPI NewCreateDirectoryA(
+BOOL WINAPI DetourCreateDirectoryA(
   _In_      LPCSTR lpPathName,
   _In_opt_  LPSECURITY_ATTRIBUTES lpSecurityAttributes
 ){
@@ -13,7 +13,7 @@ BOOL WINAPI NewCreateDirectoryA(
 	return Result;
 }
 
-HANDLE WINAPI NewCreateFileA(
+HANDLE WINAPI DetourCreateFileA(
   _In_      LPCSTR lpFileName,
   _In_      DWORD dwDesiredAccess,
   _In_      DWORD dwShareMode,
@@ -23,14 +23,14 @@ HANDLE WINAPI NewCreateFileA(
   _In_opt_  HANDLE hTemplateFile
 ){
 	LPVOID lpuszFileName = AnsiToUnicode(lpFileName);
-	//MessageBox(0,lpuszFileName,TEXT("NewCreateFileA"),0);
+	//MessageBox(0,lpuszFileName,TEXT("DetourCreateFileA"),0);
 	HANDLE Result = CreateFile(lpuszFileName,dwDesiredAccess,dwShareMode,lpSecurityAttributes,dwCreationDisposition,dwFlagsAndAttributes,hTemplateFile);
 
 	KeepLastErrorAndFree(lpuszFileName);
 	return Result;
 }
 
-BOOL WINAPI NewDeleteFileA(
+BOOL WINAPI DetourDeleteFileA(
   _In_  LPCSTR lpFileName
 ){
 	LPVOID lpuszFileName = AnsiToUnicode(lpFileName);
@@ -40,7 +40,7 @@ BOOL WINAPI NewDeleteFileA(
 	return Result;
 }
 
-HANDLE WINAPI NewFindFirstFileA(
+HANDLE WINAPI DetourFindFirstFileA(
   _In_   LPCSTR lpFileName,
   _Out_  LPWIN32_FIND_DATAA lpFindFileData
 ){
@@ -66,7 +66,7 @@ HANDLE WINAPI NewFindFirstFileA(
 	return Result;
 }
 
-BOOL WINAPI NewFindNextFileA(
+BOOL WINAPI DetourFindNextFileA(
   _In_   HANDLE hFindFile,
   _Out_  LPWIN32_FIND_DATAA lpFindFileData
 ){
@@ -90,17 +90,17 @@ BOOL WINAPI NewFindNextFileA(
 	return Result;
 }
 
-UINT WINAPI NewGetACP(void)
+UINT WINAPI DetourGetACP(void)
 {
 	return stNewEnvir.ACP;
 }
 
-LPSTR WINAPI NewGetCommandLineA(void)   //由于这个函数直接返回指针无需释放,所以只能这么做
+LPSTR WINAPI DetourGetCommandLineA(void)   //由于这个函数直接返回指针无需释放,所以只能这么做
 {
 	return lpszCommandLineA;
 }
 
-BOOL WINAPI NewGetCPInfo(
+BOOL WINAPI DetourGetCPInfo(
   _In_   UINT CodePage,
   _Out_  LPCPINFO lpCPInfo
 ){
@@ -110,7 +110,7 @@ BOOL WINAPI NewGetCPInfo(
 	return ((LPGETCPINFO)stGetCPInfo.lpOldFunction)(CodePage,lpCPInfo);
 }
 
-DWORD WINAPI NewGetFileAttributesA(
+DWORD WINAPI DetourGetFileAttributesA(
   _In_  LPCSTR lpFileName
 ){
 	LPVOID lpuszFileName = AnsiToUnicode(lpFileName);
@@ -120,7 +120,7 @@ DWORD WINAPI NewGetFileAttributesA(
 	return Result;
 }
 
-DWORD WINAPI NewGetModuleFileNameA(
+DWORD WINAPI DetourGetModuleFileNameA(
   _In_opt_  HMODULE hModule,
   _Out_     LPSTR lpFilename,
   _In_      DWORD nSize
@@ -138,7 +138,7 @@ DWORD WINAPI NewGetModuleFileNameA(
 	return lstrlenA(lpFilename);
 }
 
-HMODULE WINAPI NewGetModuleHandleA(
+HMODULE WINAPI DetourGetModuleHandleA(
   _In_opt_  LPCSTR lpModuleName
 ){
 	LPVOID lpuszModuleName = AnsiToUnicode(lpModuleName);
@@ -148,7 +148,7 @@ HMODULE WINAPI NewGetModuleHandleA(
 	return Result;
 }
 
-HMODULE WINAPI NewLoadLibraryA(
+HMODULE WINAPI DetourLoadLibraryA(
   _In_  LPCSTR lpFileName
 ){
 	LPVOID lpuszFileName = AnsiToUnicode(lpFileName);
@@ -158,7 +158,7 @@ HMODULE WINAPI NewLoadLibraryA(
 	return Result;
 }
 
-HMODULE WINAPI NewLoadLibraryExA(
+HMODULE WINAPI DetourLoadLibraryExA(
   _In_        LPCSTR lpFileName,
   _Reserved_  HANDLE hFile,
   _In_        DWORD dwFlags
@@ -170,7 +170,7 @@ HMODULE WINAPI NewLoadLibraryExA(
 	return Result;
 }
 
-int WINAPI NewMultiByteToWideChar(
+int WINAPI DetourMultiByteToWideChar(
   _In_       UINT CodePage,
   _In_       DWORD dwFlags,
   _In_       LPCSTR lpMultiByteStr,
@@ -184,7 +184,7 @@ int WINAPI NewMultiByteToWideChar(
 	return ((LPMULTIBYTETOWIDECHAR)stMultiByteToWideChar.lpOldFunction)(CodePage,dwFlags,lpMultiByteStr,cbMultiByte,lpWideCharStr,cchWideChar);
 }
 
-BOOL WINAPI NewSetCurrentDirectoryA(
+BOOL WINAPI DetourSetCurrentDirectoryA(
   _In_  LPCSTR lpPathName
 ){
 	LPVOID lpuszPathName = AnsiToUnicode(lpPathName);
@@ -194,7 +194,7 @@ BOOL WINAPI NewSetCurrentDirectoryA(
 	return Result;
 }
 
-BOOL WINAPI NewSetFileAttributesA(
+BOOL WINAPI DetourSetFileAttributesA(
   _In_  LPCSTR lpFileName,
   _In_  DWORD dwFileAttributes
 ){
@@ -205,7 +205,7 @@ BOOL WINAPI NewSetFileAttributesA(
 	return Result;
 }
 
-int WINAPI NewWideCharToMultiByte(
+int WINAPI DetourWideCharToMultiByte(
   _In_       UINT CodePage,
   _In_       DWORD dwFlags,
   _In_       LPCWSTR lpWideCharStr,

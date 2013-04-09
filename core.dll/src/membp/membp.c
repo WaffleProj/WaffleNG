@@ -4,8 +4,7 @@
 #include <winternl.h>
 #include <psapi.h>
 #include <intrin.h>
-#include "..\core.h"
-#include "membp.h"
+#include "..\..\core.h"
 #pragma GCC diagnostic ignored "-Wpointer-to-int-cast"
 
 int WINAPI _lstrcmpiW(
@@ -39,22 +38,20 @@ HMODULE WINAPI GetModuleAddressW(
     PPEB lpPeb = (PPEB)__readfsdword(0x30);
     #endif  // defined(_WIN64)
 
-    PLDR_DATA_TABLE_ENTRY lpLdrDataTableEntry = (PLDR_DATA_TABLE_ENTRY)lpPeb->Ldr->InMemoryOrderModuleList.Flink;
     PLIST_ENTRY lpListEntry = lpPeb->Ldr->InMemoryOrderModuleList.Flink;
     while (TRUE)
     {
-        WCHAR *lpszFullDllName = lpLdrDataTableEntry->FullDllName.Buffer;
+        WCHAR *lpszFullDllName = ((PLDR_DATA_TABLE_ENTRY)lpListEntry)->FullDllName.Buffer;
 
         if (lpszFullDllName && lpszModule)
         {
             if (_lstrcmpiW(lpszModule,lpszFullDllName) == 0)
             {
-                return (HMODULE)lpLdrDataTableEntry->Reserved2[0];
+                return (HMODULE)((PLDR_DATA_TABLE_ENTRY)((SIZE_T)lpListEntry - FIELD_OFFSET(LDR_DATA_TABLE_ENTRY, InMemoryOrderLinks)))->DllBase;
             }
             else
             {
                 lpListEntry = lpListEntry->Flink;
-                lpLdrDataTableEntry = (PLDR_DATA_TABLE_ENTRY)(lpListEntry->Flink);
             }
         }
         else
@@ -65,16 +62,13 @@ HMODULE WINAPI GetModuleAddressW(
 }
 
 HMODULE WINAPI CopyLibrary(
-  _In_  LPTSTR lpszDllName
+  _In_  HMODULE hModule
 ){
-    if  (!lpszDllName)
+    if  (!hModule)
         return NULL;
 
     //Get dll base address and size
     HANDLE hProcess = GetCurrentProcess();
-    HMODULE hModule = LoadLibrary(lpszDllName);
-    if  (!hModule)
-        return NULL;
     MODULEINFO  stModuleInfo;
     GetModuleInformation(hProcess,hModule,&stModuleInfo,sizeof(stModuleInfo));
 
@@ -98,8 +92,6 @@ HMODULE WINAPI CopyLibrary(
         }
         addrPointer = (PBYTE)stMemInfo.BaseAddress + stMemInfo.RegionSize;
     }
-    
-    FreeLibrary(hModule);
 
     return hDll;
 }
@@ -157,27 +149,32 @@ LPVOID WINAPI GetFunctionAddressA(
 LONG CALLBACK BreakpointHandler(
   _In_  PEXCEPTION_POINTERS ExceptionInfo
 ){
-    CHAR szExceptionRecord[512];
-
-    _wsprintfA(szExceptionRecord,"ExceptionRecord->ExceptionCode = %08x\nExceptionRecord->ExceptionFlags = %08x\nExceptionRecord->ExceptionRecord = %016I64X\nExceptionRecord->ExceptionAddress = %016I64X\nExceptionRecord->NumberParameters = %08x",ExceptionInfo->ExceptionRecord->ExceptionCode,ExceptionInfo->ExceptionRecord->ExceptionFlags,(UINT64)(ExceptionInfo->ExceptionRecord->ExceptionRecord),(UINT64)(ExceptionInfo->ExceptionRecord->ExceptionAddress),ExceptionInfo->ExceptionRecord->NumberParameters);
-
-    DWORD i;
-    for (i = 0; i < ExceptionInfo->ExceptionRecord->NumberParameters; i++)
+    if  ( (ExceptionInfo->ExceptionRecord->ExceptionCode == 0xC0000005) && (ExceptionInfo->ExceptionRecord->NumberParameters == 2) && (ExceptionInfo->ExceptionRecord->ExceptionInformation[0] == 8) && ((SIZE_T)ExceptionInfo->ExceptionRecord->ExceptionAddress == ExceptionInfo->ExceptionRecord->ExceptionInformation[1]) )
     {
-        CHAR szBuf[256];
-        _wsprintfA(szBuf,"\nExceptionRecord->ExceptionInformation[%u] = %016I64X",i,(UINT64)(ExceptionInfo->ExceptionRecord->ExceptionInformation[i]));
-        lstrcatA(szExceptionRecord,szBuf);
+        if  (stMessageBoxA.lpOldFunction == ExceptionInfo->ExceptionRecord->ExceptionAddress)
+        {
+            #if defined(_WIN64)
+            ExceptionInfo->ContextRecord->Rip = (SIZE_T)stMessageBoxA.lpNewFunction;
+            #else
+            ExceptionInfo->ContextRecord->Eip = (SIZE_T)stMessageBoxA.lpNewFunction;
+            #endif  // defined(_WIN64)
+            return EXCEPTION_CONTINUE_EXECUTION;
+        }
     }
-    _MessageBoxA(0,szExceptionRecord,"BreakpointHandler",0);
-
-    if  (stMessageBoxA.lpOldFunction == ExceptionInfo->ExceptionRecord->ExceptionAddress)
+    else
     {
-        #if defined(_WIN64)
-        ExceptionInfo->ContextRecord->Rip = (SIZE_T)HookedMessageBoxA;
-        #else
-        ExceptionInfo->ContextRecord->Eip = (SIZE_T)HookedMessageBoxA;
-        #endif  // defined(_WIN64)
-        return EXCEPTION_CONTINUE_EXECUTION;
+        CHAR szExceptionRecord[512];
+
+        _wsprintfA(szExceptionRecord,"ExceptionRecord->ExceptionCode = %08x\nExceptionRecord->ExceptionFlags = %08x\nExceptionRecord->ExceptionRecord = %016I64X\nExceptionRecord->ExceptionAddress = %016I64X\nExceptionRecord->NumberParameters = %08x",ExceptionInfo->ExceptionRecord->ExceptionCode,ExceptionInfo->ExceptionRecord->ExceptionFlags,(UINT64)(ExceptionInfo->ExceptionRecord->ExceptionRecord),(UINT64)(ExceptionInfo->ExceptionRecord->ExceptionAddress),ExceptionInfo->ExceptionRecord->NumberParameters);
+
+        DWORD i;
+        for (i = 0; i < ExceptionInfo->ExceptionRecord->NumberParameters; i++)
+        {
+            CHAR szBuf[256];
+            _wsprintfA(szBuf,"\nExceptionRecord->ExceptionInformation[%u] = %016I64X",i,(UINT64)(ExceptionInfo->ExceptionRecord->ExceptionInformation[i]));
+            lstrcatA(szExceptionRecord,szBuf);
+        }
+        _MessageBoxA(0,szExceptionRecord,"BreakpointHandler",0);
     }
     return EXCEPTION_CONTINUE_SEARCH;
 }

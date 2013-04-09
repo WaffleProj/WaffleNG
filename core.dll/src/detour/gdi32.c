@@ -1,8 +1,8 @@
 #define  UNICODE
 #include <windows.h>
-#include "..\core.h"
+#include "..\..\core.h"
 
-HFONT WINAPI NewCreateFontA(
+HFONT WINAPI DetourCreateFontA(
   _In_  int nHeight,
   _In_  int nWidth,
   _In_  int nEscapement,
@@ -25,7 +25,7 @@ HFONT WINAPI NewCreateFontA(
     return Result;
 }
 
-BOOL WINAPI NewTextOutA(
+BOOL WINAPI DetourTextOutA(
   _In_  HDC hdc,
   _In_  int nXStart,
   _In_  int nYStart,

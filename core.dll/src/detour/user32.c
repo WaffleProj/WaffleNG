@@ -1,8 +1,8 @@
 #define  UNICODE
 #include <windows.h>
-#include "..\core.h"
+#include "..\..\core.h"
 
-LRESULT WINAPI NewCallWindowProcA(
+LRESULT WINAPI DetourCallWindowProcA(
   _In_  WNDPROC lpPrevWndFunc,
   _In_  HWND hWnd,
   _In_  UINT Msg,
@@ -31,7 +31,7 @@ LRESULT WINAPI NewCallWindowProcA(
     }    
 }
 
-HWND WINAPI NewCreateWindowExA(
+HWND WINAPI DetourCreateWindowExA(
   _In_      DWORD dwExStyle,
   _In_opt_  LPCSTR lpClassName,
   _In_opt_  LPCSTR lpWindowName,
@@ -48,7 +48,7 @@ HWND WINAPI NewCreateWindowExA(
     LPVOID lpuszClassName = AnsiToUnicode(lpClassName);
     LPVOID lpuszWindowName = AnsiToUnicode(lpWindowName);
     //if  (!lstrcmpA("TFormView",lpClassName))
-        //MessageBox(0,lpuszWindowName,TEXT("NewCreateWindowExA"),0);
+        //MessageBox(0,lpuszWindowName,TEXT("DetourCreateWindowExA"),0);
     HWND Result = CreateWindowEx(dwExStyle,lpuszClassName,lpuszWindowName,dwStyle,x,y,nWidth,nHeight,hWndParent,hMenu,hInstance,lpParam);
 
     DWORD LastError = GetLastError();
@@ -58,7 +58,7 @@ HWND WINAPI NewCreateWindowExA(
     return Result;
 }
 
-int WINAPI NewMessageBoxA(
+int WINAPI DetourMessageBoxA(
   _In_opt_  HWND hWnd,
   _In_opt_  LPCSTR lpText,
   _In_opt_  LPCSTR lpCaption,
@@ -75,7 +75,7 @@ int WINAPI NewMessageBoxA(
     return Result;
 }
 
-int WINAPI NewMessageBoxExA(
+int WINAPI DetourMessageBoxExA(
   _In_opt_  HWND hWnd,
   _In_opt_  LPCSTR lpText,
   _In_opt_  LPCSTR lpCaption,
@@ -93,7 +93,7 @@ int WINAPI NewMessageBoxExA(
     return Result;
 }
 
-LRESULT WINAPI NewSendMessageA(
+LRESULT WINAPI DetourSendMessageA(
   _In_  HWND hWnd,
   _In_  UINT Msg,
   _In_  WPARAM wParam,
@@ -103,7 +103,7 @@ LRESULT WINAPI NewSendMessageA(
     if  (Msg == WM_SETTEXT)
     {
         LPVOID lpuszString = AnsiToUnicode((LPVOID)lParam);
-        //MessageBox(0,lpuszString,TEXT("NewSendMessageA"),0);
+        //MessageBox(0,lpuszString,TEXT("DetourSendMessageA"),0);
         LRESULT Result = SendMessage(hWnd,Msg,wParam,(LPARAM)lpuszString);
     
         KeepLastErrorAndFree(lpuszString);
@@ -116,12 +116,12 @@ LRESULT WINAPI NewSendMessageA(
 //    }
 }
 
-BOOL WINAPI NewSetWindowTextA(
+BOOL WINAPI DetourSetWindowTextA(
   _In_      HWND hWnd,
   _In_opt_  LPCSTR lpString
 ){
     LPVOID lpuszString = AnsiToUnicode(lpString);
-    //MessageBox(0,lpuszString,TEXT("NewSetWindowTextA"),0);
+    //MessageBox(0,lpuszString,TEXT("DetourSetWindowTextA"),0);
     BOOL Result = SetWindowText(hWnd,lpuszString);
 
     KeepLastErrorAndFree(lpuszString);

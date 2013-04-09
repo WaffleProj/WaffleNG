@@ -1,13 +1,16 @@
 #ifndef __MEMBP_H_
 #define __MEMBP_H_
-#include "..\core.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+HMODULE WINAPI GetModuleAddressW(
+  _In_  LPCWSTR lpszModule
+);
+
 HMODULE WINAPI CopyLibrary(
-  _In_  LPTSTR lpszDllName
+  _In_  HMODULE hModule
 );
 
 LPVOID WINAPI GetFunctionAddressA(
@@ -17,17 +20,6 @@ LPVOID WINAPI GetFunctionAddressA(
 
 LONG CALLBACK BreakpointHandler(
   _In_  PEXCEPTION_POINTERS ExceptionInfo
-);
-
-int WINAPI HookedMessageBoxA(
-  _In_opt_  HWND hWnd,
-  _In_opt_  LPCSTR lpText,
-  _In_opt_  LPCSTR lpCaption,
-  _In_      UINT uType
-);
-
-HMODULE WINAPI GetModuleAddressW(
-  _In_  LPCWSTR lpszModule
 );
 
 #ifdef __cplusplus

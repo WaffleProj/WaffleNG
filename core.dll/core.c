@@ -2,7 +2,6 @@
 #include <windows.h>
 #include <shlwapi.h>
 #include "core.h"
-#include "Source\membp.h"
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
 LPVOID WINAPI AnsiToUnicode(
@@ -44,42 +43,14 @@ VOID WINAPI KeepLastErrorAndFree(
    return;
 }
 
-DWORD WINAPI SetThreadEnvironment()
+VOID WINAPI InitLibraryWithTID()
 {
-    SetThreadLocale(stNewEnvir.ThreadLocale);
-    //MessageBox(0,TEXT("Please attach"),0,0);
-    PostThreadMessage(ParentTid,TM_RESUMETMAINIP,0,0);
-    while (TRUE);
-    return 0;
-}
-
-DWORD WINAPI InitLibrary(
-  _In_  LPVOID lpParameter
-){
-    hHeap = HeapCreate(0,0,0);
-    //∂¡»°≥Ã–Ú≈‰÷√
-    //CryptCATAdminCalcHashFromFileHandle
-    stOldEnvir.ACP = GetACP();
-    stNewEnvir.ACP = CP_SHIFT_JIS;
-    stOldEnvir.OEMCP = GetOEMCP();
-    stNewEnvir.OEMCP = CP_SHIFT_JIS;
-    stOldEnvir.ThreadLocale = GetThreadLocale();
-    stNewEnvir.ThreadLocale = LOCALE_JA_JP;
-    
     TCHAR szEnvirVar[32];
+    int ParentTid;
     GetEnvironmentVariable(TEXT("ParentTID"),szEnvirVar,sizeof(szEnvirVar));
     SetEnvironmentVariable(TEXT("ParentTID"),NULL);
-    StrToIntEx(szEnvirVar,STIF_SUPPORT_HEX,(int *)&ParentTid);
-
-    LPTSTR lpszCommandLineW = GetCommandLineW();
-    int intSize = 4*lstrlenW(lpszCommandLineW);
-    lpszCommandLineA = GlobalAlloc(GPTR,intSize);
-    WideCharToMultiByte(stNewEnvir.ACP,0,lpszCommandLineW,-1,lpszCommandLineA,intSize,NULL,NULL);
-
-    SetHook(stHookTable);
-
-    PostThreadMessage(ParentTid,TM_SETMAINIP,0,(LPARAM)SetThreadEnvironment);
-    return 0;
+    StrToIntEx(szEnvirVar,STIF_SUPPORT_HEX,&ParentTid);
+    PostThreadMessage(ParentTid,TM_GETTID,0,(LPARAM)InitLibrary);
 }
 
 BOOL WINAPI DllMain(
@@ -90,16 +61,14 @@ BOOL WINAPI DllMain(
     switch(fdwReason) 
     { 
         case DLL_PROCESS_ATTACH:
-            hDLL = hinstDLL;
-            HANDLE hThread = CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)InitLibrary,NULL,0,NULL);
-            CloseHandle(hThread);
+            //Save hinstDLL
+            //No. Can not get the correct function address in new library
+            InitLibraryWithTID();
             break;
         case DLL_THREAD_ATTACH:
             break;
-
         case DLL_THREAD_DETACH:
             break;
-
         case DLL_PROCESS_DETACH:
             break;
     }

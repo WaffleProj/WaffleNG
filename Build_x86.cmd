@@ -9,7 +9,7 @@ md	Release 2>nul
 md	Release\x86 2>nul
 md	Release\x64 2>nul
 
-::goto	noloader
+goto	noloader
 echo	===============================================================================
 echo	Build	loader.exe
 echo	===============================================================================
@@ -18,15 +18,15 @@ taskkill /f /im loader.exe >nul 2>nul
 
 echo	gcc	loader.c
 gcc	-c -Wall -Wextra loader.c
-echo	gcc	Source\CmdLine.c
-gcc	-c -Wall -Wextra Source\CmdLine.c
-echo	gcc	Source\PECheck.c
-gcc	-c -Wall -Wextra Source\PECheck.c
-echo	gcc	Source\DllInject.c
-gcc	-c -Wall -Wextra Source\DllInject.c
+echo	gcc	src\cmdarg.c
+gcc	-c -Wall -Wextra src\cmdarg.c
+echo	gcc	src\inject.c
+gcc	-c -Wall -Wextra src\inject.c
+echo	gcc	src\pemagic.c
+gcc	-c -Wall -Wextra src\pemagic.c
 
 echo	ld
-ld	--subsystem console -L%mingw%\lib --enable-stdcall-fixup -e _Main -o ..\Release\x86\loader.exe loader.o CmdLine.o PECheck.o DllInject.o %libgcc% -lkernel32 -luser32 -lcomdlg32 -lmsvcrt
+ld	--subsystem console -L%mingw%\lib --enable-stdcall-fixup -e _Main -o ..\Release\x86\loader.exe loader.o cmdarg.o inject.o pemagic.o %libgcc% -lkernel32 -luser32 -lcomdlg32 -lmsvcrt
 del	*.o 2>nul
 cd..
 :noloader
@@ -41,19 +41,21 @@ echo	gcc	core.c
 gcc	-c -Wall -Wextra core.c
 echo	gcc	global.c
 gcc	-c -Wall -Wextra global.c
-echo	gcc	Source\membp.c
-gcc	-c -Wall -Wextra Source\membp.c
-echo	gcc	Source\kernel32.c
-gcc	-c -Wall -Wextra Source\kernel32.c
-echo	gcc	Source\user32.c
-gcc	-c -Wall -Wextra Source\user32.c
-echo	gcc	Source\gdi32.c
-gcc	-c -Wall -Wextra Source\gdi32.c
-echo	gcc	Source\psapi.c
-gcc	-c -Wall -Wextra Source\psapi.c
+echo	gcc	init.c
+gcc	-c -Wall -Wextra init.c
+echo	gcc	src\membp\membp.c
+gcc	-c -Wall -Wextra src\membp\membp.c
+echo	gcc	src\detour\kernel32.c
+gcc	-c -Wall -Wextra src\detour\kernel32.c
+echo	gcc	src\detour\user32.c
+gcc	-c -Wall -Wextra src\detour\user32.c
+echo	gcc	src\detour\gdi32.c
+gcc	-c -Wall -Wextra src\detour\\gdi32.c
+echo	gcc	src\detour\psapi.c
+gcc	-c -Wall -Wextra src\detour\psapi.c
 
 echo	ld
-ld	--subsystem windows --dll -L%mingw%\lib --enable-stdcall-fixup -e _DllMain -o ..\Release\x86\core.dll global.o core.o membp.o kernel32.o user32.o gdi32.o psapi.o -lkernel32 -luser32 -lgdi32 -lpsapi -lshlwapi -lmingwex
+ld	--subsystem windows --dll -L%mingw%\lib --enable-stdcall-fixup -e _DllMain -o ..\Release\x86\core.dll core.o global.o init.o membp.o kernel32.o user32.o gdi32.o psapi.o -lkernel32 -luser32 -lgdi32 -lpsapi -lshlwapi -lmingwex
 del	*.o 2>nul
 cd	..
 :nocore
