@@ -1,7 +1,7 @@
 #ifndef __MOJIBAKE_CORE_H_
 #define __MOJIBAKE_CORE_H_
 #include "..\mojibake.h"
-#include "global.h"
+#include "detour.h"
 #include "init.h"
 #include "src\membp\membp.h"
 

@@ -39,23 +39,15 @@ cd	core.dll
 
 echo	gcc	core.c
 gcc	-c -Wall -Wextra core.c
-echo	gcc	global.c
-gcc	-c -Wall -Wextra global.c
+echo	gcc	detour.c
+gcc	-c -Wall -Wextra detour.c
 echo	gcc	init.c
 gcc	-c -Wall -Wextra init.c
 echo	gcc	src\membp\membp.c
 gcc	-c -Wall -Wextra src\membp\membp.c
-echo	gcc	src\detour\kernel32.c
-gcc	-c -Wall -Wextra src\detour\kernel32.c
-echo	gcc	src\detour\user32.c
-gcc	-c -Wall -Wextra src\detour\user32.c
-echo	gcc	src\detour\gdi32.c
-gcc	-c -Wall -Wextra src\detour\\gdi32.c
-echo	gcc	src\detour\psapi.c
-gcc	-c -Wall -Wextra src\detour\psapi.c
 
 echo	ld
-ld	--subsystem windows --dll -L%mingw%\lib -e DllMain -o ..\Release\x64\core.dll core.o global.o init.o membp.o kernel32.o user32.o gdi32.o psapi.o -lkernel32 -luser32 -lgdi32 -lpsapi -lshlwapi -lmingwex
+ld	--subsystem windows --dll -L%mingw%\lib -e DllMain -o ..\Release\x64\core.dll core.o detour.o init.o membp.o -lkernel32 -luser32 -lgdi32 -lpsapi -lshlwapi -lmingwex
 del	*.o 2>nul
 cd	..
 :nocore

@@ -151,12 +151,12 @@ LONG CALLBACK BreakpointHandler(
 ){
     if  ( (ExceptionInfo->ExceptionRecord->ExceptionCode == 0xC0000005) && (ExceptionInfo->ExceptionRecord->NumberParameters == 2) && (ExceptionInfo->ExceptionRecord->ExceptionInformation[0] == 8) && ((SIZE_T)ExceptionInfo->ExceptionRecord->ExceptionAddress == ExceptionInfo->ExceptionRecord->ExceptionInformation[1]) )
     {
-        if  (stMessageBoxA.lpOldFunction == ExceptionInfo->ExceptionRecord->ExceptionAddress)
+        if  (stMessageBoxA.lpOriginalFunction == ExceptionInfo->ExceptionRecord->ExceptionAddress)
         {
             #if defined(_WIN64)
-            ExceptionInfo->ContextRecord->Rip = (SIZE_T)stMessageBoxA.lpNewFunction;
+            ExceptionInfo->ContextRecord->Rip = (SIZE_T)stMessageBoxA.lpDetourFunction;
             #else
-            ExceptionInfo->ContextRecord->Eip = (SIZE_T)stMessageBoxA.lpNewFunction;
+            ExceptionInfo->ContextRecord->Eip = (SIZE_T)stMessageBoxA.lpDetourFunction;
             #endif  // defined(_WIN64)
             return EXCEPTION_CONTINUE_EXECUTION;
         }

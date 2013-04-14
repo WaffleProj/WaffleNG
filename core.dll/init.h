@@ -1,6 +1,11 @@
 #ifndef __INIT_H_
 #define __INIT_H_
 
+typedef struct {
+    HANDLE   hThread;
+    PCONTEXT lpstContext;
+} THREAD_CONTEXT,*LPTHREAD_CONTEXT;
+
 #ifdef __cplusplus
 extern "C" {
 #endif
