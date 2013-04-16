@@ -107,7 +107,7 @@ BOOL WINAPI DetourGetCPInfo(
 	if  (!CodePage)
 		CodePage = stNewEnvir.ACP;
 
-	return ((LPGETCPINFO)stGetCPInfo.lpNewFunction)(CodePage,lpCPInfo);
+	return ((LPGETCPINFO)stKernel32Table[GETCPINFO].lpNewFunction)(CodePage,lpCPInfo);
 }
 
 DWORD WINAPI DetourGetFileAttributesA(
@@ -181,7 +181,7 @@ int WINAPI DetourMultiByteToWideChar(
 	if  (!CodePage)
 		CodePage = stNewEnvir.ACP;
 
-	return ((LPMULTIBYTETOWIDECHAR)stMultiByteToWideChar.lpNewFunction)(CodePage,dwFlags,lpMultiByteStr,cbMultiByte,lpWideCharStr,cchWideChar);
+	return ((LPMULTIBYTETOWIDECHAR)stKernel32Table[MULTIBYTETOWIDECHAR].lpNewFunction)(CodePage,dwFlags,lpMultiByteStr,cbMultiByte,lpWideCharStr,cchWideChar);
 }
 
 BOOL WINAPI DetourSetCurrentDirectoryA(
@@ -218,5 +218,5 @@ int WINAPI DetourWideCharToMultiByte(
 	if  (!CodePage)
 		CodePage = stNewEnvir.ACP;
 
-	return ((LPWIDECHARTOMULTIBYTE)stWideCharToMultiByte.lpNewFunction)(CodePage,dwFlags,lpWideCharStr,cchWideChar,lpMultiByteStr,cbMultiByte,lpDefaultChar,lpUsedDefaultChar);
+	return ((LPWIDECHARTOMULTIBYTE)stKernel32Table[WIDECHARTOMULTIBYTE].lpNewFunction)(CodePage,dwFlags,lpWideCharStr,cchWideChar,lpMultiByteStr,cbMultiByte,lpDefaultChar,lpUsedDefaultChar);
 }

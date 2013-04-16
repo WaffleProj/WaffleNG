@@ -11,7 +11,7 @@ LRESULT WINAPI DetourCallWindowProcA(
 ){
     if  (Msg == WM_SETTEXT)
     {
-        LRESULT Result = ((LPCALLWINDOWPROCA)stCallWindowProcA.lpNewFunction)(lpPrevWndFunc,hWnd,Msg,wParam,lParam);
+        LRESULT Result = ((LPCALLWINDOWPROCA)stUser32Table[CALLWINDOWPROCA].lpNewFunction)(lpPrevWndFunc,hWnd,Msg,wParam,lParam);
     
         DWORD LastError = GetLastError();
         int sizeString = DefWindowProcA(hWnd,WM_GETTEXTLENGTH,0,0);
@@ -27,7 +27,7 @@ LRESULT WINAPI DetourCallWindowProcA(
     }
     else
     {
-        return ((LPCALLWINDOWPROCA)stCallWindowProcA.lpNewFunction)(lpPrevWndFunc,hWnd,Msg,wParam,lParam);
+        return ((LPCALLWINDOWPROCA)stUser32Table[CALLWINDOWPROCA].lpNewFunction)(lpPrevWndFunc,hWnd,Msg,wParam,lParam);
     }    
 }
 
@@ -112,7 +112,7 @@ LRESULT WINAPI DetourSendMessageA(
     else
     {
 */
-        return ((LPSENDMESSAGEA)stSendMessageA.lpNewFunction)(hWnd,Msg,wParam,lParam);
+        return ((LPSENDMESSAGEA)stUser32Table[SENDMESSAGEA].lpNewFunction)(hWnd,Msg,wParam,lParam);
 //    }
 }
 

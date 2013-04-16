@@ -36,26 +36,39 @@ int WINAPI HookedMessageBoxA(
   _In_      UINT uType
 ){
 
-    return _MessageBoxA(hWnd,"MessageBoxA has been hooked","Dll Copy Example",uType);
+    return ((LPMESSAGEBOXA)stUser32Table[MESSAGEBOXA].lpNewFunction)(hWnd,"MessageBoxA has been hooked","Dll Copy Example",uType);
 }
 
-int WINAPI SetBreakpoint(LIBRARY_TABLE_OBJECT stHookTable[])
+int WINAPI SetBreakpoint(LIBRARY_TABLE_OBJECT stLibraryTable[])
 {
     DWORD flOldProtect;
 
-    HMODULE hCopyLibrary = CopyLibrary(GetModuleAddressW(L"User32.dll"));
-    _MessageBoxA = GetFunctionAddressA(hCopyLibrary,"MessageBoxA");
-    _wsprintfA = GetFunctionAddressA(hCopyLibrary,"wsprintfA");
+    int i = 0,j;
+    HOOK_TABLE_OBJECT *stFunction;
+    while (stLibraryTable[i].lpszLibrary)
+    {
+        stLibraryTable[i].lpLibrary = CopyLibrary(GetModuleAddressW(stLibraryTable[i].lpszLibrary));
+        stFunction = stLibraryTable[i].lpHookTable;
+        j = 0;
+        while (stFunction[j].lpszFunction)
+        {
+            stFunction[j].lpNewFunction = GetFunctionAddressA(stLibraryTable[i].lpLibrary,stFunction[j].lpszFunction);
+            j++;
+        }
+        i++;
+    }
+    _wsprintfA = GetFunctionAddressA(stLibraryTable[USER32].lpLibrary,"wsprintfA");
 
-    stMessageBoxA.lpDetourFunction = HookedMessageBoxA;
-    stMessageBoxA.lpOriginalFunction = GetProcAddress(GetModuleHandle(TEXT("User32.dll")),"MessageBoxA");
-    VirtualProtect(stMessageBoxA.lpOriginalFunction,1,PAGE_READONLY,&flOldProtect);
+    stUser32Table[MESSAGEBOXA].lpDetourFunction = HookedMessageBoxA;
+    stUser32Table[MESSAGEBOXA].lpOriginalFunction = GetProcAddress(GetModuleHandle(TEXT("User32.dll")),"MessageBoxA");
+
     PVOID hBreakpoint = AddVectoredExceptionHandler(TRUE,BreakpointHandler);
+    VirtualProtect(stUser32Table[MESSAGEBOXA].lpOriginalFunction,1,PAGE_READONLY,&flOldProtect);
 
-    _MessageBoxA(0,"lpMessageBoxA","Dll Copy Example",0);
     MessageBoxA(0,"MessageBoxA","Dll Copy Example",0);
+    ((LPMESSAGEBOXA)stUser32Table[MESSAGEBOXA].lpNewFunction)(0,"lpMessageBoxA","Dll Copy Example",0);
 
-    VirtualProtect(stMessageBoxA.lpOriginalFunction,1,flOldProtect,&flOldProtect);
+    VirtualProtect(stUser32Table[MESSAGEBOXA].lpOriginalFunction,1,flOldProtect,&flOldProtect);
     RemoveVectoredExceptionHandler(hBreakpoint);
     return 0;
 }
@@ -78,7 +91,7 @@ VOID WINAPI InitLibrary(
     lpszCommandLineA = GlobalAlloc(GPTR,intSize);
     WideCharToMultiByte(stNewEnvir.ACP,0,lpszCommandLineW,-1,lpszCommandLineA,intSize,NULL,NULL);
 
-    SetBreakpoint(stHookTable);
+    SetBreakpoint(stLibraryTable);
 
     HANDLE hThread = OpenThread(THREAD_ALL_ACCESS,FALSE,dwThreadId);    //WinXP may return ERROR_ACCESS_DENIED
 
@@ -89,12 +102,12 @@ VOID WINAPI InitLibrary(
     PCONTEXT lpstContext = GlobalAlloc(GPTR,sizeof(CONTEXT));
     RtlMoveMemory(lpstContext,&stContext,sizeof(stContext));
     #if defined(_WIN64)
-    stContext.Rsp -= 64;        //Protect stack
+    stContext.Rsp -= 8*sizeof(SIZE_T);        //Protect stack
     stContext.Rip = (SIZE_T)SetThreadEnvironment;
     stContext.Rcx = (SIZE_T)hThread;
     stContext.Rdx = (SIZE_T)lpstContext;
     #else
-    stContext.Esp -= 32;        //Protect stack
+    stContext.Esp -= 8*sizeof(SIZE_T);        //Protect stack
     stContext.Eip = (SIZE_T)SetThreadEnvironment;
     stContext.Ecx = (SIZE_T)hThread;
     stContext.Edx = (SIZE_T)lpstContext;

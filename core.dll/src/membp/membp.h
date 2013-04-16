@@ -15,7 +15,7 @@ HMODULE WINAPI CopyLibrary(
 
 LPVOID WINAPI GetFunctionAddressA(
   _In_  HMODULE hDll,
-  _In_  LPSTR lpszFuncName
+  _In_  LPCSTR lpszFuncName
 );
 
 LONG CALLBACK BreakpointHandler(

@@ -98,7 +98,7 @@ HMODULE WINAPI CopyLibrary(
 
 LPVOID WINAPI GetFunctionAddressA(
   _In_  HMODULE hDll,
-  _In_  LPSTR lpszFuncName
+  _In_  LPCSTR lpszFuncName
 ){
     if (!hDll)
         return NULL;
@@ -151,12 +151,12 @@ LONG CALLBACK BreakpointHandler(
 ){
     if  ( (ExceptionInfo->ExceptionRecord->ExceptionCode == 0xC0000005) && (ExceptionInfo->ExceptionRecord->NumberParameters == 2) && (ExceptionInfo->ExceptionRecord->ExceptionInformation[0] == 8) && ((SIZE_T)ExceptionInfo->ExceptionRecord->ExceptionAddress == ExceptionInfo->ExceptionRecord->ExceptionInformation[1]) )
     {
-        if  (stMessageBoxA.lpOriginalFunction == ExceptionInfo->ExceptionRecord->ExceptionAddress)
+        if  (stUser32Table[MESSAGEBOXA].lpOriginalFunction == ExceptionInfo->ExceptionRecord->ExceptionAddress)
         {
             #if defined(_WIN64)
-            ExceptionInfo->ContextRecord->Rip = (SIZE_T)stMessageBoxA.lpDetourFunction;
+            ExceptionInfo->ContextRecord->Rip = (SIZE_T)stUser32Table[MESSAGEBOXA].lpDetourFunction;
             #else
-            ExceptionInfo->ContextRecord->Eip = (SIZE_T)stMessageBoxA.lpDetourFunction;
+            ExceptionInfo->ContextRecord->Eip = (SIZE_T)stUser32Table[MESSAGEBOXA].lpDetourFunction;
             #endif  // defined(_WIN64)
             return EXCEPTION_CONTINUE_EXECUTION;
         }
@@ -174,7 +174,7 @@ LONG CALLBACK BreakpointHandler(
             _wsprintfA(szBuf,"\nExceptionRecord->ExceptionInformation[%u] = %016I64X",i,(UINT64)(ExceptionInfo->ExceptionRecord->ExceptionInformation[i]));
             lstrcatA(szExceptionRecord,szBuf);
         }
-        _MessageBoxA(0,szExceptionRecord,"BreakpointHandler",0);
+        ((LPMESSAGEBOXA)stUser32Table[MESSAGEBOXA].lpNewFunction)(0,szExceptionRecord,"BreakpointHandler",0);
     }
     return EXCEPTION_CONTINUE_SEARCH;
 }
