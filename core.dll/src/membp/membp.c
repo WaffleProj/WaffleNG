@@ -47,7 +47,7 @@ HMODULE WINAPI GetModuleAddressW(
         {
             if (_lstrcmpiW(lpszModule,lpszFullDllName) == 0)
             {
-                return (HMODULE)((PLDR_DATA_TABLE_ENTRY)((SIZE_T)lpListEntry - FIELD_OFFSET(LDR_DATA_TABLE_ENTRY, InMemoryOrderLinks)))->DllBase;
+                return (HMODULE)((PLDR_DATA_TABLE_ENTRY)((SIZE_T)lpListEntry - FIELD_OFFSET(LDR_DATA_TABLE_ENTRY,InMemoryOrderLinks)))->DllBase;
             }
             else
             {
@@ -59,41 +59,6 @@ HMODULE WINAPI GetModuleAddressW(
             return 0;
         }
     }
-}
-
-HMODULE WINAPI CopyLibrary(
-  _In_  HMODULE hModule
-){
-    if  (!hModule)
-        return NULL;
-
-    //Get dll base address and size
-    HANDLE hProcess = GetCurrentProcess();
-    MODULEINFO  stModuleInfo;
-    GetModuleInformation(hProcess,hModule,&stModuleInfo,sizeof(stModuleInfo));
-
-    //Reserve memory address
-    HMODULE hDll = (HMODULE)VirtualAlloc(NULL,stModuleInfo.SizeOfImage,MEM_RESERVE,PAGE_NOACCESS);
-
-    LPVOID addrPointer = stModuleInfo.lpBaseOfDll;
-    LPVOID addrEnd = (LPVOID)((SIZE_T)stModuleInfo.lpBaseOfDll + stModuleInfo.SizeOfImage);
-    while (addrPointer < addrEnd)
-    {
-        MEMORY_BASIC_INFORMATION stMemInfo;
-        VirtualQuery(addrPointer,&stMemInfo,sizeof(stMemInfo));
-        if  (stMemInfo.State == MEM_COMMIT)
-        {
-            //Get offset of the memory
-            LPVOID addrNew = (LPVOID)((SIZE_T)stMemInfo.BaseAddress - (SIZE_T)stMemInfo.AllocationBase + (SIZE_T)hDll);
-
-            VirtualAlloc(addrNew,stMemInfo.RegionSize,MEM_COMMIT,PAGE_READWRITE);
-            RtlMoveMemory(addrNew,stMemInfo.BaseAddress,stMemInfo.RegionSize);
-            VirtualProtect(addrNew,stMemInfo.RegionSize,stMemInfo.Protect,&stMemInfo.AllocationProtect);
-        }
-        addrPointer = (PBYTE)stMemInfo.BaseAddress + stMemInfo.RegionSize;
-    }
-
-    return hDll;
 }
 
 LPVOID WINAPI GetFunctionAddressA(
@@ -144,6 +109,86 @@ LPVOID WINAPI GetFunctionAddressA(
         }
     }
     return NULL;
+}
+
+HMODULE WINAPI CopyLibrary(
+  _In_  HMODULE hModule
+){
+    if  (!hModule)
+        return NULL;
+
+    //Get dll base address and size
+    HANDLE hProcess = GetCurrentProcess();
+    MODULEINFO  stModuleInfo;
+    GetModuleInformation(hProcess,hModule,&stModuleInfo,sizeof(stModuleInfo));
+
+    //Reserve memory address
+    HMODULE hDll = (HMODULE)VirtualAlloc(NULL,stModuleInfo.SizeOfImage,MEM_RESERVE,PAGE_NOACCESS);
+
+    LPVOID addrPointer = stModuleInfo.lpBaseOfDll;
+    LPVOID addrEnd = (LPVOID)((SIZE_T)stModuleInfo.lpBaseOfDll + stModuleInfo.SizeOfImage);
+    while (addrPointer < addrEnd)
+    {
+        MEMORY_BASIC_INFORMATION stMemInfo;
+        VirtualQuery(addrPointer,&stMemInfo,sizeof(stMemInfo));
+        if  (stMemInfo.State == MEM_COMMIT)
+        {
+            //Get offset of the memory
+            LPVOID addrNew = (LPVOID)((SIZE_T)stMemInfo.BaseAddress - (SIZE_T)stMemInfo.AllocationBase + (SIZE_T)hDll);
+
+            VirtualAlloc(addrNew,stMemInfo.RegionSize,MEM_COMMIT,PAGE_READWRITE);
+            RtlMoveMemory(addrNew,stMemInfo.BaseAddress,stMemInfo.RegionSize);
+            VirtualProtect(addrNew,stMemInfo.RegionSize,stMemInfo.Protect,&stMemInfo.AllocationProtect);
+        }
+        addrPointer = (PBYTE)stMemInfo.BaseAddress + stMemInfo.RegionSize;
+    }
+
+    return hDll;
+}
+
+HMODULE WINAPI CopyLibraryEx(
+  _In_  LPLIBRARY_TABLE_OBJECT stLibrary
+){
+    stLibrary->hModule = GetModuleAddressW(stLibrary->lpszLibrary);
+    if  (!stLibrary->hModule)
+        return NULL;
+
+    //Get dll base address and size
+    HANDLE hProcess = GetCurrentProcess();
+    MODULEINFO  stModuleInfo;
+    GetModuleInformation(hProcess,stLibrary->hModule,&stModuleInfo,sizeof(stModuleInfo));
+    stLibrary->lpEndOfModule = (LPVOID)((SIZE_T)stLibrary->hModule + stModuleInfo.SizeOfImage);
+
+    //Reserve memory address
+    stLibrary->lpLibrary = (HMODULE)VirtualAlloc(NULL,stModuleInfo.SizeOfImage,MEM_RESERVE,PAGE_NOACCESS);
+
+    LPVOID addrPointer = stModuleInfo.lpBaseOfDll;
+    LPVOID addrEnd = (LPVOID)((SIZE_T)stModuleInfo.lpBaseOfDll + stModuleInfo.SizeOfImage);
+    while (addrPointer < addrEnd)
+    {
+        MEMORY_BASIC_INFORMATION stMemInfo;
+        VirtualQuery(addrPointer,&stMemInfo,sizeof(stMemInfo));
+        if  (stMemInfo.State == MEM_COMMIT)
+        {
+            //Get offset of the memory
+            LPVOID addrNew = (LPVOID)((SIZE_T)stMemInfo.BaseAddress - (SIZE_T)stMemInfo.AllocationBase + (SIZE_T)stLibrary->lpLibrary);
+
+            VirtualAlloc(addrNew,stMemInfo.RegionSize,MEM_COMMIT,PAGE_READWRITE);
+            RtlMoveMemory(addrNew,stMemInfo.BaseAddress,stMemInfo.RegionSize);
+            VirtualProtect(addrNew,stMemInfo.RegionSize,stMemInfo.Protect,&stMemInfo.AllocationProtect);
+        }
+        addrPointer = (PBYTE)stMemInfo.BaseAddress + stMemInfo.RegionSize;
+    }
+
+    LPHOOK_TABLE_OBJECT stFunction = stLibrary->lpHookTable;
+    int i = 0;
+    while (stFunction[i].lpszFunction)
+    {
+        stFunction[i].lpNewFunction = GetFunctionAddressA(stLibrary->lpLibrary,stFunction[i].lpszFunction);
+        i++;
+    }
+
+    return stLibrary->lpLibrary;
 }
 
 LONG CALLBACK BreakpointHandler(

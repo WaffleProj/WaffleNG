@@ -43,18 +43,10 @@ int WINAPI SetBreakpoint(LIBRARY_TABLE_OBJECT stLibraryTable[])
 {
     DWORD flOldProtect;
 
-    int i = 0,j;
-    HOOK_TABLE_OBJECT *stFunction;
+    int i = 0;
     while (stLibraryTable[i].lpszLibrary)
     {
-        stLibraryTable[i].lpLibrary = CopyLibrary(GetModuleAddressW(stLibraryTable[i].lpszLibrary));
-        stFunction = stLibraryTable[i].lpHookTable;
-        j = 0;
-        while (stFunction[j].lpszFunction)
-        {
-            stFunction[j].lpNewFunction = GetFunctionAddressA(stLibraryTable[i].lpLibrary,stFunction[j].lpszFunction);
-            j++;
-        }
+        CopyLibraryEx(&stLibraryTable[i]);
         i++;
     }
     _wsprintfA = GetFunctionAddressA(stLibraryTable[USER32].lpLibrary,"wsprintfA");

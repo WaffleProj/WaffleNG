@@ -13,6 +13,10 @@ HMODULE WINAPI CopyLibrary(
   _In_  HMODULE hModule
 );
 
+HMODULE WINAPI CopyLibraryEx(
+  _In_  LPLIBRARY_TABLE_OBJECT stLibrary
+);
+
 LPVOID WINAPI GetFunctionAddressA(
   _In_  HMODULE hDll,
   _In_  LPCSTR lpszFuncName
