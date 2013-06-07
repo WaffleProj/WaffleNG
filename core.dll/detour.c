@@ -58,14 +58,20 @@ HOOK_TABLE_OBJECT stPsapiTable[] = {
 {NULL},
 };
 
+HOOK_TABLE_OBJECT stNtdllTable[] = {
+//lpszFunction lpDetourFunction lpNewFunction lpOriginalFunction
+{NULL},
+};
+
 LIBRARY_TABLE_OBJECT stLibraryTable[] = {
 //lpszLibrary lpHookTable lpLibrary hModule lpEndOfModule
 {L"kernel32.dll",   stKernel32Table},
 {L"user32.dll",     stUser32Table},
 {L"gdi32.dll",      stGdi32Table},
 {L"psapi.dll",      stPsapiTable},
+{L"ntdll.dll",      stNtdllTable},
 {NULL},
 };
 
-LPMESSAGEBOXA       _MessageBoxA;
 LPWSPRINTFA         _wsprintfA;
+LPVIRTUALPROTECT    _VirtualProtect;

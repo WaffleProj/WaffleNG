@@ -58,11 +58,11 @@ extern	HOOK_TABLE_OBJECT       stPsapiTable[];
 #define GETMODULEFILENAMEEXA    0
 
 typedef struct {
-    LPCWSTR lpszLibrary;
-    LPVOID  lpHookTable;
-    LPVOID  lpLibrary;
-    HMODULE hModule;
-    LPVOID  lpEndOfModule;
+    LPCWSTR             lpszLibrary;
+    LPHOOK_TABLE_OBJECT lpHookTable;
+    LPVOID              lpLibrary;
+    HMODULE             hModule;
+    LPVOID              lpEndOfModule;
 } LIBRARY_TABLE_OBJECT,*LPLIBRARY_TABLE_OBJECT;
 
 extern LIBRARY_TABLE_OBJECT    stLibraryTable[];
@@ -70,14 +70,24 @@ extern LIBRARY_TABLE_OBJECT    stLibraryTable[];
 #define USER32                  1
 #define GDI32                   2
 #define PSAPI                   3
+#define NTDLL                   4
 
 typedef int (__cdecl *LPWSPRINTFA)(
   _Out_  LPSTR lpOut,
   _In_   LPCSTR lpFmt,
-  _In_    ...
+  _In_   ...
 );
 
 extern LPWSPRINTFA                      _wsprintfA;
+
+typedef BOOL (WINAPI *LPVIRTUALPROTECT)(
+  _In_   LPVOID lpAddress,
+  _In_   SIZE_T dwSize,
+  _In_   DWORD flNewProtect,
+  _Out_  PDWORD lpflOldProtect
+);
+
+extern LPVIRTUALPROTECT                 _VirtualProtect;
 
 #ifdef __cplusplus
 extern "C" {

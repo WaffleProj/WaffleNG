@@ -29,39 +29,48 @@ VOID FASTCALL SetThreadEnvironment(
     while (TRUE);
 }
 
-int WINAPI HookedMessageBoxA(
-  _In_opt_  HWND hWnd,
-  _In_opt_  LPCSTR lpText,
-  _In_opt_  LPCSTR lpCaption,
-  _In_      UINT uType
-){
-
-    return ((LPMESSAGEBOXA)stUser32Table[MESSAGEBOXA].lpNewFunction)(hWnd,"MessageBoxA has been hooked","Dll Copy Example",uType);
-}
-
 int WINAPI SetBreakpoint(LIBRARY_TABLE_OBJECT stLibraryTable[])
 {
-    DWORD flOldProtect;
-
-    int i = 0;
-    while (stLibraryTable[i].lpszLibrary)
+    //MessageBox(0,TEXT("Start Hooking"),TEXT("Debugger"),0);
+    int i;
+    for (i = 0; stLibraryTable[i].lpszLibrary; i++)
     {
         CopyLibraryEx(&stLibraryTable[i]);
-        i++;
     }
     _wsprintfA = GetFunctionAddressA(stLibraryTable[USER32].lpLibrary,"wsprintfA");
+    _VirtualProtect = GetFunctionAddressA(stLibraryTable[KERNEL32].lpLibrary,"VirtualProtect");
 
-    stUser32Table[MESSAGEBOXA].lpDetourFunction = HookedMessageBoxA;
-    stUser32Table[MESSAGEBOXA].lpOriginalFunction = GetProcAddress(GetModuleHandle(TEXT("User32.dll")),"MessageBoxA");
+    //stUser32Table[MESSAGEBOXA].lpDetourFunction = HookedMessageBoxA;
+    //stUser32Table[MESSAGEBOXA].lpOriginalFunction = GetProcAddress(GetModuleHandle(TEXT("User32.dll")),"MessageBoxA");
 
-    PVOID hBreakpoint = AddVectoredExceptionHandler(TRUE,BreakpointHandler);
-    VirtualProtect(stUser32Table[MESSAGEBOXA].lpOriginalFunction,1,PAGE_READONLY,&flOldProtect);
+    AddVectoredExceptionHandler(TRUE,BreakpointHandler);
+    for (i = 0; stLibraryTable[i].lpszLibrary; i++)
+    {
+        LPHOOK_TABLE_OBJECT lpHookTable = stLibraryTable[i].lpHookTable;
+        int j;
+        for (j = 0; lpHookTable[j].lpszFunction; j++)
+        {
+            DWORD flOldProtect;
+            //if  (_VirtualProtect(lpHookTable[j].lpOriginalFunction,1,PAGE_EXECUTE_READWRITE,&flOldProtect))
+            //{
+                _VirtualProtect(lpHookTable[j].lpOriginalFunction,1,PAGE_EXECUTE_READWRITE,&flOldProtect);
+                *(char *)(lpHookTable[j].lpOriginalFunction) = 0xF4;    //hlt
+                _VirtualProtect(lpHookTable[j].lpOriginalFunction,1,flOldProtect,&flOldProtect);
+            //}
+            //else
+            //{
+                //((LPMESSAGEBOXA)stUser32Table[MESSAGEBOXA].lpNewFunction)(0,lpHookTable[j].lpszFunction,"Unable to hook",0);
+            //}
+        }
+    }
 
-    MessageBoxA(0,"MessageBoxA","Dll Copy Example",0);
-    ((LPMESSAGEBOXA)stUser32Table[MESSAGEBOXA].lpNewFunction)(0,"lpMessageBoxA","Dll Copy Example",0);
+    //MessageBoxA(0,"MessageBoxA","Dll Copy Example",0);
+    //((LPMESSAGEBOXA)stUser32Table[MESSAGEBOXA].lpNewFunction)(0,"lpMessageBoxA","Dll Copy Example",0);
 
-    VirtualProtect(stUser32Table[MESSAGEBOXA].lpOriginalFunction,1,flOldProtect,&flOldProtect);
-    RemoveVectoredExceptionHandler(hBreakpoint);
+    //VirtualProtect(stUser32Table[MESSAGEBOXA].lpOriginalFunction,1,flOldProtect,&flOldProtect);
+    //RemoveVectoredExceptionHandler(hBreakpoint);
+
+    //((LPMESSAGEBOXA)stUser32Table[MESSAGEBOXA].lpNewFunction)(0,"Finish Hooking","Debugger",0);
     return 0;
 }
 

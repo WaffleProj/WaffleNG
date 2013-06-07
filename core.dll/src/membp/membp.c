@@ -17,9 +17,13 @@ int WINAPI _lstrcmpiW(
         while (TRUE)
         {
             if ( ((lpString1[i]|0x20) != (lpString2[i]|0x20)) || (lpString1[i]==0) || (lpString2[i]==0) )
+            {
                 break;
+            }
             else
+            {
                 i++;
+            }
         }
         return lpString1[i] - lpString2[i];
     }
@@ -66,7 +70,9 @@ LPVOID WINAPI GetFunctionAddressA(
   _In_  LPCSTR lpszFuncName
 ){
     if (!hDll)
+    {
         return NULL;
+    }
 
     if (((PIMAGE_DOS_HEADER)hDll)->e_magic == IMAGE_DOS_SIGNATURE)
     {
@@ -85,7 +91,9 @@ LPVOID WINAPI GetFunctionAddressA(
             lpDataDirectory = (PIMAGE_DATA_DIRECTORY)(lpOptionalHeader->DataDirectory + IMAGE_DIRECTORY_ENTRY_EXPORT);
         }
         else
+        {
             return NULL;
+        }
 
         PIMAGE_EXPORT_DIRECTORY lpExportTable = (PIMAGE_EXPORT_DIRECTORY)((SIZE_T)hDll + lpDataDirectory->VirtualAddress);
         
@@ -99,13 +107,17 @@ LPVOID WINAPI GetFunctionAddressA(
             for (i = 0; i < lpExportTable->NumberOfFunctions; i++)
             {
                 if (!lstrcmpA((LPVOID)((SIZE_T)hDll + lpName[i]),lpszFuncName))
+                {
                     return (LPVOID)((SIZE_T)hDll + lpFunction[lpOrdinal[i]]);
+                }
             }
         }
         else
         {
             if  ((SIZE_T)lpszFuncName <= lpExportTable->NumberOfFunctions)
+            {
                 return (LPVOID)((SIZE_T)hDll + lpFunction[(SIZE_T)lpszFuncName - lpExportTable->Base]);
+            }
         }
     }
     return NULL;
@@ -115,7 +127,9 @@ HMODULE WINAPI CopyLibrary(
   _In_  HMODULE hModule
 ){
     if  (!hModule)
+    {
         return NULL;
+    }
 
     //Get dll base address and size
     HANDLE hProcess = GetCurrentProcess();
@@ -151,7 +165,9 @@ HMODULE WINAPI CopyLibraryEx(
 ){
     stLibrary->hModule = GetModuleAddressW(stLibrary->lpszLibrary);
     if  (!stLibrary->hModule)
+    {
         return NULL;
+    }
 
     //Get dll base address and size
     HANDLE hProcess = GetCurrentProcess();
@@ -181,11 +197,11 @@ HMODULE WINAPI CopyLibraryEx(
     }
 
     LPHOOK_TABLE_OBJECT stFunction = stLibrary->lpHookTable;
-    int i = 0;
-    while (stFunction[i].lpszFunction)
+    int i;
+    for (i = 0; stFunction[i].lpszFunction; i++)
     {
         stFunction[i].lpNewFunction = GetFunctionAddressA(stLibrary->lpLibrary,stFunction[i].lpszFunction);
-        i++;
+        stFunction[i].lpOriginalFunction = GetFunctionAddressA(stLibrary->hModule,stFunction[i].lpszFunction);
     }
 
     return stLibrary->lpLibrary;
@@ -194,32 +210,52 @@ HMODULE WINAPI CopyLibraryEx(
 LONG CALLBACK BreakpointHandler(
   _In_  PEXCEPTION_POINTERS ExceptionInfo
 ){
-    if  ( (ExceptionInfo->ExceptionRecord->ExceptionCode == 0xC0000005) && (ExceptionInfo->ExceptionRecord->NumberParameters == 2) && (ExceptionInfo->ExceptionRecord->ExceptionInformation[0] == 8) && ((SIZE_T)ExceptionInfo->ExceptionRecord->ExceptionAddress == ExceptionInfo->ExceptionRecord->ExceptionInformation[1]) )
+
+    if  (ExceptionInfo->ExceptionRecord->ExceptionCode == 0xC0000096)
     {
-        if  (stUser32Table[MESSAGEBOXA].lpOriginalFunction == ExceptionInfo->ExceptionRecord->ExceptionAddress)
+        int i;
+        for (i = 0; stLibraryTable[i].lpszLibrary; i++)
         {
-            #if defined(_WIN64)
-            ExceptionInfo->ContextRecord->Rip = (SIZE_T)stUser32Table[MESSAGEBOXA].lpDetourFunction;
-            #else
-            ExceptionInfo->ContextRecord->Eip = (SIZE_T)stUser32Table[MESSAGEBOXA].lpDetourFunction;
-            #endif  // defined(_WIN64)
-            return EXCEPTION_CONTINUE_EXECUTION;
+            LPHOOK_TABLE_OBJECT lpHookTable = stLibraryTable[i].lpHookTable;    //kernel32中的api可能是ntdll的存根
+            if  ( ((SIZE_T)ExceptionInfo->ExceptionRecord->ExceptionAddress >= (SIZE_T)stLibraryTable[i].hModule) && ((SIZE_T)ExceptionInfo->ExceptionRecord->ExceptionAddress <= (SIZE_T)stLibraryTable[i].lpEndOfModule) )
+            {
+                int j;
+                for (j = 0; lpHookTable[j].lpszFunction; j++)
+                {
+                    if  (lpHookTable[j].lpOriginalFunction == ExceptionInfo->ExceptionRecord->ExceptionAddress)
+                    {
+                        //((LPMESSAGEBOXA)stUser32Table[MESSAGEBOXA].lpNewFunction)(0,lpHookTable[j].lpszFunction,"BreakpointHandler",0);
+                        #if defined(_WIN64)
+                        ExceptionInfo->ContextRecord->Rip = (SIZE_T)lpHookTable[j].lpDetourFunction;
+                        #else
+                        ExceptionInfo->ContextRecord->Eip = (SIZE_T)lpHookTable[j].lpDetourFunction;
+                        #endif  // defined(_WIN64)
+                        return EXCEPTION_CONTINUE_EXECUTION;
+                    }
+                }
+            
+                #if defined(_WIN64)
+                ExceptionInfo->ContextRecord->Rip = (SIZE_T)ExceptionInfo->ExceptionRecord->ExceptionAddress - (SIZE_T)stLibraryTable[i].hModule + (SIZE_T)stLibraryTable[i].lpLibrary;
+                #else
+                ExceptionInfo->ContextRecord->Eip = (SIZE_T)ExceptionInfo->ExceptionRecord->ExceptionAddress - (SIZE_T)stLibraryTable[i].hModule + (SIZE_T)stLibraryTable[i].lpLibrary;
+                #endif  // defined(_WIN64)
+                return EXCEPTION_CONTINUE_EXECUTION;
+            }
         }
     }
-    else
+/*
+    CHAR szExceptionRecord[512];
+
+    _wsprintfA(szExceptionRecord,"ExceptionRecord->ExceptionCode = %08x\nExceptionRecord->ExceptionFlags = %08x\nExceptionRecord->ExceptionRecord = %016I64X\nExceptionRecord->ExceptionAddress = %016I64X\nExceptionRecord->NumberParameters = %08x",ExceptionInfo->ExceptionRecord->ExceptionCode,ExceptionInfo->ExceptionRecord->ExceptionFlags,(UINT64)(ExceptionInfo->ExceptionRecord->ExceptionRecord),(UINT64)(ExceptionInfo->ExceptionRecord->ExceptionAddress),ExceptionInfo->ExceptionRecord->NumberParameters);
+
+    DWORD i;
+    for (i = 0; i < ExceptionInfo->ExceptionRecord->NumberParameters; i++)
     {
-        CHAR szExceptionRecord[512];
-
-        _wsprintfA(szExceptionRecord,"ExceptionRecord->ExceptionCode = %08x\nExceptionRecord->ExceptionFlags = %08x\nExceptionRecord->ExceptionRecord = %016I64X\nExceptionRecord->ExceptionAddress = %016I64X\nExceptionRecord->NumberParameters = %08x",ExceptionInfo->ExceptionRecord->ExceptionCode,ExceptionInfo->ExceptionRecord->ExceptionFlags,(UINT64)(ExceptionInfo->ExceptionRecord->ExceptionRecord),(UINT64)(ExceptionInfo->ExceptionRecord->ExceptionAddress),ExceptionInfo->ExceptionRecord->NumberParameters);
-
-        DWORD i;
-        for (i = 0; i < ExceptionInfo->ExceptionRecord->NumberParameters; i++)
-        {
-            CHAR szBuf[256];
-            _wsprintfA(szBuf,"\nExceptionRecord->ExceptionInformation[%u] = %016I64X",i,(UINT64)(ExceptionInfo->ExceptionRecord->ExceptionInformation[i]));
-            lstrcatA(szExceptionRecord,szBuf);
-        }
-        ((LPMESSAGEBOXA)stUser32Table[MESSAGEBOXA].lpNewFunction)(0,szExceptionRecord,"BreakpointHandler",0);
+        CHAR szBuf[256];
+        _wsprintfA(szBuf,"\nExceptionRecord->ExceptionInformation[%u] = %016I64X",i,(UINT64)(ExceptionInfo->ExceptionRecord->ExceptionInformation[i]));
+        lstrcatA(szExceptionRecord,szBuf);
     }
+    ((LPMESSAGEBOXA)stUser32Table[MESSAGEBOXA].lpNewFunction)(0,szExceptionRecord,"BreakpointHandler",0);
+*/
     return EXCEPTION_CONTINUE_SEARCH;
 }
