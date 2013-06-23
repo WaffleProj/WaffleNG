@@ -2,8 +2,7 @@
 #define  _UNICODE
 #include <windows.h>
 #include <shellapi.h>
-#include <stdio.h>
-#include "loader.h"
+#include "waffle.h"
 #pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 
 VOID WINAPI Main()
@@ -19,7 +18,6 @@ VOID WINAPI Main()
     int nArg = argc();
     TCHAR szTarget[MAX_PATH];
     TCHAR szDirectory[MAX_PATH];
-    int nCommandLine = 0;
     if (nArg > 1)
     {
         for (i = 1; i <= nArg; i++)
@@ -34,10 +32,7 @@ VOID WINAPI Main()
                 int j;
                 for (j = lstrlen(szTarget); szDirectory[j] != '\\'; j--);
                 szDirectory[j] = '\0';
-
-                i++;
-                nCommandLine = i;
-
+            
                 break;
             }
         }
@@ -61,39 +56,34 @@ VOID WINAPI Main()
         return;
     }
 
-    TCHAR szEnvirVar[64];   //SHA-1也放的下了
-    wsprintf(szEnvirVar,TEXT("0x%X"),GetCurrentThreadId());
-    SetEnvironmentVariable(TEXT("ParentTID"),szEnvirVar);
-
-    MSG stMSG;
-    PeekMessage(&stMSG,0,0,0,PM_NOREMOVE);
-
-    HGLOBAL lpszArgument = GlobalAlloc(GPTR,1024);
-    lstrcpy(lpszArgument,TEXT("\""));
-    lstrcpy(lpszArgument,szTarget);
-    lstrcpy(lpszArgument,TEXT("\""));
-    lstrcpy(lpszArgument,TEXT(" "));
-    lstrcpy(lpszArgument,argp(nCommandLine));
-
-    TCHAR szDllFull[MAX_PATH];
-    lstrcpy(szDllFull,szPath);
-    lstrcat(szDllFull,TEXT("\\waffle.dll"));
-
-    PROCESS_INFORMATION stProcessInfo = InjectDll(szTarget,lpszArgument,szDirectory,szDllFull);
-    
-    CONTEXT stContext = {};
-    stContext.ContextFlags = CONTEXT_FULL;
-    GetThreadContext(stProcessInfo.hThread,&stContext);
-    
-    while (TRUE)
+    TCHAR szLoader[MAX_PATH];
+    lstrcpy(szLoader,szPath);
+    WORD Magic = GetMachineType(szTarget);
+    if  (Magic == MACHINE_I386)
     {
-        GetMessage(&stMSG,0,TM_FIRSTMESSAGE,TM_LASTMESSAGE);
-        if (stMSG.message == TM_GETTID)
-        {
-            HANDLE hThread = CreateRemoteThread(stProcessInfo.hProcess,NULL,0,(LPTHREAD_START_ROUTINE)stMSG.lParam,(LPVOID)((SIZE_T)(stProcessInfo.dwThreadId)),0,NULL);
-            CloseHandle(hThread);
-            break;
-        }
+        STARTUPINFO stStartUp;
+        PROCESS_INFORMATION stProcessInfo;
+
+        stStartUp.cb = sizeof(stStartUp);
+        GetStartupInfo(&stStartUp);
+
+        lstrcat(szLoader,TEXT("\\Component\\Waffle\\I386\\loader.exe"));
+        CreateProcess(szLoader,(LPWSTR)argp(2),NULL,NULL,TRUE,0,0,szDirectory,&stStartUp,&stProcessInfo);
+    }
+    else if (Magic == MACHINE_AMD64)
+    {
+        STARTUPINFO stStartUp;
+        PROCESS_INFORMATION stProcessInfo;
+
+        stStartUp.cb = sizeof(stStartUp);
+        GetStartupInfo(&stStartUp);
+    
+        lstrcat(szLoader,TEXT("\\Component\\Waffle\\AMD64\\loader.exe"));
+        CreateProcess(szLoader,(LPWSTR)argp(2),NULL,NULL,TRUE,0,0,szDirectory,&stStartUp,&stProcessInfo);
+    }
+    else
+    {
+        MessageBox(0,TEXT("FIXME:Unsupported file or .net program"),0,0);       //Can be .net program
     }
 
     ExitProcess(0);

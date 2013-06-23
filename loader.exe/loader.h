@@ -1,6 +1,6 @@
-#ifndef __MOJIBAKE_LOADER_H_
-#define __MOJIBAKE_LOADER_H_
-#include "..\mojibake.h"
+#ifndef __WAFFLE_LOADER_H_
+#define __WAFFLE_LOADER_H_
+#include <waffle.h>
 
 typedef BOOL (WINAPI *LPWOW64DISABLEWOW64FSREDIRECTION)(
   _Out_  PVOID *OldValue
@@ -27,4 +27,4 @@ PROCESS_INFORMATION WINAPI InjectDll(LPCTSTR lpszTarget, LPTSTR lpszArgument, LP
 };
 #endif
 
-#endif /* __MOJIBAKE_LOADER_H_ */
+#endif /* __WAFFLE_LOADER_H_ */

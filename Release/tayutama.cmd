@@ -1,1 +1,1 @@
-x86\loader "E:\Galgame\Lump of Sugar\タユタマ\tayutama.exe"
+waffle_i386.exe /target "E:\Galgame\Lump of Sugar\タユタマ\tayutama.exe"

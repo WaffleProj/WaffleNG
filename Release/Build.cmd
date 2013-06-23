@@ -1,3 +1,5 @@
 @echo off
 cd ..
-Build.cmd
+call Build_Waffle.cmd
+call Build_Mojibake.cmd
+cd Release

@@ -1,2 +1,1 @@
-x64\loader "C:\Windows\System32\notepad.exe"
-@pause
+waffle_i386.exe /target "C:\Windows\System32\notepad.exe"

@@ -1,1 +1,1 @@
-x86\loader "E:\Doujin\限界_お兄ちゃん\genkai\genkai.exe"
+waffle_i386.exe /target "E:\Doujin\限界_お兄ちゃん\genkai\genkai.exe"
