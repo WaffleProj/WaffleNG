@@ -1,1 +1,1 @@
-waffle_i386.exe /target "C:\Windows\System32\notepad.exe"
+waffle_i386.exe /target "C:\Windows\SysWow64\notepad.exe"
