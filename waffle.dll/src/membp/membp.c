@@ -211,7 +211,6 @@ HMODULE WINAPI CopyLibraryEx(
 LONG CALLBACK BreakpointHandler(
   _In_  PEXCEPTION_POINTERS ExceptionInfo
 ){
-
     if  ( (ExceptionInfo->ExceptionRecord->ExceptionCode == EXCEPTION_PRIV_INSTRUCTION) && (*(char *)(ExceptionInfo->ExceptionRecord->ExceptionAddress) == (char)0xF4) )
     {
         int i;

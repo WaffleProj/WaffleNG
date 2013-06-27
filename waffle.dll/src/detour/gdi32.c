@@ -1,4 +1,4 @@
-#define  UNICODE
+﻿#define  UNICODE
 #define  _UNICODE
 #include <windows.h>
 #include "..\..\waffle.h"

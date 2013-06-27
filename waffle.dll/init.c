@@ -54,9 +54,12 @@ int WINAPI SetBreakpoint(LIBRARY_TABLE_OBJECT stLibraryTable[])
             DWORD flOldProtect;
             //if  (_VirtualProtect(lpHookTable[j].lpOriginalFunction,1,PAGE_EXECUTE_READWRITE,&flOldProtect))
             //{
+            if  (lpHookTable[j].lpDetourFunction)
+            {
                 _VirtualProtect(lpHookTable[j].lpOriginalFunction,1,PAGE_EXECUTE_READWRITE,&flOldProtect);
                 *(char *)(lpHookTable[j].lpOriginalFunction) = 0xF4;    //hlt
                 _VirtualProtect(lpHookTable[j].lpOriginalFunction,1,flOldProtect,&flOldProtect);
+            }
             //}
             //else
             //{

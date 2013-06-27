@@ -68,7 +68,7 @@ HOOK_TABLE_OBJECT stNtdllTable[] = {
 
 HOOK_TABLE_OBJECT stShell32Table[] = {
 //lpszFunction lpDetourFunction lpNewFunction lpOriginalFunction
-{"ShellAboutW",DetourShellAboutW},
+{"ShellAboutW",		DetourShellAboutW},
 {NULL},
 };
 

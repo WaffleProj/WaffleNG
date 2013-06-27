@@ -10,13 +10,23 @@ LPVOID WINAPI AnsiToUnicode(
 ){
     if  (lpszText)
     {
-        int intText = lstrlenA(lpszText) + 1;
-        LPVOID lpuszText = HeapAlloc(hHeap,HEAP_ZERO_MEMORY,2*intText);
-        MultiByteToWideChar(stNewEnvir.ACP,0,lpszText,-1,lpuszText,intText);
-        return lpuszText;
+        int intText = lstrlenA(lpszText);
+        if  (intText)
+        {
+            intText++;
+            LPVOID lpuszText = HeapAlloc(hHeap,HEAP_ZERO_MEMORY,2*intText);
+            MultiByteToWideChar(stNewEnvir.ACP,0,lpszText,-1,lpuszText,intText);
+            return lpuszText;
+        }
+        else
+        {
+            return 0;
+        }
     }
     else
-       return 0;
+    {
+        return 0;
+    }
 }
 
 LPVOID WINAPI ProgramCPToWindowsCP(

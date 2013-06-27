@@ -70,10 +70,10 @@ VOID WINAPI Main()
 
     HGLOBAL lpszArgument = GlobalAlloc(GPTR,1024);
     lstrcpy(lpszArgument,TEXT("\""));
-    lstrcpy(lpszArgument,szTarget);
-    lstrcpy(lpszArgument,TEXT("\""));
-    lstrcpy(lpszArgument,TEXT(" "));
-    lstrcpy(lpszArgument,argp(nCommandLine));
+    lstrcat(lpszArgument,szTarget);
+    lstrcat(lpszArgument,TEXT("\""));
+    lstrcat(lpszArgument,TEXT(" "));
+    lstrcat(lpszArgument,argp(nCommandLine));
 
     TCHAR szDllFull[MAX_PATH];
     lstrcpy(szDllFull,szPath);
