@@ -42,7 +42,7 @@ cd	%1
 goto	ExitProcess
 :Compile
 echo	gcc	%1
-gcc	-c -Wall -Wextra %1
+gcc	-O3 -c -Wall -Wextra %1
 goto	ExitProcess
 :CleanUp
 del	*.o 2>nul

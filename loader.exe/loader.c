@@ -19,28 +19,13 @@ VOID WINAPI Main()
     int nArg = argc();
     TCHAR szTarget[MAX_PATH];
     TCHAR szDirectory[MAX_PATH];
-    int nCommandLine = 0;
     if (nArg > 1)
     {
-        for (i = 1; i <= nArg; i++)
-        {
-            argv(i,szTarget,sizeof(szTarget));
-            if  (!lstrcmpi(szTarget,TEXT("/target")))
-            {
-                i++;    //如果没有忘记带路径的话
-                argv(i,szTarget,sizeof(szTarget));
-                lstrcpy(szDirectory,szTarget);
-                
-                int j;
-                for (j = lstrlen(szTarget); szDirectory[j] != '\\'; j--);
-                szDirectory[j] = '\0';
-
-                i++;
-                nCommandLine = i;
-
-                break;
-            }
-        }
+        argv(3,szTarget,sizeof(szTarget));      //1.文件名 2.插件名 3.目标
+        lstrcpy(szDirectory,szTarget);
+        
+        for (i = lstrlen(szTarget); szDirectory[i] != '\\'; i--);
+        szDirectory[i] = '\0';
     }
     else if (nArg == 1)
     {
@@ -68,18 +53,19 @@ VOID WINAPI Main()
     MSG stMSG;
     PeekMessage(&stMSG,0,0,0,PM_NOREMOVE);
 
-    HGLOBAL lpszArgument = GlobalAlloc(GPTR,1024);
+    HGLOBAL lpszArgument = GlobalAlloc(GPTR,(lstrlen(szTarget) + lstrlen(argp(4)) + 3 + 1) * sizeof(TCHAR));
     lstrcpy(lpszArgument,TEXT("\""));
     lstrcat(lpszArgument,szTarget);
     lstrcat(lpszArgument,TEXT("\""));
     lstrcat(lpszArgument,TEXT(" "));
-    lstrcat(lpszArgument,argp(nCommandLine));
+    lstrcat(lpszArgument,argp(4));
 
     TCHAR szDllFull[MAX_PATH];
     lstrcpy(szDllFull,szPath);
     lstrcat(szDllFull,TEXT("\\waffle.dll"));
 
     PROCESS_INFORMATION stProcessInfo = InjectDll(szTarget,lpszArgument,szDirectory,szDllFull);
+    GlobalFree(lpszArgument);
     
     CONTEXT stContext = {};
     stContext.ContextFlags = CONTEXT_FULL;

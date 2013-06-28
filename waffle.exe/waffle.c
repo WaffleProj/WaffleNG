@@ -20,22 +20,11 @@ VOID WINAPI Main()
     TCHAR szDirectory[MAX_PATH];
     if (nArg > 1)
     {
-        for (i = 1; i <= nArg; i++)
-        {
-            argv(i,szTarget,sizeof(szTarget));
-            if  (!lstrcmpi(szTarget,TEXT("/target")))
-            {
-                i++;    //如果没有忘记带路径的话
-                argv(i,szTarget,sizeof(szTarget));
-                lstrcpy(szDirectory,szTarget);
-                
-                int j;
-                for (j = lstrlen(szTarget); szDirectory[j] != '\\'; j--);
-                szDirectory[j] = '\0';
-            
-                break;
-            }
-        }
+        argv(3,szTarget,sizeof(szTarget));      //1.文件名 2.插件名 3.目标
+        lstrcpy(szDirectory,szTarget);
+        
+        for (i = lstrlen(szTarget); szDirectory[i] != '\\'; i--);
+        szDirectory[i] = '\0';
     }
     else if (nArg == 1)
     {
@@ -68,7 +57,14 @@ VOID WINAPI Main()
         GetStartupInfo(&stStartUp);
 
         lstrcat(szLoader,TEXT("\\Component\\Waffle\\I386\\loader.exe"));
-        CreateProcess(szLoader,(LPWSTR)argp(2),NULL,NULL,TRUE,0,0,szDirectory,&stStartUp,&stProcessInfo);
+        HGLOBAL lpszArgument = GlobalAlloc(GPTR,(lstrlen(szLoader) + lstrlen(argp(2)) + 3 + 1) * sizeof(TCHAR));
+        lstrcpy(lpszArgument,TEXT("\""));
+        lstrcat(lpszArgument,szLoader);
+        lstrcat(lpszArgument,TEXT("\""));
+        lstrcat(lpszArgument,TEXT(" "));
+        lstrcat(lpszArgument,argp(2));
+        CreateProcess(szLoader,lpszArgument,NULL,NULL,TRUE,0,0,szDirectory,&stStartUp,&stProcessInfo);
+        GlobalFree(lpszArgument);
     }
     else if (Magic == MACHINE_AMD64)
     {
@@ -79,7 +75,14 @@ VOID WINAPI Main()
         GetStartupInfo(&stStartUp);
     
         lstrcat(szLoader,TEXT("\\Component\\Waffle\\AMD64\\loader.exe"));
-        CreateProcess(szLoader,(LPWSTR)argp(2),NULL,NULL,TRUE,0,0,szDirectory,&stStartUp,&stProcessInfo);
+        HGLOBAL lpszArgument = GlobalAlloc(GPTR,(lstrlen(szLoader) + lstrlen(argp(2)) + 3 + 1) * sizeof(TCHAR));
+        lstrcpy(lpszArgument,TEXT("\""));
+        lstrcat(lpszArgument,szLoader);
+        lstrcat(lpszArgument,TEXT("\""));
+        lstrcat(lpszArgument,TEXT(" "));
+        lstrcat(lpszArgument,argp(2));
+        CreateProcess(szLoader,lpszArgument,NULL,NULL,TRUE,0,0,szDirectory,&stStartUp,&stProcessInfo);
+        GlobalFree(lpszArgument);
     }
     else
     {

@@ -1,1 +1,1 @@
-Waffle_I386 /target "C:\Windows\SysWow64\notepad.exe" "%~dp0932.txt"
+Waffle_I386 mojibake "C:\Windows\System32\notepad.exe" "%~dp0932.txt"
