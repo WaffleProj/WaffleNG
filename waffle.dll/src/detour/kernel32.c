@@ -3,7 +3,7 @@
 #include <windows.h>
 #include "..\..\waffle.h"
 
-BOOL WINAPI DetourCreateDirectoryA(
+LIBRARY_API BOOL WINAPI DetourCreateDirectoryA(
   _In_      LPCSTR lpPathName,
   _In_opt_  LPSECURITY_ATTRIBUTES lpSecurityAttributes
 ){
@@ -14,7 +14,7 @@ BOOL WINAPI DetourCreateDirectoryA(
 	return Result;
 }
 
-HANDLE WINAPI DetourCreateFileA(
+LIBRARY_API HANDLE WINAPI DetourCreateFileA(
   _In_      LPCSTR lpFileName,
   _In_      DWORD dwDesiredAccess,
   _In_      DWORD dwShareMode,
@@ -31,7 +31,7 @@ HANDLE WINAPI DetourCreateFileA(
 	return Result;
 }
 
-BOOL WINAPI DetourDeleteFileA(
+LIBRARY_API BOOL WINAPI DetourDeleteFileA(
   _In_  LPCSTR lpFileName
 ){
 	LPVOID lpuszFileName = AnsiToUnicode(lpFileName);
@@ -41,7 +41,7 @@ BOOL WINAPI DetourDeleteFileA(
 	return Result;
 }
 
-HANDLE WINAPI DetourFindFirstFileA(
+LIBRARY_API HANDLE WINAPI DetourFindFirstFileA(
   _In_   LPCSTR lpFileName,
   _Out_  LPWIN32_FIND_DATAA lpFindFileData
 ){
@@ -67,7 +67,7 @@ HANDLE WINAPI DetourFindFirstFileA(
 	return Result;
 }
 
-BOOL WINAPI DetourFindNextFileA(
+LIBRARY_API BOOL WINAPI DetourFindNextFileA(
   _In_   HANDLE hFindFile,
   _Out_  LPWIN32_FIND_DATAA lpFindFileData
 ){
@@ -91,17 +91,17 @@ BOOL WINAPI DetourFindNextFileA(
 	return Result;
 }
 
-UINT WINAPI DetourGetACP(void)
+LIBRARY_API UINT WINAPI DetourGetACP(void)
 {
 	return stNewEnvir.ACP;
 }
 
-LPSTR WINAPI DetourGetCommandLineA(void)   //由于这个函数直接返回指针无需释放,所以只能这么做
+LIBRARY_API LPSTR WINAPI DetourGetCommandLineA(void)   //由于这个函数直接返回指针无需释放,所以只能这么做
 {
 	return lpszCommandLineA;
 }
 
-BOOL WINAPI DetourGetCPInfo(
+LIBRARY_API BOOL WINAPI DetourGetCPInfo(
   _In_   UINT CodePage,
   _Out_  LPCPINFO lpCPInfo
 ){
@@ -111,7 +111,7 @@ BOOL WINAPI DetourGetCPInfo(
 	return ((LPGETCPINFO)stKernel32Table[GETCPINFO].lpNewFunction)(CodePage,lpCPInfo);
 }
 
-DWORD WINAPI DetourGetFileAttributesA(
+LIBRARY_API DWORD WINAPI DetourGetFileAttributesA(
   _In_  LPCSTR lpFileName
 ){
 	LPVOID lpuszFileName = AnsiToUnicode(lpFileName);
@@ -121,7 +121,7 @@ DWORD WINAPI DetourGetFileAttributesA(
 	return Result;
 }
 
-DWORD WINAPI DetourGetModuleFileNameA(
+LIBRARY_API DWORD WINAPI DetourGetModuleFileNameA(
   _In_opt_  HMODULE hModule,
   _Out_     LPSTR lpFilename,
   _In_      DWORD nSize
@@ -139,7 +139,7 @@ DWORD WINAPI DetourGetModuleFileNameA(
 	return lstrlenA(lpFilename);
 }
 
-HMODULE WINAPI DetourGetModuleHandleA(
+LIBRARY_API HMODULE WINAPI DetourGetModuleHandleA(
   _In_opt_  LPCSTR lpModuleName
 ){
 	LPVOID lpuszModuleName = AnsiToUnicode(lpModuleName);
@@ -149,7 +149,7 @@ HMODULE WINAPI DetourGetModuleHandleA(
 	return Result;
 }
 
-HMODULE WINAPI DetourLoadLibraryA(
+LIBRARY_API HMODULE WINAPI DetourLoadLibraryA(
   _In_  LPCSTR lpFileName
 ){
 	LPVOID lpuszFileName = AnsiToUnicode(lpFileName);
@@ -159,7 +159,7 @@ HMODULE WINAPI DetourLoadLibraryA(
 	return Result;
 }
 
-HMODULE WINAPI DetourLoadLibraryExA(
+LIBRARY_API HMODULE WINAPI DetourLoadLibraryExA(
   _In_        LPCSTR lpFileName,
   _Reserved_  HANDLE hFile,
   _In_        DWORD dwFlags
@@ -171,7 +171,7 @@ HMODULE WINAPI DetourLoadLibraryExA(
 	return Result;
 }
 
-int WINAPI DetourMultiByteToWideChar(
+LIBRARY_API int WINAPI DetourMultiByteToWideChar(
   _In_       UINT CodePage,
   _In_       DWORD dwFlags,
   _In_       LPCSTR lpMultiByteStr,
@@ -185,7 +185,7 @@ int WINAPI DetourMultiByteToWideChar(
 	return ((LPMULTIBYTETOWIDECHAR)stKernel32Table[MULTIBYTETOWIDECHAR].lpNewFunction)(CodePage,dwFlags,lpMultiByteStr,cbMultiByte,lpWideCharStr,cchWideChar);
 }
 
-BOOL WINAPI DetourSetCurrentDirectoryA(
+LIBRARY_API BOOL WINAPI DetourSetCurrentDirectoryA(
   _In_  LPCSTR lpPathName
 ){
 	LPVOID lpuszPathName = AnsiToUnicode(lpPathName);
@@ -195,7 +195,7 @@ BOOL WINAPI DetourSetCurrentDirectoryA(
 	return Result;
 }
 
-BOOL WINAPI DetourSetFileAttributesA(
+LIBRARY_API BOOL WINAPI DetourSetFileAttributesA(
   _In_  LPCSTR lpFileName,
   _In_  DWORD dwFileAttributes
 ){
@@ -206,7 +206,7 @@ BOOL WINAPI DetourSetFileAttributesA(
 	return Result;
 }
 
-int WINAPI DetourWideCharToMultiByte(
+LIBRARY_API int WINAPI DetourWideCharToMultiByte(
   _In_       UINT CodePage,
   _In_       DWORD dwFlags,
   _In_       LPCWSTR lpWideCharStr,

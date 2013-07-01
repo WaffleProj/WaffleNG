@@ -1,4 +1,5 @@
 @echo off
+call kill.cmd
 cd ..
 call Build_Waffle.cmd
 call Build_Waffle.cmd AMD64

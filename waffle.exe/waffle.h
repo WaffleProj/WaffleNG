@@ -1,5 +1,5 @@
-#ifndef __WAFFLE_H_
-#define __WAFFLE_H_
+#ifndef __WAFFLE_WAFFLE_EXE_H_
+#define __WAFFLE_WAFFLE_EXE_H_
 #include <waffle.h>
 
 typedef BOOL (WINAPI *LPWOW64DISABLEWOW64FSREDIRECTION)(
@@ -24,4 +24,4 @@ WORD WINAPI GetMachineType(LPCTSTR lpszFile);
 };
 #endif
 
-#endif /* __WAFFLE_H_ */
+#endif /* __WAFFLE_WAFFLE_EXE_H_ */

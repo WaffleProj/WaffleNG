@@ -62,7 +62,7 @@ VOID WINAPI Main()
 
     TCHAR szDllFull[MAX_PATH];
     lstrcpy(szDllFull,szPath);
-    lstrcat(szDllFull,TEXT("\\waffle.dll"));
+    lstrcat(szDllFull,TEXT("\\loader.dll"));
 
     PROCESS_INFORMATION stProcessInfo = InjectDll(szTarget,lpszArgument,szDirectory,szDllFull);
     GlobalFree(lpszArgument);

@@ -54,7 +54,7 @@ VOID WINAPI KeepLastErrorAndFree(
    return;
 }
 
-VOID WINAPI InitLibraryWithTID()
+LIBRARY_API VOID WINAPI ComponentInit()
 {
     TCHAR szEnvirVar[32];
     int ParentTid;
@@ -69,19 +69,13 @@ BOOL WINAPI DllMain(
   _In_  DWORD fdwReason,
   _In_  LPVOID lpvReserved
 ){
-    switch(fdwReason) 
-    { 
-        case DLL_PROCESS_ATTACH:
-            //Save hinstDLL
-            //No. Can not get the correct function address in new library
-            InitLibraryWithTID();
-            break;
-        case DLL_THREAD_ATTACH:
-            break;
-        case DLL_THREAD_DETACH:
-            break;
-        case DLL_PROCESS_DETACH:
-            break;
+    if (fdwReason == DLL_PROCESS_ATTACH) 
+    {
+        DisableThreadLibraryCalls(hinstDLL);
+        //Save hinstDLL
+        //No. Can not get the correct function address in new library
+        //InitLibraryWithTID();
+        //ComponentInit();
     }
     return TRUE;
 }

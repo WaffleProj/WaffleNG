@@ -3,7 +3,7 @@
 #include <windows.h>
 #include "..\..\waffle.h"
 
-HFONT WINAPI DetourCreateFontA(
+LIBRARY_API HFONT WINAPI DetourCreateFontA(
   _In_  int nHeight,
   _In_  int nWidth,
   _In_  int nEscapement,
@@ -26,7 +26,7 @@ HFONT WINAPI DetourCreateFontA(
     return Result;
 }
 
-BOOL WINAPI DetourTextOutA(
+LIBRARY_API BOOL WINAPI DetourTextOutA(
   _In_  HDC hdc,
   _In_  int nXStart,
   _In_  int nYStart,

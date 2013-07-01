@@ -1,5 +1,5 @@
-#ifndef __WAFFLE_LOADER_H_
-#define __WAFFLE_LOADER_H_
+#ifndef __WAFFLE_LOADER_EXE_H_
+#define __WAFFLE_LOADER_EXE_H_
 #include <waffle.h>
 
 typedef BOOL (WINAPI *LPWOW64DISABLEWOW64FSREDIRECTION)(
@@ -27,4 +27,4 @@ PROCESS_INFORMATION WINAPI InjectDll(LPCTSTR lpszTarget, LPTSTR lpszArgument, LP
 };
 #endif
 
-#endif /* __WAFFLE_LOADER_H_ */
+#endif /* __WAFFLE_LOADER_EXE_H_ */

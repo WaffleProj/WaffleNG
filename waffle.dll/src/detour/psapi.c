@@ -4,7 +4,7 @@
 #include <psapi.h>
 #include "..\..\waffle.h"
 
-DWORD WINAPI DetourGetModuleFileNameExA(
+LIBRARY_API DWORD WINAPI DetourGetModuleFileNameExA(
   _In_      HANDLE hProcess,
   _In_opt_  HMODULE hModule,
   _Out_     LPSTR lpFilename,

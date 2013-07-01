@@ -4,7 +4,7 @@
 #include <shellapi.h>
 #include "..\..\waffle.h"
 
-int DetourShellAboutW(
+LIBRARY_API int DetourShellAboutW(
   _In_opt_  HWND hWnd,
   _In_      LPCTSTR szApp,
   _In_opt_  LPCTSTR szOtherStuff,

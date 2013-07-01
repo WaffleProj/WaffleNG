@@ -1,5 +1,6 @@
-#ifndef __MOJIBAKE_CORE_H_
-#define __MOJIBAKE_CORE_H_
+#ifndef __WAFFLE_WAFFLE_DLL_H_
+#define __WAFFLE_WAFFLE_DLL_H_
+#define	 LIBRARY_EXPORTS
 #include <waffle.h>
 #include "detour.h"
 #include "init.h"
@@ -20,4 +21,4 @@ VOID WINAPI KeepLastErrorAndFree(LPVOID lpMem);
 };
 #endif
 
-#endif /* __MOJIBAKE_CORE_H_ */
+#endif /* __WAFFLE_WAFFLE_DLL_H_ */

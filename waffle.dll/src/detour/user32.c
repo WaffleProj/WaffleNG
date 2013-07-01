@@ -3,7 +3,7 @@
 #include <windows.h>
 #include "..\..\waffle.h"
 
-LRESULT WINAPI DetourCallWindowProcA(
+LIBRARY_API LRESULT WINAPI DetourCallWindowProcA(
   _In_  WNDPROC lpPrevWndFunc,
   _In_  HWND hWnd,
   _In_  UINT Msg,
@@ -32,7 +32,7 @@ LRESULT WINAPI DetourCallWindowProcA(
     }    
 }
 
-HWND WINAPI DetourCreateWindowExA(
+LIBRARY_API HWND WINAPI DetourCreateWindowExA(
   _In_      DWORD dwExStyle,
   _In_opt_  LPCSTR lpClassName,
   _In_opt_  LPCSTR lpWindowName,
@@ -59,7 +59,7 @@ HWND WINAPI DetourCreateWindowExA(
     return Result;
 }
 
-int WINAPI DetourMessageBoxA(
+LIBRARY_API int WINAPI DetourMessageBoxA(
   _In_opt_  HWND hWnd,
   _In_opt_  LPCSTR lpText,
   _In_opt_  LPCSTR lpCaption,
@@ -76,7 +76,7 @@ int WINAPI DetourMessageBoxA(
     return Result;
 }
 
-int WINAPI DetourMessageBoxExA(
+LIBRARY_API int WINAPI DetourMessageBoxExA(
   _In_opt_  HWND hWnd,
   _In_opt_  LPCSTR lpText,
   _In_opt_  LPCSTR lpCaption,
@@ -94,7 +94,7 @@ int WINAPI DetourMessageBoxExA(
     return Result;
 }
 
-LRESULT WINAPI DetourSendMessageA(
+LIBRARY_API LRESULT WINAPI DetourSendMessageA(
   _In_  HWND hWnd,
   _In_  UINT Msg,
   _In_  WPARAM wParam,
@@ -117,7 +117,7 @@ LRESULT WINAPI DetourSendMessageA(
 //    }
 }
 
-BOOL WINAPI DetourSetWindowTextA(
+LIBRARY_API BOOL WINAPI DetourSetWindowTextA(
   _In_      HWND hWnd,
   _In_opt_  LPCSTR lpString
 ){
