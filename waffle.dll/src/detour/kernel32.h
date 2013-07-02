@@ -1,7 +1,6 @@
 #ifndef __KERNEL32_H_
 #define __KERNEL32_H_
 
-#include <windows.h>
 #include "..\..\waffle.h"
 
 typedef BOOL (WINAPI *LPCREATEDIRECTORYA)(

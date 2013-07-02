@@ -1,8 +1,7 @@
 #define  UNICODE
 #define _UNICODE
-#include <windows.h>
-#include <shlwapi.h>
 #include "loader.h"
+#include <shlwapi.h>
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
 HINSTANCE hLoader;

@@ -1,6 +1,5 @@
 #define  UNICODE
 #define  _UNICODE
-#include <windows.h>
 #include "..\..\waffle.h"
 
 LIBRARY_API BOOL WINAPI DetourCreateDirectoryA(

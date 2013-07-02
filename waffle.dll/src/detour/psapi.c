@@ -1,8 +1,7 @@
 #define  UNICODE
 #define  _UNICODE
-#include <windows.h>
-#include <psapi.h>
 #include "..\..\waffle.h"
+#include <psapi.h>
 
 LIBRARY_API DWORD WINAPI DetourGetModuleFileNameExA(
   _In_      HANDLE hProcess,

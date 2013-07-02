@@ -1,8 +1,7 @@
 #define  UNICODE
 #define  _UNICODE
-#include <windows.h>
-#include <shellapi.h>
 #include "waffle.h"
+#include <shellapi.h>
 #pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 
 VOID WINAPI Main()

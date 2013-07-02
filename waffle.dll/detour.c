@@ -1,9 +1,8 @@
 #define  UNICODE
 #define _UNICODE
-#include <windows.h>
-#include "waffle.h"
 #pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 #pragma GCC diagnostic ignored "-Wunused-parameter"
+#include "waffle.h"
 #include "src\detour\kernel32.c"
 #include "src\detour\user32.c"
 #include "src\detour\gdi32.c"

@@ -1,9 +1,8 @@
 #ifndef __SHELL32_H_
 #define __SHELL32_H_
 
-#include <windows.h>
-#include <shellapi.h>
 #include "..\..\waffle.h"
+#include <shellapi.h>
 
 typedef int (WINAPI *LPSHELLABOUTW)(
   _In_opt_  HWND hWnd,

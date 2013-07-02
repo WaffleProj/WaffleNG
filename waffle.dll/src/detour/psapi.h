@@ -1,9 +1,8 @@
 #ifndef __PSAPI_H_
 #define __PSAPI_H_
 
-#include <windows.h>
-#include <psapi.h>
 #include "..\..\waffle.h"
+#include <psapi.h>
 
 typedef DWORD (WINAPI *LPGETMODULEFILENAMEEXA)(
   _In_      HANDLE hProcess,

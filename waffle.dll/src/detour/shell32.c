@@ -1,8 +1,7 @@
 #define  UNICODE
 #define  _UNICODE
-#include <windows.h>
-#include <shellapi.h>
 #include "..\..\waffle.h"
+#include <shellapi.h>
 
 LIBRARY_API int DetourShellAboutW(
   _In_opt_  HWND hWnd,

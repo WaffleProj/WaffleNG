@@ -1,5 +1,4 @@
 #define  UNICODE
-#include <windows.h>
 #include "..\loader.h"
 
 int WINAPI argc()

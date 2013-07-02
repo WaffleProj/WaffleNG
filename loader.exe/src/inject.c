@@ -1,5 +1,4 @@
 #define  UNICODE
-#include <windows.h>
 #include "..\loader.h"
 
 PROCESS_INFORMATION WINAPI InjectDll(LPCTSTR lpszTarget, LPTSTR lpszArgument, LPCTSTR lpszDirectory, LPCTSTR lpszDllFull)
