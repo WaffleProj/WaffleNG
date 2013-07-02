@@ -12,7 +12,7 @@ echo	+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 pushd	%~dp0
 
-set	OUTPUT_PATH=%~dp0..\WaffleProj
+set	OUTPUT_PATH=%~dp0..\WaffleNightly
 set	SDK=%OUTPUT_PATH%\SDK
 if	"%Machine%" == "I386"	(
 	set	MinGW=D:\mingw32\i686-w64-mingw32
