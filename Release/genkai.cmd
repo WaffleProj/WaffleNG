@@ -1,1 +1,0 @@
-waffle_i386.exe /target "E:\Doujin\ÏÞ½ç_¤ªÐÖ¤Á¤ã¤ó\genkai\genkai.exe"

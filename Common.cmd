@@ -12,7 +12,8 @@ echo	+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 pushd	%~dp0
 
-set	SDK=E:\Project\Mojibake\SDK
+set	OUTPUT_PATH=%~dp0..\WaffleProj
+set	SDK=%OUTPUT_PATH%\SDK
 if	"%Machine%" == "I386"	(
 	set	MinGW=D:\mingw32\i686-w64-mingw32
 	set	libgcc=D:\mingw32\lib\gcc\i686-w64-mingw32\4.8.1\libgcc.a
@@ -27,12 +28,6 @@ set	include=%MinGW%\..\include;%MinGW%\include;%SDK%\include
 set	C_INCLUDE_PATH=%include%
 set	lib=%MinGW%\..\lib;%MinGW%\lib;%SDK%\lib\%Machine%
 set	LIBRARY_PATH=%lib%
-goto	ExitProcess
-:CreateDirectory
-md	Release 2>nul
-md	Release\Component\%Project% 2>nul
-md	Release\Component\%Project%\%Machine% 2>nul
-md	Release\Component\%Project%\Config 2>nul
 goto	ExitProcess
 :ChangeDirectory
 echo	===============================================================================

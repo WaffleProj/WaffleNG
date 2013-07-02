@@ -1,1 +1,0 @@
-waffle_i386.exe mojibake "C:\Windows\SysWow64\notepad.exe"
