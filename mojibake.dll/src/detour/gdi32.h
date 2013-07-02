@@ -1,7 +1,6 @@
 #ifndef __GDI32_H_
 #define __GDI32_H_
 
-#include <windows.h>
 #include "..\..\mojibake.h"
 
 typedef HFONT (WINAPI *LPCREATEFONTA)(

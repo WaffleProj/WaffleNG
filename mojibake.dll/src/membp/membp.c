@@ -1,11 +1,7 @@
 ﻿#define UNICODE
 #define _UNICODE
-#include <windows.h>
-#include <WinNT.h>
-#include <winternl.h>
-#include <psapi.h>
-#include <intrin.h>
 #include "..\..\mojibake.h"
+#include <psapi.h>
 #pragma GCC diagnostic ignored "-Wpointer-to-int-cast"
 
 int WINAPI _lstrcmpiW(
@@ -37,11 +33,7 @@ int WINAPI _lstrcmpiW(
 HMODULE WINAPI GetModuleAddressW(
   _In_  LPCWSTR lpszModule
 ){
-    #if defined(_WIN64)
-    PPEB lpPeb = (PPEB)__readgsqword(0x60);
-    #else
-    PPEB lpPeb = (PPEB)__readfsdword(0x30);
-    #endif  // defined(_WIN64)
+    PPEB lpPeb = WAFFLE_PORT_PEB_ADDRESS;
 
     PLIST_ENTRY lpListEntry = lpPeb->Ldr->InMemoryOrderModuleList.Flink;
     while (TRUE)
@@ -226,20 +218,11 @@ LONG CALLBACK BreakpointHandler(
                     if  (lpHookTable[j].lpOriginalFunction == ExceptionInfo->ExceptionRecord->ExceptionAddress)
                     {
                         //((LPMESSAGEBOXA)stUser32Table[MESSAGEBOXA].lpNewFunction)(0,lpHookTable[j].lpszFunction,"BreakpointHandler",0);
-                        #if defined(_WIN64)
-                        ExceptionInfo->ContextRecord->Rip = (SIZE_T)lpHookTable[j].lpDetourFunction;
-                        #else
-                        ExceptionInfo->ContextRecord->Eip = (SIZE_T)lpHookTable[j].lpDetourFunction;
-                        #endif  // defined(_WIN64)
+                        WAFFLE_PORT_INSTRUCTION_POINTER(ExceptionInfo) = (SIZE_T)lpHookTable[j].lpDetourFunction;
                         return EXCEPTION_CONTINUE_EXECUTION;
                     }
                 }
-            
-                #if defined(_WIN64)
-                ExceptionInfo->ContextRecord->Rip = (SIZE_T)ExceptionInfo->ExceptionRecord->ExceptionAddress - (SIZE_T)stLibraryTable[i].hModule + (SIZE_T)stLibraryTable[i].lpLibrary;
-                #else
-                ExceptionInfo->ContextRecord->Eip = (SIZE_T)ExceptionInfo->ExceptionRecord->ExceptionAddress - (SIZE_T)stLibraryTable[i].hModule + (SIZE_T)stLibraryTable[i].lpLibrary;
-                #endif  // defined(_WIN64)
+                WAFFLE_PORT_INSTRUCTION_POINTER(ExceptionInfo) = (SIZE_T)ExceptionInfo->ExceptionRecord->ExceptionAddress - (SIZE_T)stLibraryTable[i].hModule + (SIZE_T)stLibraryTable[i].lpLibrary;
                 return EXCEPTION_CONTINUE_EXECUTION;
             }
         }

@@ -1,6 +1,5 @@
 #define  UNICODE
 #define _UNICODE
-#include <windows.h>
 #include "mojibake.h"
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
@@ -55,7 +54,7 @@ int WINAPI SetBreakpoint(LIBRARY_TABLE_OBJECT stLibraryTable[])
             //if  (_VirtualProtect(lpHookTable[j].lpOriginalFunction,1,PAGE_EXECUTE_READWRITE,&flOldProtect))
             //{
                 _VirtualProtect(lpHookTable[j].lpOriginalFunction,1,PAGE_EXECUTE_READWRITE,&flOldProtect);
-                *(char *)(lpHookTable[j].lpOriginalFunction) = 0xF4;    //hlt
+                WAFFLE_PORT_WRITE_PRIVILEGED_INSTRUCTION(lpHookTable[j].lpOriginalFunction);
                 _VirtualProtect(lpHookTable[j].lpOriginalFunction,1,flOldProtect,&flOldProtect);
             //}
             //else

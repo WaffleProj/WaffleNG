@@ -1,9 +1,8 @@
 #define  UNICODE
 #define _UNICODE
-#include <windows.h>
-#include "mojibake.h"
 #pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 #pragma GCC diagnostic ignored "-Wunused-parameter"
+#include "mojibake.h"
 #include "src\detour\kernel32.c"
 #include "src\detour\user32.c"
 #include "src\detour\gdi32.c"

@@ -1,7 +1,6 @@
 #ifndef __USER32_H_
 #define __USER32_H_
 
-#include <windows.h>
 #include "..\..\mojibake.h"
 
 typedef LRESULT (WINAPI *LPCALLWINDOWPROCA)(

@@ -1,7 +1,6 @@
 #ifndef __SHELL32_H_
 #define __SHELL32_H_
 
-#include <windows.h>
 #include <shellapi.h>
 #include "..\..\mojibake.h"
 

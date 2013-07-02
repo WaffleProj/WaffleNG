@@ -1,8 +1,7 @@
 #define  UNICODE
 #define  _UNICODE
-#include <windows.h>
-#include <psapi.h>
 #include "..\..\mojibake.h"
+#include <psapi.h>
 
 DWORD WINAPI DetourGetModuleFileNameExA(
   _In_      HANDLE hProcess,

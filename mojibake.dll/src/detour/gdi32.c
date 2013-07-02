@@ -1,6 +1,5 @@
 #define  UNICODE
 #define  _UNICODE
-#include <windows.h>
 #include "..\..\mojibake.h"
 
 HFONT WINAPI DetourCreateFontA(
