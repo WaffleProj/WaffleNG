@@ -55,7 +55,7 @@ VOID WINAPI Main()
         stStartUp.cb = sizeof(stStartUp);
         GetStartupInfo(&stStartUp);
 
-        lstrcat(szLoader,TEXT("\\Component\\Waffle\\I386\\loader.exe"));
+        lstrcat(szLoader,TEXT("\\Component\\Waffle\\I386\\Waffle_loader.exe"));
         HGLOBAL lpszArgument = GlobalAlloc(GPTR,(lstrlen(szLoader) + lstrlen(argp(2)) + 3 + 1) * sizeof(TCHAR));
         lstrcpy(lpszArgument,TEXT("\""));
         lstrcat(lpszArgument,szLoader);
@@ -73,7 +73,7 @@ VOID WINAPI Main()
         stStartUp.cb = sizeof(stStartUp);
         GetStartupInfo(&stStartUp);
     
-        lstrcat(szLoader,TEXT("\\Component\\Waffle\\AMD64\\loader.exe"));
+        lstrcat(szLoader,TEXT("\\Component\\Waffle\\AMD64\\Waffle_loader.exe"));
         HGLOBAL lpszArgument = GlobalAlloc(GPTR,(lstrlen(szLoader) + lstrlen(argp(2)) + 3 + 1) * sizeof(TCHAR));
         lstrcpy(lpszArgument,TEXT("\""));
         lstrcat(lpszArgument,szLoader);

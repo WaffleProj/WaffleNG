@@ -1,5 +1,6 @@
 #ifndef __WAFFLE_COMMON_DLL_H_
 #define __WAFFLE_COMMON_DLL_H_
+#define LIBRARY_EXPORTS
 #include <waffle.h>
 
 #ifdef __cplusplus
