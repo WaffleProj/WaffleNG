@@ -18,7 +18,7 @@ extern "C" {
 #endif
 
 int WINAPI argc();
-LPCTSTR WINAPI argv(int intPosition, LPTSTR lpString, int intSize);
+SIZE_T WINAPI argv(int intPosition, LPTSTR lpString, int intSize);
 LPCTSTR WINAPI argp(int intPosition);
 WORD WINAPI GetPEMagic(LPVOID lpFile);
 PROCESS_INFORMATION WINAPI InjectDll(LPCTSTR lpszTarget, LPTSTR lpszArgument, LPCTSTR lpszDirectory, LPCTSTR lpszDllFull);

@@ -1,4 +1,4 @@
-#define  UNICODE
+ï»¿#define  UNICODE
 #define  _UNICODE
 #include "loader.h"
 #include <shellapi.h>
@@ -19,7 +19,7 @@ VOID WINAPI Main()
     TCHAR szDirectory[MAX_PATH];
     if (nArg > 1)
     {
-        argv(3,szTarget,sizeof(szTarget));      //1.ÎÄ¼þÃû 2.²å¼þÃû 3.Ä¿±ê
+        argv(3,szTarget,sizeof(szTarget));      //1.æ–‡ä»¶å 2.æ’ä»¶å 3.ç›®æ ‡
         lstrcpy(szDirectory,szTarget);
         
         for (i = lstrlen(szTarget); szDirectory[i] != '\\'; i--);
@@ -44,9 +44,28 @@ VOID WINAPI Main()
         return;
     }
 
-    TCHAR szEnvirVar[64];   //SHA-1Ò²·ÅµÄÏÂÁË
-    wsprintf(szEnvirVar,TEXT("0x%X"),GetCurrentThreadId());
-    SetEnvironmentVariable(TEXT("ParentTID"),szEnvirVar);
+    TCHAR szValueProcessSetting[64];
+    TCHAR szPluginName[64];
+    if (argv(2,szPluginName,sizeof(szPluginName)))
+    {
+        wsprintf(szValueProcessSetting,szFmtValueProcessSetting,GetCurrentThreadId(),GetTickCount());
+        HANDLE hFileMapping = CreateFileMapping(INVALID_HANDLE_VALUE,NULL,PAGE_READWRITE,0,WAFFLE_PROCESS_SETTING_SIZE,szValueProcessSetting);
+        SetEnvironmentVariable(szNameProcessSetting,szValueProcessSetting);
+        LPWAFFLE_PROCESS_SETTING lpstProcessSetting = MapViewOfFile(hFileMapping,FILE_MAP_ALL_ACCESS,0,0,0);
+
+        lpstProcessSetting->wVersionMajor = WAFFLE_SDK_VERSION_MAJOR;
+        lpstProcessSetting->wVersionMinor = WAFFLE_SDK_VERSION_MINOR;
+        lpstProcessSetting->cbSize = sizeof(WAFFLE_PROCESS_SETTING);
+        lpstProcessSetting->dwThreadId = GetCurrentThreadId();
+        lpstProcessSetting->offsetPluginName = sizeof(WAFFLE_PROCESS_SETTING);
+        LPTSTR lpszPluginName = (LPTSTR)((SIZE_T)lpstProcessSetting + lpstProcessSetting->offsetPluginName);
+        lstrcpy(lpszPluginName,szPluginName);
+    }
+    else
+    {
+        MessageBox(0,TEXT("FIXME:No plugin"),0,0);
+        ExitProcess(0);
+    }
 
     MSG stMSG;
     PeekMessage(&stMSG,0,0,0,PM_NOREMOVE);

@@ -1,4 +1,4 @@
-#define  UNICODE
+﻿#define  UNICODE
 #include "..\loader.h"
 
 int WINAPI argc()
@@ -31,7 +31,7 @@ end:
     return intArg;
 }
 
-LPCTSTR WINAPI argv(int intPosition, LPTSTR lpString, int intSize)
+SIZE_T WINAPI argv(int intPosition, LPTSTR lpString, int intSize)
 {
     int intArg = 0;
     BOOL FLAG;
@@ -84,7 +84,7 @@ deliloop:
 end:
     j++;
     lpString[j] = '\0';
-    return 0;
+    return j;   //返回复制的字符数(不含末尾0)
 }
 
 LPCTSTR WINAPI argp(int intPosition)
