@@ -6,13 +6,11 @@
 
 HINSTANCE hLoader;
 
-VOID WINAPI InitLibrary(
+LIBRARY_EXPORT VOID WINAPI InitLibrary(
   _In_  DWORD  dwThreadId
 ){
-    ExitProcess(0);
     HANDLE hThread = OpenThread(THREAD_ALL_ACCESS,FALSE,dwThreadId);    //WinXP may return ERROR_ACCESS_DENIED
     ResumeThread(hThread);
-
     return;
 }
 
@@ -34,23 +32,31 @@ SIZE_T WINAPI LoadDll(
         ExitProcess(0);
     }
     LPTSTR lpszPluginName = (LPTSTR)((SIZE_T)lpstProcessSetting + lpstProcessSetting->offsetPluginName);
-    MessageBox(0,lpszPluginName,0,0);
-    PostThreadMessage(lpstProcessSetting->dwThreadId,TM_GETTID,0,(LPARAM)InitLibrary);
-    return 0;
-
+    
     TCHAR szPath[MAX_PATH];
     GetModuleFileName(hLoader,szPath,sizeof(szPath)/sizeof(TCHAR));
     int i;
     for (i = lstrlen(szPath); szPath[i] != '\\'; i--);
     szPath[i] = '\0';
+    for (i = lstrlen(szPath); szPath[i] != '\\'; i--);
+    szPath[i] = '\0';
+    for (i = lstrlen(szPath); szPath[i] != '\\'; i--);
+    szPath[i] = '\0';
 
     TCHAR szLibrary[MAX_PATH];
-    lstrcpy(szLibrary,szPath);
-    lstrcat(szLibrary,TEXT("\\"));
-    lstrcat(szLibrary,lpszLibrary);
+    wsprintf(szLibrary,TEXT("%s\\%s\\%s\\Mojibake_main.dll"),szPath,lpszPluginName,WAFFLE_PORT_MACHINE_STRING);
+    VirtualAlloc((LPVOID)0x10000000,1024,MEM_COMMIT,PAGE_EXECUTE_READWRITE);
     HMODULE hDll = LoadLibrary(szLibrary);
     LPCOMPONENTINIT ComponentInit = (LPCOMPONENTINIT)GetProcAddress(hDll,"ComponentInit");
-    ComponentInit();
+    if (!ComponentInit)
+    {
+        MessageBox(0,TEXT("FIXME:Invalid Component"),0,0);
+        PostThreadMessage(lpstProcessSetting->dwThreadId,TM_GETTID,0,(LPARAM)InitLibrary);
+    }
+    else
+    {
+        ComponentInit(lpstProcessSetting);
+    }
     return 0;
 }
 
@@ -64,7 +70,6 @@ BOOL WINAPI DllMain(
         DisableThreadLibraryCalls(hinstDLL);
         hLoader = hinstDLL;
         CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)LoadDll,TEXT("Waffle_waffle.dll"),0,NULL);
-        //LoadDll(TEXT("waffle.dll"));
     }
     return TRUE;
 }

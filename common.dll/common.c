@@ -3,7 +3,7 @@
 #include "common.h"
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
-BOOL WINAPI WaffleCreateProcess(
+LIBRARY_EXPORT BOOL WINAPI WaffleCreateProcess(
   _In_  HINSTANCE hinstDLL,
   _In_  DWORD fdwReason,
   _In_  LPVOID lpvReserved
