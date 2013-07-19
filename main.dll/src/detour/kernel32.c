@@ -2,7 +2,7 @@
 #define  _UNICODE
 #include "..\..\mojibake.h"
 
-LIBRARY_API BOOL WINAPI DetourCreateDirectoryA(
+LIBRARY_EXPORT BOOL WINAPI DetourCreateDirectoryA(
   _In_      LPCSTR lpPathName,
   _In_opt_  LPSECURITY_ATTRIBUTES lpSecurityAttributes
 ){
@@ -13,7 +13,7 @@ LIBRARY_API BOOL WINAPI DetourCreateDirectoryA(
 	return Result;
 }
 
-LIBRARY_API HANDLE WINAPI DetourCreateFileA(
+LIBRARY_EXPORT HANDLE WINAPI DetourCreateFileA(
   _In_      LPCSTR lpFileName,
   _In_      DWORD dwDesiredAccess,
   _In_      DWORD dwShareMode,
@@ -30,7 +30,7 @@ LIBRARY_API HANDLE WINAPI DetourCreateFileA(
 	return Result;
 }
 
-LIBRARY_API BOOL WINAPI DetourDeleteFileA(
+LIBRARY_EXPORT BOOL WINAPI DetourDeleteFileA(
   _In_  LPCSTR lpFileName
 ){
 	LPVOID lpuszFileName = AnsiToUnicode(lpFileName);
@@ -40,7 +40,7 @@ LIBRARY_API BOOL WINAPI DetourDeleteFileA(
 	return Result;
 }
 
-LIBRARY_API HANDLE WINAPI DetourFindFirstFileA(
+LIBRARY_EXPORT HANDLE WINAPI DetourFindFirstFileA(
   _In_   LPCSTR lpFileName,
   _Out_  LPWIN32_FIND_DATAA lpFindFileData
 ){
@@ -66,7 +66,7 @@ LIBRARY_API HANDLE WINAPI DetourFindFirstFileA(
 	return Result;
 }
 
-LIBRARY_API BOOL WINAPI DetourFindNextFileA(
+LIBRARY_EXPORT BOOL WINAPI DetourFindNextFileA(
   _In_   HANDLE hFindFile,
   _Out_  LPWIN32_FIND_DATAA lpFindFileData
 ){
@@ -90,17 +90,17 @@ LIBRARY_API BOOL WINAPI DetourFindNextFileA(
 	return Result;
 }
 
-LIBRARY_API UINT WINAPI DetourGetACP(void)
+LIBRARY_EXPORT UINT WINAPI DetourGetACP(void)
 {
 	return stNewEnvir.ACP;
 }
 
-LIBRARY_API LPSTR WINAPI DetourGetCommandLineA(void)   //由于这个函数直接返回指针无需释放,所以只能这么做
+LIBRARY_EXPORT LPSTR WINAPI DetourGetCommandLineA(void)   //由于这个函数直接返回指针无需释放,所以只能这么做
 {
 	return lpszCommandLineA;
 }
 
-LIBRARY_API BOOL WINAPI DetourGetCPInfo(
+LIBRARY_EXPORT BOOL WINAPI DetourGetCPInfo(
   _In_   UINT CodePage,
   _Out_  LPCPINFO lpCPInfo
 ){
@@ -110,7 +110,7 @@ LIBRARY_API BOOL WINAPI DetourGetCPInfo(
 	return ((LPGETCPINFO)stKernel32Table[GETCPINFO].lpNewFunction)(CodePage,lpCPInfo);
 }
 
-LIBRARY_API DWORD WINAPI DetourGetFileAttributesA(
+LIBRARY_EXPORT DWORD WINAPI DetourGetFileAttributesA(
   _In_  LPCSTR lpFileName
 ){
 	LPVOID lpuszFileName = AnsiToUnicode(lpFileName);
@@ -120,7 +120,7 @@ LIBRARY_API DWORD WINAPI DetourGetFileAttributesA(
 	return Result;
 }
 
-LIBRARY_API DWORD WINAPI DetourGetModuleFileNameA(
+LIBRARY_EXPORT DWORD WINAPI DetourGetModuleFileNameA(
   _In_opt_  HMODULE hModule,
   _Out_     LPSTR lpFilename,
   _In_      DWORD nSize
@@ -138,7 +138,7 @@ LIBRARY_API DWORD WINAPI DetourGetModuleFileNameA(
 	return lstrlenA(lpFilename);
 }
 
-LIBRARY_API HMODULE WINAPI DetourGetModuleHandleA(
+LIBRARY_EXPORT HMODULE WINAPI DetourGetModuleHandleA(
   _In_opt_  LPCSTR lpModuleName
 ){
 	LPVOID lpuszModuleName = AnsiToUnicode(lpModuleName);
@@ -148,7 +148,7 @@ LIBRARY_API HMODULE WINAPI DetourGetModuleHandleA(
 	return Result;
 }
 
-LIBRARY_API HMODULE WINAPI DetourLoadLibraryA(
+LIBRARY_EXPORT HMODULE WINAPI DetourLoadLibraryA(
   _In_  LPCSTR lpFileName
 ){
 	LPVOID lpuszFileName = AnsiToUnicode(lpFileName);
@@ -158,7 +158,7 @@ LIBRARY_API HMODULE WINAPI DetourLoadLibraryA(
 	return Result;
 }
 
-LIBRARY_API HMODULE WINAPI DetourLoadLibraryExA(
+LIBRARY_EXPORT HMODULE WINAPI DetourLoadLibraryExA(
   _In_        LPCSTR lpFileName,
   _Reserved_  HANDLE hFile,
   _In_        DWORD dwFlags
@@ -170,7 +170,7 @@ LIBRARY_API HMODULE WINAPI DetourLoadLibraryExA(
 	return Result;
 }
 
-LIBRARY_API int WINAPI DetourMultiByteToWideChar(
+LIBRARY_EXPORT int WINAPI DetourMultiByteToWideChar(
   _In_       UINT CodePage,
   _In_       DWORD dwFlags,
   _In_       LPCSTR lpMultiByteStr,
@@ -184,7 +184,7 @@ LIBRARY_API int WINAPI DetourMultiByteToWideChar(
 	return ((LPMULTIBYTETOWIDECHAR)stKernel32Table[MULTIBYTETOWIDECHAR].lpNewFunction)(CodePage,dwFlags,lpMultiByteStr,cbMultiByte,lpWideCharStr,cchWideChar);
 }
 
-LIBRARY_API BOOL WINAPI DetourSetCurrentDirectoryA(
+LIBRARY_EXPORT BOOL WINAPI DetourSetCurrentDirectoryA(
   _In_  LPCSTR lpPathName
 ){
 	LPVOID lpuszPathName = AnsiToUnicode(lpPathName);
@@ -194,7 +194,7 @@ LIBRARY_API BOOL WINAPI DetourSetCurrentDirectoryA(
 	return Result;
 }
 
-LIBRARY_API BOOL WINAPI DetourSetFileAttributesA(
+LIBRARY_EXPORT BOOL WINAPI DetourSetFileAttributesA(
   _In_  LPCSTR lpFileName,
   _In_  DWORD dwFileAttributes
 ){
@@ -205,7 +205,7 @@ LIBRARY_API BOOL WINAPI DetourSetFileAttributesA(
 	return Result;
 }
 
-LIBRARY_API int WINAPI DetourWideCharToMultiByte(
+LIBRARY_EXPORT int WINAPI DetourWideCharToMultiByte(
   _In_       UINT CodePage,
   _In_       DWORD dwFlags,
   _In_       LPCWSTR lpWideCharStr,

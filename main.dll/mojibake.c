@@ -53,14 +53,11 @@ VOID WINAPI KeepLastErrorAndFree(
    return;
 }
 
-LIBRARY_API VOID WINAPI ComponentInit()
-{
-    TCHAR szEnvirVar[32];
-    int ParentTid;
-    GetEnvironmentVariable(TEXT("ParentTID"),szEnvirVar,sizeof(szEnvirVar));
-    SetEnvironmentVariable(TEXT("ParentTID"),NULL);
-    StrToIntEx(szEnvirVar,STIF_SUPPORT_HEX,&ParentTid);
-    PostThreadMessage(ParentTid,TM_GETTID,0,(LPARAM)InitLibrary);
+LIBRARY_EXPORT SIZE_T WINAPI ComponentInit(
+  _In_  LPWAFFLE_PROCESS_SETTING lpstProcessSetting
+){
+    PostThreadMessage(lpstProcessSetting->dwThreadId,TM_GETTID,0,(LPARAM)InitLibrary);
+    return 0;
 }
 
 BOOL WINAPI DllMain(

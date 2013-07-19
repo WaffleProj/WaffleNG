@@ -2,7 +2,7 @@
 #define  _UNICODE
 #include "..\..\mojibake.h"
 
-LIBRARY_API LRESULT WINAPI DetourCallWindowProcA(
+LIBRARY_EXPORT LRESULT WINAPI DetourCallWindowProcA(
   _In_  WNDPROC lpPrevWndFunc,
   _In_  HWND hWnd,
   _In_  UINT Msg,
@@ -31,7 +31,7 @@ LIBRARY_API LRESULT WINAPI DetourCallWindowProcA(
     }    
 }
 
-LIBRARY_API HWND WINAPI DetourCreateWindowExA(
+LIBRARY_EXPORT HWND WINAPI DetourCreateWindowExA(
   _In_      DWORD dwExStyle,
   _In_opt_  LPCSTR lpClassName,
   _In_opt_  LPCSTR lpWindowName,
@@ -58,7 +58,7 @@ LIBRARY_API HWND WINAPI DetourCreateWindowExA(
     return Result;
 }
 
-LIBRARY_API int WINAPI DetourMessageBoxA(
+LIBRARY_EXPORT int WINAPI DetourMessageBoxA(
   _In_opt_  HWND hWnd,
   _In_opt_  LPCSTR lpText,
   _In_opt_  LPCSTR lpCaption,
@@ -75,7 +75,7 @@ LIBRARY_API int WINAPI DetourMessageBoxA(
     return Result;
 }
 
-LIBRARY_API int WINAPI DetourMessageBoxExA(
+LIBRARY_EXPORT int WINAPI DetourMessageBoxExA(
   _In_opt_  HWND hWnd,
   _In_opt_  LPCSTR lpText,
   _In_opt_  LPCSTR lpCaption,
@@ -93,7 +93,7 @@ LIBRARY_API int WINAPI DetourMessageBoxExA(
     return Result;
 }
 
-LIBRARY_API LRESULT WINAPI DetourSendMessageA(
+LIBRARY_EXPORT LRESULT WINAPI DetourSendMessageA(
   _In_  HWND hWnd,
   _In_  UINT Msg,
   _In_  WPARAM wParam,
@@ -116,7 +116,7 @@ LIBRARY_API LRESULT WINAPI DetourSendMessageA(
 //    }
 }
 
-LIBRARY_API BOOL WINAPI DetourSetWindowTextA(
+LIBRARY_EXPORT BOOL WINAPI DetourSetWindowTextA(
   _In_      HWND hWnd,
   _In_opt_  LPCSTR lpString
 ){

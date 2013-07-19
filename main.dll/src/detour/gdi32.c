@@ -2,7 +2,7 @@
 #define  _UNICODE
 #include "..\..\mojibake.h"
 
-LIBRARY_API HFONT WINAPI DetourCreateFontA(
+LIBRARY_EXPORT HFONT WINAPI DetourCreateFontA(
   _In_  int nHeight,
   _In_  int nWidth,
   _In_  int nEscapement,
@@ -25,7 +25,7 @@ LIBRARY_API HFONT WINAPI DetourCreateFontA(
     return Result;
 }
 
-LIBRARY_API BOOL WINAPI DetourTextOutA(
+LIBRARY_EXPORT BOOL WINAPI DetourTextOutA(
   _In_  HDC hdc,
   _In_  int nXStart,
   _In_  int nYStart,

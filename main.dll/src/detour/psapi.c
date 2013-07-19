@@ -3,7 +3,7 @@
 #include "..\..\mojibake.h"
 #include <psapi.h>
 
-LIBRARY_API DWORD WINAPI DetourGetModuleFileNameExA(
+LIBRARY_EXPORT DWORD WINAPI DetourGetModuleFileNameExA(
   _In_      HANDLE hProcess,
   _In_opt_  HMODULE hModule,
   _Out_     LPSTR lpFilename,

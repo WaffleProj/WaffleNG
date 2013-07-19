@@ -1,7 +1,6 @@
 #ifndef __MOJIBAKE_MAIN_MOJIBAKE_H_
 #define __MOJIBAKE_MAIN_MOJIBAKE_H_
 #include <waffle.h>
-#define  LIBRARY_EXPORTS
 #include "detour.h"
 #include "init.h"
 #include "src\exception\exception.h"
