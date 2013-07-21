@@ -1,8 +1,8 @@
 #define  UNICODE
 #define  _UNICODE
-#include "..\waffle.h"
+#include "..\common.h"
 
-WORD WINAPI GetMachineType(LPCTSTR lpszFile)
+LIBRARY_EXPORT WORD WINAPI WaffleGetMachineType(LPCTSTR lpszFile)
 {
     //Disable redirection if the target is in the "system32"
     HMODULE hKernel32 = GetModuleHandle(TEXT("kernel32.dll"));
@@ -10,21 +10,21 @@ WORD WINAPI GetMachineType(LPCTSTR lpszFile)
 
     //Open the target
     LPWOW64DISABLEWOW64FSREDIRECTION lpWow64DisableWow64FsRedirection = (LPVOID)GetProcAddress(hKernel32,"Wow64DisableWow64FsRedirection");
+    LPWOW64REVERTWOW64FSREDIRECTION lpWow64RevertWow64FsRedirection = (LPVOID)GetProcAddress(hKernel32,"Wow64RevertWow64FsRedirection");
+
     if (lpWow64DisableWow64FsRedirection)
     {
         lpWow64DisableWow64FsRedirection(&OldValue);
     }
     HANDLE hFile = CreateFile(lpszFile,GENERIC_READ,0,NULL,OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL,NULL);
-    if  (hFile == INVALID_HANDLE_VALUE)
-    {
-        MessageBox(0,TEXT("FIXME:Unable to open the target"),0,0);
-        ExitProcess(0);
-        return  0;
-    }
-    LPWOW64REVERTWOW64FSREDIRECTION lpWow64RevertWow64FsRedirection = (LPVOID)GetProcAddress(hKernel32,"Wow64RevertWow64FsRedirection");
     if (lpWow64RevertWow64FsRedirection)
     {
         lpWow64RevertWow64FsRedirection(OldValue);
+    }
+
+    if  (hFile == INVALID_HANDLE_VALUE)
+    {
+        return 0xFFFF;
     }
 
     //Mapping it
@@ -32,9 +32,9 @@ WORD WINAPI GetMachineType(LPCTSTR lpszFile)
     LPVOID lpFile = MapViewOfFile(hMapFile,FILE_MAP_READ,0,0,0);
     if (!lpFile)
     {
-        MessageBox(0,TEXT("FIXME:Can't map the file."),0,0);
-        ExitProcess(0);
-        return  0;
+        CloseHandle(hMapFile);
+        CloseHandle(hFile);
+        return 0xFFFF;
     }
 
     //Get the machine type
@@ -64,7 +64,7 @@ WORD WINAPI GetMachineType(LPCTSTR lpszFile)
     //Clean up
     UnmapViewOfFile(lpFile);
     CloseHandle(hMapFile);
-    CloseHandle(hFile);         //Has to close this handle to CreateProcess
+    CloseHandle(hFile);         //Has to close this handle for CreateProcess
 
     return  Machine;
 }

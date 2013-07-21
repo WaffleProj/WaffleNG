@@ -1,8 +1,13 @@
-#define  UNICODE
+Ôªø#define  UNICODE
 #define  _UNICODE
 #include "waffle.h"
 #include <shellapi.h>
 #pragma GCC diagnostic ignored "-Wmissing-field-initializers"
+
+LPWAFFLEARGC    lpWaffleArgc;
+LPWAFFLEARGV    lpWaffleArgv;
+LPWAFFLEARGP    lpWaffleArgp;
+LPWAFFLEGETMACHINETYPE  lpWaffleGetMachineType;
 
 VOID WINAPI Main()
 {
@@ -13,13 +18,22 @@ VOID WINAPI Main()
     for (i = lstrlen(szPath); szPath[i] != '\\'; i--);
     szPath[i] = '\0';
 
+    //Load Waffle_common
+    TCHAR szLibrary[MAX_PATH];
+    wsprintf(szLibrary,TEXT("%s\\Component\\Waffle\\%s\\Waffle_common.dll"),szPath,WAFFLE_PORT_MACHINE_STRING);
+    HMODULE hLibrary = LoadLibrary(szLibrary);
+    lpWaffleArgc = (LPVOID)GetProcAddress(hLibrary,"WaffleArgc");
+    lpWaffleArgv = (LPVOID)GetProcAddress(hLibrary,"WaffleArgv");
+    lpWaffleArgp = (LPVOID)GetProcAddress(hLibrary,"WaffleArgp");
+    lpWaffleGetMachineType = (LPVOID)GetProcAddress(hLibrary,"WaffleGetMachineType");
+
     //Pickup target
-    int nArg = argc();
+    int nArg = lpWaffleArgc();
     TCHAR szTarget[MAX_PATH];
     TCHAR szDirectory[MAX_PATH];
     if (nArg > 1)
     {
-        argv(3,szTarget,sizeof(szTarget));      //1.Œƒº˛√˚ 2.≤Âº˛√˚ 3.ƒø±Í
+        lpWaffleArgv(3,szTarget,sizeof(szTarget));      //1.Êñá‰ª∂Âêç 2.Êèí‰ª∂Âêç 3.ÁõÆÊ†á
         lstrcpy(szDirectory,szTarget);
         
         for (i = lstrlen(szTarget); szDirectory[i] != '\\'; i--);
@@ -46,46 +60,47 @@ VOID WINAPI Main()
 
     TCHAR szLoader[MAX_PATH];
     lstrcpy(szLoader,szPath);
-    WORD Magic = GetMachineType(szTarget);
-    if  (Magic == MACHINE_I386)
+    switch (lpWaffleGetMachineType(szTarget))
     {
-        STARTUPINFO stStartUp;
-        PROCESS_INFORMATION stProcessInfo;
+        case MACHINE_I386:
+        {
+            STARTUPINFO stStartUp;
+            PROCESS_INFORMATION stProcessInfo;
 
-        stStartUp.cb = sizeof(stStartUp);
-        GetStartupInfo(&stStartUp);
+            stStartUp.cb = sizeof(stStartUp);
+            GetStartupInfo(&stStartUp);
 
-        lstrcat(szLoader,TEXT("\\Component\\Waffle\\I386\\Waffle_loader.exe"));
-        HGLOBAL lpszArgument = GlobalAlloc(GPTR,(lstrlen(szLoader) + lstrlen(argp(2)) + 3 + 1) * sizeof(TCHAR));
-        lstrcpy(lpszArgument,TEXT("\""));
-        lstrcat(lpszArgument,szLoader);
-        lstrcat(lpszArgument,TEXT("\""));
-        lstrcat(lpszArgument,TEXT(" "));
-        lstrcat(lpszArgument,argp(2));
-        CreateProcess(szLoader,lpszArgument,NULL,NULL,TRUE,0,0,szDirectory,&stStartUp,&stProcessInfo);
-        GlobalFree(lpszArgument);
-    }
-    else if (Magic == MACHINE_AMD64)
-    {
-        STARTUPINFO stStartUp;
-        PROCESS_INFORMATION stProcessInfo;
+            lstrcat(szLoader,TEXT("\\Component\\Waffle\\I386\\Waffle_loader.exe"));
+            HGLOBAL lpszArgument = GlobalAlloc(GPTR,(lstrlen(szLoader) + lstrlen(lpWaffleArgp(2)) + 3 + 1) * sizeof(TCHAR));
+            wsprintf(lpszArgument,TEXT("\"%s\" %s"),szLoader,lpWaffleArgp(2));
+            CreateProcess(szLoader,lpszArgument,NULL,NULL,TRUE,0,0,szDirectory,&stStartUp,&stProcessInfo);
+            GlobalFree(lpszArgument);
+            break;
+        }
+        case MACHINE_AMD64:
+        {
+            STARTUPINFO stStartUp;
+            PROCESS_INFORMATION stProcessInfo;
 
-        stStartUp.cb = sizeof(stStartUp);
-        GetStartupInfo(&stStartUp);
-    
-        lstrcat(szLoader,TEXT("\\Component\\Waffle\\AMD64\\Waffle_loader.exe"));
-        HGLOBAL lpszArgument = GlobalAlloc(GPTR,(lstrlen(szLoader) + lstrlen(argp(2)) + 3 + 1) * sizeof(TCHAR));
-        lstrcpy(lpszArgument,TEXT("\""));
-        lstrcat(lpszArgument,szLoader);
-        lstrcat(lpszArgument,TEXT("\""));
-        lstrcat(lpszArgument,TEXT(" "));
-        lstrcat(lpszArgument,argp(2));
-        CreateProcess(szLoader,lpszArgument,NULL,NULL,TRUE,0,0,szDirectory,&stStartUp,&stProcessInfo);
-        GlobalFree(lpszArgument);
-    }
-    else
-    {
-        MessageBox(0,TEXT("FIXME:Unsupported file or .net program"),0,0);       //Can be .net program
+            stStartUp.cb = sizeof(stStartUp);
+            GetStartupInfo(&stStartUp);
+        
+            lstrcat(szLoader,TEXT("\\Component\\Waffle\\AMD64\\Waffle_loader.exe"));
+            HGLOBAL lpszArgument = GlobalAlloc(GPTR,(lstrlen(szLoader) + lstrlen(lpWaffleArgp(2)) + 3 + 1) * sizeof(TCHAR));
+            wsprintf(lpszArgument,TEXT("\"%s\" %s"),szLoader,lpWaffleArgp(2));
+            CreateProcess(szLoader,lpszArgument,NULL,NULL,TRUE,0,0,szDirectory,&stStartUp,&stProcessInfo);
+            GlobalFree(lpszArgument);
+            break;
+        }
+        case 0xFFFF:
+        {
+            MessageBox(0,TEXT("FIXME:Unable to open the target"),0,0);
+            break;
+        }
+        default:
+        {
+            MessageBox(0,TEXT("FIXME:Unsupported file or .net program"),0,0);       //Can be .net program
+        }
     }
 
     ExitProcess(0);

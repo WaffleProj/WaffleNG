@@ -14,12 +14,12 @@ VOID WINAPI Main()
     szPath[i] = '\0';
 
     //Pickup target
-    int nArg = argc();
+    int nArg = WaffleArgc();
     TCHAR szTarget[MAX_PATH];
     TCHAR szDirectory[MAX_PATH];
     if (nArg > 1)
     {
-        argv(3,szTarget,sizeof(szTarget));      //1.文件名 2.插件名 3.目标
+        WaffleArgv(3,szTarget,sizeof(szTarget));      //1.文件名 2.插件名 3.目标
         lstrcpy(szDirectory,szTarget);
         
         for (i = lstrlen(szTarget); szDirectory[i] != '\\'; i--);
@@ -46,7 +46,7 @@ VOID WINAPI Main()
 
     TCHAR szValueProcessSetting[64];
     TCHAR szPluginName[64];
-    if (argv(2,szPluginName,sizeof(szPluginName)))
+    if (WaffleArgv(2,szPluginName,sizeof(szPluginName)))
     {
         wsprintf(szValueProcessSetting,szFmtValueProcessSetting,GetCurrentThreadId(),GetTickCount());
         HANDLE hFileMapping = CreateFileMapping(INVALID_HANDLE_VALUE,NULL,PAGE_READWRITE,0,WAFFLE_PROCESS_SETTING_SIZE,szValueProcessSetting);
@@ -70,18 +70,18 @@ VOID WINAPI Main()
     MSG stMSG;
     PeekMessage(&stMSG,0,0,0,PM_NOREMOVE);
 
-    HGLOBAL lpszArgument = GlobalAlloc(GPTR,(lstrlen(szTarget) + lstrlen(argp(4)) + 3 + 1) * sizeof(TCHAR));
+    HGLOBAL lpszArgument = GlobalAlloc(GPTR,(lstrlen(szTarget) + lstrlen(WaffleArgp(4)) + 3 + 1) * sizeof(TCHAR));
     lstrcpy(lpszArgument,TEXT("\""));
     lstrcat(lpszArgument,szTarget);
     lstrcat(lpszArgument,TEXT("\""));
     lstrcat(lpszArgument,TEXT(" "));
-    lstrcat(lpszArgument,argp(4));
+    lstrcat(lpszArgument,WaffleArgp(4));
 
     TCHAR szDllFull[MAX_PATH];
     lstrcpy(szDllFull,szPath);
     lstrcat(szDllFull,TEXT("\\Waffle_loader.dll"));
 
-    PROCESS_INFORMATION stProcessInfo = InjectDll(szTarget,lpszArgument,szDirectory,szDllFull);
+    PROCESS_INFORMATION stProcessInfo = WaffleInjectDll(szTarget,lpszArgument,szDirectory,szDllFull);
     GlobalFree(lpszArgument);
     
     CONTEXT stContext = {};

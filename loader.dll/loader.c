@@ -6,7 +6,9 @@
 
 HINSTANCE hLoader;
 
-LIBRARY_EXPORT VOID WINAPI InitLibrary(
+LIBRARY_EXPORT VOID WINAPI WaffleLoaderStub(){}
+
+VOID WINAPI InitLibrary(
   _In_  DWORD  dwThreadId
 ){
     HANDLE hThread = OpenThread(THREAD_ALL_ACCESS,FALSE,dwThreadId);    //WinXP may return ERROR_ACCESS_DENIED
@@ -47,7 +49,7 @@ SIZE_T WINAPI LoadDll(
     wsprintf(szLibrary,TEXT("%s\\%s\\%s\\Mojibake_main.dll"),szPath,lpszPluginName,WAFFLE_PORT_MACHINE_STRING);
     VirtualAlloc((LPVOID)0x10000000,1024,MEM_COMMIT,PAGE_EXECUTE_READWRITE);
     HMODULE hDll = LoadLibrary(szLibrary);
-    LPCOMPONENTINIT ComponentInit = (LPCOMPONENTINIT)GetProcAddress(hDll,"ComponentInit");
+    LPCOMPONENTINIT ComponentInit = (LPVOID)GetProcAddress(hDll,"ComponentInit");
     if (!ComponentInit)
     {
         MessageBox(0,TEXT("FIXME:Invalid Component"),0,0);

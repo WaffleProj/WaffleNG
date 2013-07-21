@@ -1,7 +1,8 @@
-#define  UNICODE
-#include "..\loader.h"
+Ôªø#define  UNICODE
+#define  _UNICODE
+#include "..\common.h"
 
-PROCESS_INFORMATION WINAPI InjectDll(LPCTSTR lpszTarget, LPTSTR lpszArgument, LPCTSTR lpszDirectory, LPCTSTR lpszDllFull)
+LIBRARY_EXPORT PROCESS_INFORMATION WINAPI WaffleInjectDll(LPCTSTR lpszTarget, LPTSTR lpszArgument, LPCTSTR lpszDirectory, LPCTSTR lpszDllFull)
 {
     STARTUPINFO stStartUp;
     PROCESS_INFORMATION stProcessInfo;
@@ -33,7 +34,7 @@ PROCESS_INFORMATION WINAPI InjectDll(LPCTSTR lpszTarget, LPTSTR lpszArgument, LP
         FARPROC lpLoadLibrary = GetProcAddress(GetModuleHandle(TEXT("kernel32.dll")),"LoadLibraryW");
         HANDLE hThread = CreateRemoteThread(stProcessInfo.hProcess,NULL,0,(LPTHREAD_START_ROUTINE)lpLoadLibrary,lpszRemoteDll,0,NULL);
         //VirtualFreeEx(stProcessInfo.hProcess,lpszRemoteDll,0,MEM_RELEASE);
-        //»∑±£LoadLibrary π”√¡À’‚∏ˆµÿ÷∑
+        //Á°Æ‰øùLoadLibrary‰ΩøÁî®‰∫ÜËøô‰∏™Âú∞ÂùÄ
         CloseHandle(hThread);
     }
     

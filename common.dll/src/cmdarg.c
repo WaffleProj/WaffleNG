@@ -1,7 +1,8 @@
-#define  UNICODE
-#include "..\loader.h"
+﻿#define  UNICODE
+#define  _UNICODE
+#include "..\common.h"
 
-int WINAPI argc()
+LIBRARY_EXPORT int WINAPI WaffleArgc()
 {
     int intArg = 0;
     int i = -1;
@@ -31,7 +32,7 @@ end:
     return intArg;
 }
 
-SIZE_T WINAPI argv(int intPosition, LPTSTR lpString, int intSize)      //好像没用到intSize判断缓冲区?
+LIBRARY_EXPORT SIZE_T WINAPI WaffleArgv(int intPosition, LPTSTR lpString, int intSize)      //好像没用到intSize判断缓冲区?
 {
     int intArg = 0;
     BOOL FLAG;
@@ -87,7 +88,7 @@ end:
     return j;   //返回复制的字符数(不含末尾0)
 }
 
-LPCTSTR WINAPI argp(int intPosition)
+LIBRARY_EXPORT LPCTSTR WINAPI WaffleArgp(int intPosition)
 {
     int intArg = 0;
     int i = -1;
