@@ -41,4 +41,16 @@ ld	--subsystem windows --dll -L%MinGW%\lib -L%OUTPUT_PATH%\Component\Waffle\%Mac
 call	Common	CleanUp
 :noloaderdll
 
+::goto nolauncher
+call	Common	ChangeDirectory	launcher.exe
+call	Common	Compile	launcher.c
+if	"%Machine%" == "I386"	(
+ld	--subsystem windows -L%MinGW%\lib --enable-stdcall-fixup -e _Main -o %OUTPUT_PATH%\Launcher_%Machine%.exe launcher.o -lkernel32 -luser32
+	)
+if	"%Machine%" == "AMD64"	(
+ld	--subsystem windows -L%MinGW%\lib --enable-stdcall-fixup -e  Main -o %OUTPUT_PATH%\Launcher_%Machine%.exe launcher.o -lkernel32 -luser32
+	)
+call	Common	CleanUp
+:nolauncher
+
 popd
