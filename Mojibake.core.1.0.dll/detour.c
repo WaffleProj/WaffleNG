@@ -17,69 +17,76 @@ ENVIRONMENT_BLOCK   stNewEnvir;
 
 HGLOBAL lpszCommandLineA;
 
-HOOK_TABLE_OBJECT stKernel32Table[] = {
-//lpszFunction lpDetourFunction lpNewFunction lpOriginalFunction
-{"CreateDirectoryA",    DetourCreateDirectoryA},
-{"CreateFileA",         DetourCreateFileA},
-{"DeleteFileA",         DetourDeleteFileA},
-{"FindFirstFileA",      DetourFindFirstFileA},
-{"FindNextFileA",       DetourFindNextFileA},
-{"GetACP",              DetourGetACP},
-{"GetCommandLineA",     DetourGetCommandLineA},
-{"GetCPInfo",           DetourGetCPInfo},
-{"GetFileAttributesA",  DetourGetFileAttributesA},
-{"GetModuleFileNameA",  DetourGetModuleFileNameA},
-{"GetModuleHandleA",    DetourGetModuleHandleA},
-{"LoadLibraryA",        DetourLoadLibraryA},
-{"LoadLibraryExA",      DetourLoadLibraryExA},
-{"MultiByteToWideChar", DetourMultiByteToWideChar},
-{"SetCurrentDirectoryA",DetourSetCurrentDirectoryA},
-{"SetFileAttributesA",  DetourSetFileAttributesA},
-{"WideCharToMultiByte", DetourWideCharToMultiByte},
-{NULL},
+HOOK_TABLE_OBJECT stKernel32Table [] =
+{
+    //lpszFunction lpDetourFunction lpNewFunction lpOriginalFunction
+    {"CreateDirectoryA", DetourCreateDirectoryA},
+    { "CreateFileA", DetourCreateFileA },
+    { "DeleteFileA", DetourDeleteFileA },
+    { "FindFirstFileA", DetourFindFirstFileA },
+    { "FindNextFileA", DetourFindNextFileA },
+    { "GetACP", DetourGetACP },
+    { "GetCommandLineA", DetourGetCommandLineA },
+    { "GetCPInfo", DetourGetCPInfo },
+    { "GetFileAttributesA", DetourGetFileAttributesA },
+    { "GetModuleFileNameA", DetourGetModuleFileNameA },
+    { "GetModuleHandleA", DetourGetModuleHandleA },
+    { "LoadLibraryA", DetourLoadLibraryA },
+    { "LoadLibraryExA", DetourLoadLibraryExA },
+    { "MultiByteToWideChar", DetourMultiByteToWideChar },
+    { "SetCurrentDirectoryA", DetourSetCurrentDirectoryA },
+    { "SetFileAttributesA", DetourSetFileAttributesA },
+    { "WideCharToMultiByte", DetourWideCharToMultiByte },
+    { NULL },
 };
-HOOK_TABLE_OBJECT stUser32Table[] = {
-//lpszFunction lpDetourFunction lpNewFunction lpOriginalFunction
-{"CallWindowProcA",     DetourCallWindowProcA},
-{"CreateWindowExA",     DetourCreateWindowExA},
-{"MessageBoxA",         DetourMessageBoxA},
-{"MessageBoxExA",       DetourMessageBoxExA},
-{"SendMessageA",        DetourSendMessageA},
-{"SetWindowTextA",      DetourSetWindowTextA},
-{NULL},
+HOOK_TABLE_OBJECT stUser32Table [] =
+{
+    //lpszFunction lpDetourFunction lpNewFunction lpOriginalFunction
+    {"CallWindowProcA", DetourCallWindowProcA},
+    { "CreateWindowExA", DetourCreateWindowExA },
+    { "MessageBoxA", DetourMessageBoxA },
+    { "MessageBoxExA", DetourMessageBoxExA },
+    { "SendMessageA", DetourSendMessageA },
+    { "SetWindowTextA", DetourSetWindowTextA },
+    { NULL },
 };
-HOOK_TABLE_OBJECT stGdi32Table[] = {
-//lpszFunction lpDetourFunction lpNewFunction lpOriginalFunction
-{"CreateFontA",         DetourCreateFontA},
-{"TextOutA",            DetourTextOutA},
-{NULL},
+HOOK_TABLE_OBJECT stGdi32Table [] =
+{
+    //lpszFunction lpDetourFunction lpNewFunction lpOriginalFunction
+    {"CreateFontA", DetourCreateFontA},
+    { "TextOutA", DetourTextOutA },
+    { NULL },
 };
-HOOK_TABLE_OBJECT stPsapiTable[] = {
-//lpszFunction lpDetourFunction lpNewFunction lpOriginalFunction
-{"GetModuleFileNameExA",DetourGetModuleFileNameExA},
-{NULL},
-};
-
-HOOK_TABLE_OBJECT stNtdllTable[] = {
-//lpszFunction lpDetourFunction lpNewFunction lpOriginalFunction
-{NULL},
-};
-
-HOOK_TABLE_OBJECT stShell32Table[] = {
-//lpszFunction lpDetourFunction lpNewFunction lpOriginalFunction
-{"ShellAboutW",		DetourShellAboutW},
-{NULL},
+HOOK_TABLE_OBJECT stPsapiTable [] =
+{
+    //lpszFunction lpDetourFunction lpNewFunction lpOriginalFunction
+    {"GetModuleFileNameExA", DetourGetModuleFileNameExA},
+    { NULL },
 };
 
-LIBRARY_TABLE_OBJECT stLibraryTable[] = {
-//lpszLibrary lpHookTable lpLibrary hModule lpEndOfModule
-{L"kernel32.dll",   stKernel32Table},
-{L"user32.dll",     stUser32Table},
-{L"gdi32.dll",      stGdi32Table},
-{L"psapi.dll",      stPsapiTable},
-{L"ntdll.dll",      stNtdllTable},
-{L"shell32.dll",    stShell32Table},
-{NULL},
+HOOK_TABLE_OBJECT stNtdllTable [] =
+{
+    //lpszFunction lpDetourFunction lpNewFunction lpOriginalFunction
+    {NULL},
+};
+
+HOOK_TABLE_OBJECT stShell32Table [] =
+{
+    //lpszFunction lpDetourFunction lpNewFunction lpOriginalFunction
+    {"ShellAboutW", DetourShellAboutW},
+    { NULL },
+};
+
+LIBRARY_TABLE_OBJECT stLibraryTable [] =
+{
+    //lpszLibrary lpHookTable lpLibrary hModule lpEndOfModule
+    {L"kernel32.dll", stKernel32Table},
+    { L"user32.dll", stUser32Table },
+    { L"gdi32.dll", stGdi32Table },
+    { L"psapi.dll", stPsapiTable },
+    { L"ntdll.dll", stNtdllTable },
+    { L"shell32.dll", stShell32Table },
+    { NULL },
 };
 
 LPWSPRINTFA         _wsprintfA;

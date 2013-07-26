@@ -5,26 +5,26 @@
 extern "C" {
 #endif
 
-HMODULE WINAPI GetModuleAddressW(
-  _In_  LPCWSTR lpszModule
-);
+    HMODULE WINAPI GetModuleAddressW(
+        _In_    LPCWSTR lpszModule
+        );
 
-HMODULE WINAPI CopyLibrary(
-  _In_  HMODULE hModule
-);
+    HMODULE WINAPI CopyLibrary(
+        _In_    HMODULE hModule
+        );
 
-HMODULE WINAPI CopyLibraryEx(
-  _In_  LPLIBRARY_TABLE_OBJECT stLibrary
-);
+    HMODULE WINAPI CopyLibraryEx(
+        _In_    LPLIBRARY_TABLE_OBJECT stLibrary
+        );
 
-LPVOID WINAPI GetFunctionAddressA(
-  _In_  HMODULE hDll,
-  _In_  LPCSTR lpszFuncName
-);
+    LPVOID WINAPI GetFunctionAddressA(
+        _In_    HMODULE hDll,
+        _In_    LPCSTR lpszFuncName
+        );
 
-LONG CALLBACK BreakpointHandler(
-  _In_  PEXCEPTION_POINTERS ExceptionInfo
-);
+    LONG CALLBACK BreakpointHandler(
+        _In_    PEXCEPTION_POINTERS ExceptionInfo
+        );
 
 #ifdef __cplusplus
 };

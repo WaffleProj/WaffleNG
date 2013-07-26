@@ -5,16 +5,17 @@
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
 LPVOID WINAPI AnsiToUnicode(
-  _In_  LPCSTR lpszText
-){
-    if  (lpszText)
+    _In_    LPCSTR lpszText
+    )
+{
+    if (lpszText)
     {
         int intText = lstrlenA(lpszText);
-        if  (intText)
+        if (intText)
         {
             intText++;
-            LPVOID lpuszText = HeapAlloc(hHeap,HEAP_ZERO_MEMORY,2*intText);
-            MultiByteToWideChar(stNewEnvir.ACP,0,lpszText,-1,lpuszText,intText);
+            LPVOID lpuszText = HeapAlloc(hHeap, HEAP_ZERO_MEMORY, 2 * intText);
+            MultiByteToWideChar(stNewEnvir.ACP, 0, lpszText, -1, lpuszText, intText);
             return lpuszText;
         }
         else
@@ -29,43 +30,47 @@ LPVOID WINAPI AnsiToUnicode(
 }
 
 LPVOID WINAPI ProgramCPToWindowsCP(
-  _In_  LPCSTR lpszText
-){
-    if  (lpszText)
+    _In_    LPCSTR lpszText
+    )
+{
+    if (lpszText)
     {
         int intText = lstrlenA(lpszText) + 1;
-        LPVOID lpuszText = HeapAlloc(hHeap,HEAP_ZERO_MEMORY,2*intText);
-        LPVOID lpszNewText = HeapAlloc(hHeap,HEAP_ZERO_MEMORY,2*intText);
-        MultiByteToWideChar(stNewEnvir.ACP,0,lpszText,-1,lpuszText,intText);
-        WideCharToMultiByte(stOldEnvir.ACP,0,lpuszText,-1,lpszNewText,intText,NULL,FALSE);
+        LPVOID lpuszText = HeapAlloc(hHeap, HEAP_ZERO_MEMORY, 2 * intText);
+        LPVOID lpszNewText = HeapAlloc(hHeap, HEAP_ZERO_MEMORY, 2 * intText);
+        MultiByteToWideChar(stNewEnvir.ACP, 0, lpszText, -1, lpuszText, intText);
+        WideCharToMultiByte(stOldEnvir.ACP, 0, lpuszText, -1, lpszNewText, intText, NULL, FALSE);
         return lpszNewText;
     }
     else
-       return 0;
+        return 0;
 }
 
 VOID WINAPI KeepLastErrorAndFree(
-  _In_  LPVOID lpMem
-){
+    _In_    LPVOID lpMem
+    )
+{
     DWORD LastError = GetLastError();
-    HeapFree(hHeap,0,lpMem);
+    HeapFree(hHeap, 0, lpMem);
     SetLastError(LastError);
     return;
 }
 
 LIBRARY_EXPORT SIZE_T WINAPI ComponentInit(
-  _In_  LPWAFFLE_PROCESS_SETTING lpstProcessSetting
-){
+    _In_    LPWAFFLE_PROCESS_SETTING lpstProcessSetting
+    )
+{
     InitLibrary(lpstProcessSetting->dwThreadId);
     return 0;
 }
 
 BOOL WINAPI DllMain(
-  _In_  HINSTANCE hinstDLL,
-  _In_  DWORD fdwReason,
-  _In_  LPVOID lpvReserved
-){
-    if (fdwReason == DLL_PROCESS_ATTACH) 
+    _In_    HINSTANCE hinstDLL,
+    _In_    DWORD fdwReason,
+    _In_    LPVOID lpvReserved
+    )
+{
+    if (fdwReason == DLL_PROCESS_ATTACH)
     {
         DisableThreadLibraryCalls(hinstDLL);
         //Save hinstDLL

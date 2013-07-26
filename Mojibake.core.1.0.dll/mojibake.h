@@ -12,9 +12,15 @@
 extern "C" {
 #endif
 
-LPVOID WINAPI AnsiToUnicode(LPCSTR lpszText);
-LPVOID WINAPI ProgramCPToWindowsCP(LPCSTR lpszText);
-VOID WINAPI KeepLastErrorAndFree(LPVOID lpMem);
+    LPVOID WINAPI AnsiToUnicode(
+        _In_    LPCSTR lpszText
+        );
+    LPVOID WINAPI ProgramCPToWindowsCP(
+        _In_    LPCSTR lpszText
+        );
+    VOID WINAPI KeepLastErrorAndFree(
+        _In_    LPVOID lpMem
+        );
 
 #ifdef __cplusplus
 };

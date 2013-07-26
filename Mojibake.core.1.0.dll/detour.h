@@ -7,27 +7,29 @@
 #include "src\detour\psapi.h"
 #include "src\detour\shell32.h"
 
-extern	HINSTANCE	hDLL;
-extern	HANDLE		hHeap;
-extern	HGLOBAL		lpszCommandLineA;
+extern HINSTANCE    hDLL;
+extern HANDLE       hHeap;
+extern HGLOBAL      lpszCommandLineA;
 
-typedef struct {
+typedef struct
+{
     UINT ACP;
     UINT OEMCP;
     LCID ThreadLocale;
-} ENVIRONMENT_BLOCK,*LPENVIRONMENT_BLOCK;
+} ENVIRONMENT_BLOCK, *LPENVIRONMENT_BLOCK;
 
-extern	ENVIRONMENT_BLOCK	stOldEnvir;
-extern	ENVIRONMENT_BLOCK	stNewEnvir;
+extern ENVIRONMENT_BLOCK    stOldEnvir;
+extern ENVIRONMENT_BLOCK    stNewEnvir;
 
-typedef struct {
+typedef struct
+{
     LPCSTR lpszFunction;
     LPVOID lpDetourFunction;
     LPVOID lpNewFunction;
     LPVOID lpOriginalFunction;
-} HOOK_TABLE_OBJECT,*LPHOOK_TABLE_OBJECT;
+} HOOK_TABLE_OBJECT, *LPHOOK_TABLE_OBJECT;
 
-extern	HOOK_TABLE_OBJECT       stKernel32Table[];
+extern	HOOK_TABLE_OBJECT       stKernel32Table [];
 #define CREATEDIRECTORYA        0
 #define CREATEFILEA             1
 #define DELETEFILEA             2
@@ -45,30 +47,31 @@ extern	HOOK_TABLE_OBJECT       stKernel32Table[];
 #define SETCURRENTDIRECTORYA    14
 #define SETFILEATTRIBUTESA      15
 #define WIDECHARTOMULTIBYTE     16
-extern	HOOK_TABLE_OBJECT       stUser32Table[];
+extern	HOOK_TABLE_OBJECT       stUser32Table [];
 #define CALLWINDOWPROCA         0
 #define CREATEWINDOWEXA         1
 #define MESSAGEBOXA             2
 #define MESSAGEBOXEXA           3
 #define SENDMESSAGEA            4
 #define SETWINDOWTEXTA          5
-extern	HOOK_TABLE_OBJECT       stGdi32Table[];
+extern	HOOK_TABLE_OBJECT       stGdi32Table [];
 #define CREATEFONTA             0
 #define TEXTOUTA                1
-extern	HOOK_TABLE_OBJECT       stPsapiTable[];
+extern	HOOK_TABLE_OBJECT       stPsapiTable [];
 #define GETMODULEFILENAMEEXA    0
-extern	HOOK_TABLE_OBJECT       stShell32Table[];
+extern	HOOK_TABLE_OBJECT       stShell32Table [];
 #define SHELLABOUTW             0
 
-typedef struct {
+typedef struct
+{
     LPCWSTR             lpszLibrary;
     LPHOOK_TABLE_OBJECT lpHookTable;
     LPVOID              lpLibrary;
     HMODULE             hModule;
     LPVOID              lpEndOfModule;
-} LIBRARY_TABLE_OBJECT,*LPLIBRARY_TABLE_OBJECT;
+} LIBRARY_TABLE_OBJECT, *LPLIBRARY_TABLE_OBJECT;
 
-extern LIBRARY_TABLE_OBJECT    stLibraryTable[];
+extern LIBRARY_TABLE_OBJECT    stLibraryTable [];
 #define KERNEL32                0
 #define USER32                  1
 #define GDI32                   2
@@ -77,21 +80,21 @@ extern LIBRARY_TABLE_OBJECT    stLibraryTable[];
 #define SHELL32                 5
 
 typedef int (__cdecl *LPWSPRINTFA)(
-  _Out_  LPSTR lpOut,
-  _In_   LPCSTR lpFmt,
-  _In_   ...
-);
+    _Out_  LPSTR lpOut,
+    _In_   LPCSTR lpFmt,
+    _In_   ...
+    );
 
-extern LPWSPRINTFA                      _wsprintfA;
+extern LPWSPRINTFA _wsprintfA;
 
-typedef BOOL (WINAPI *LPVIRTUALPROTECT)(
-  _In_   LPVOID lpAddress,
-  _In_   SIZE_T dwSize,
-  _In_   DWORD flNewProtect,
-  _Out_  PDWORD lpflOldProtect
-);
+typedef BOOL(WINAPI *LPVIRTUALPROTECT)(
+    _In_   LPVOID lpAddress,
+    _In_   SIZE_T dwSize,
+    _In_   DWORD flNewProtect,
+    _Out_  PDWORD lpflOldProtect
+    );
 
-extern LPVIRTUALPROTECT                 _VirtualProtect;
+extern LPVIRTUALPROTECT _VirtualProtect;
 
 #ifdef __cplusplus
 extern "C" {
