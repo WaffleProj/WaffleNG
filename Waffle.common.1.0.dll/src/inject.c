@@ -2,7 +2,7 @@
 #define  _UNICODE
 #include "..\common.h"
 
-LIBRARY_EXPORT PROCESS_INFORMATION WINAPI WaffleInjectDll(LPCTSTR lpszTarget, LPTSTR lpszArgument, LPCTSTR lpszDirectory, LPCTSTR lpszDllFull)
+LIBRARY_EXPORT PROCESS_INFORMATION WINAPI WaffleInjectDll(LPCTSTR lpszTarget, LPTSTR lpszArgument, LPCTSTR lpszDirectory, LPCTSTR lpszDllFull, LPWAFFLE_PROCESS_SETTING lpstProcessSetting)
 {
     STARTUPINFO stStartUp;
     PROCESS_INFORMATION stProcessInfo;
@@ -27,13 +27,24 @@ LIBRARY_EXPORT PROCESS_INFORMATION WINAPI WaffleInjectDll(LPCTSTR lpszTarget, LP
         lpWow64RevertWow64FsRedirection(OldValue);
     }
 
+    lpstProcessSetting->dwThreadId = stProcessInfo.dwThreadId;
+    lpstProcessSetting->dwProcessId = stProcessInfo.dwProcessId;
+
     LPVOID lpszRemoteDll = VirtualAllocEx(stProcessInfo.hProcess,NULL,MAX_PATH*sizeof(TCHAR),MEM_COMMIT,PAGE_READWRITE);
     if (lpszRemoteDll)
     {
-        WriteProcessMemory(stProcessInfo.hProcess,lpszRemoteDll,lpszDllFull,MAX_PATH*sizeof(TCHAR),NULL);
         FARPROC lpLoadLibrary = GetProcAddress(GetModuleHandle(TEXT("kernel32.dll")),"LoadLibraryW");
-        HANDLE hThread = CreateRemoteThread(stProcessInfo.hProcess,NULL,0,(LPTHREAD_START_ROUTINE)lpLoadLibrary,lpszRemoteDll,0,NULL);
-        //VirtualFreeEx(stProcessInfo.hProcess,lpszRemoteDll,0,MEM_RELEASE);
+        HANDLE hThread;
+    
+        WriteProcessMemory(stProcessInfo.hProcess,lpszRemoteDll,szWaffleCommonDll,MAX_PATH*sizeof(TCHAR),NULL);
+        hThread = CreateRemoteThread(stProcessInfo.hProcess,NULL,0,(LPTHREAD_START_ROUTINE)lpLoadLibrary,lpszRemoteDll,0,NULL);
+        WaitForSingleObject(hThread,INFINITE);
+
+        WriteProcessMemory(stProcessInfo.hProcess,lpszRemoteDll,lpszDllFull,MAX_PATH*sizeof(TCHAR),NULL);
+        hThread = CreateRemoteThread(stProcessInfo.hProcess,NULL,0,(LPTHREAD_START_ROUTINE)lpLoadLibrary,lpszRemoteDll,0,NULL);
+        WaitForSingleObject(hThread,INFINITE);
+
+        VirtualFreeEx(stProcessInfo.hProcess,lpszRemoteDll,0,MEM_RELEASE);
         //确保LoadLibrary使用了这个地址
         CloseHandle(hThread);
     }

@@ -8,10 +8,7 @@ VOID WINAPI Main()
 {
     //Get base directory
     TCHAR szPath[MAX_PATH];
-    GetModuleFileName(NULL,szPath,sizeof(szPath)/sizeof(TCHAR));
-    int i;
-    for (i = lstrlen(szPath); szPath[i] != '\\'; i--);
-    szPath[i] = '\0';
+    WaffleGetModuleDirectory(NULL,szPath,sizeof(szPath)/sizeof(szPath[0]));
 
     //Pickup target
     int nArg = WaffleArgc();
@@ -24,9 +21,10 @@ VOID WINAPI Main()
         WaffleArgv(2,szPluginName,sizeof(szPluginName));
         
         WaffleArgv(3,szTarget,sizeof(szTarget));
-        lstrcpy(szDirectory,szTarget);
         
-        for (i = lstrlen(szTarget); szDirectory[i] != '\\'; i--);
+        lstrcpy(szDirectory,szTarget);
+        int i = lstrlen(szTarget);
+        for (; szDirectory[i] != '\\'; i--);
         szDirectory[i] = '\0';
     }
     else if (nArg == 1)
@@ -43,7 +41,7 @@ VOID WINAPI Main()
     }
     else // if (nArg == 0)
     {
-        MessageBox(0,TEXT("FIXME:argc failed."),0,0);
+        MessageBox(0,TEXT("FIXME:argc failed"),0,0);
         ExitProcess(0);
         return;
     }
@@ -65,93 +63,67 @@ VOID WINAPI Main()
                             lpstProcessSetting->wVersionMajor = WAFFLE_SDK_VERSION_MAJOR;
                             lpstProcessSetting->wVersionMinor = WAFFLE_SDK_VERSION_MINOR;
                             lpstProcessSetting->cbSize = sizeof(WAFFLE_PROCESS_SETTING);
-                            lpstProcessSetting->dwThreadId = GetCurrentThreadId();
-                            lpstProcessSetting->offsetPluginName = sizeof(WAFFLE_PROCESS_SETTING);
-                            LPTSTR lpszPluginName = (LPTSTR)((SIZE_T)lpstProcessSetting + lpstProcessSetting->offsetPluginName);
-                            lstrcpy(lpszPluginName,szPluginName);
+                            lpstProcessSetting->offsetszPluginName = sizeof(WAFFLE_PROCESS_SETTING);
+                            lpstProcessSetting->lpszPluginName = (LPTSTR)((SIZE_T)lpstProcessSetting + lpstProcessSetting->offsetszPluginName);
+                            lstrcpy(lpstProcessSetting->lpszPluginName,szPluginName);
+
+                            HGLOBAL lpszArgument = GlobalAlloc(GPTR,(lstrlen(szTarget) + lstrlen(WaffleArgp(4)) + 3 + 1) * sizeof(TCHAR));
+                            lstrcpy(lpszArgument,TEXT("\""));
+                            lstrcat(lpszArgument,szTarget);
+                            lstrcat(lpszArgument,TEXT("\""));
+                            lstrcat(lpszArgument,TEXT(" "));
+                            lstrcat(lpszArgument,WaffleArgp(4));
+
+                            TCHAR szDllFull[MAX_PATH];
+                            lstrcpy(szDllFull,szPath);
+                            lstrcat(szDllFull,TEXT("\\Waffle.common.1.0.dll"));
+
+                            WaffleInjectDll(szTarget,lpszArgument,szDirectory,szDllFull,lpstProcessSetting);
+                            GlobalFree(lpszArgument);
                         }
                         else
                         {
                             MessageBox(0,TEXT("FIXME:No plugin"),0,0);
                             ExitProcess(0);
                         }
-
-                        MSG stMSG;
-                        PeekMessage(&stMSG,0,0,0,PM_NOREMOVE);
-
-                        HGLOBAL lpszArgument = GlobalAlloc(GPTR,(lstrlen(szTarget) + lstrlen(WaffleArgp(4)) + 3 + 1) * sizeof(TCHAR));
-                        lstrcpy(lpszArgument,TEXT("\""));
-                        lstrcat(lpszArgument,szTarget);
-                        lstrcat(lpszArgument,TEXT("\""));
-                        lstrcat(lpszArgument,TEXT(" "));
-                        lstrcat(lpszArgument,WaffleArgp(4));
-
-                        TCHAR szDllFull[MAX_PATH];
-                        lstrcpy(szDllFull,szPath);
-                        lstrcat(szDllFull,TEXT("\\Waffle_loader.dll"));
-
-                        PROCESS_INFORMATION stProcessInfo = WaffleInjectDll(szTarget,lpszArgument,szDirectory,szDllFull);
-                        GlobalFree(lpszArgument);
-                        
-                        CONTEXT stContext = {};
-                        stContext.ContextFlags = CONTEXT_FULL;
-                        GetThreadContext(stProcessInfo.hThread,&stContext);
-                        
-                        while (TRUE)
-                        {
-                            GetMessage(&stMSG,0,TM_FIRSTMESSAGE,TM_LASTMESSAGE);
-                            if (stMSG.message == TM_GETTID)
-                            {
-                                HANDLE hThread = CreateRemoteThread(stProcessInfo.hProcess,NULL,0,(LPTHREAD_START_ROUTINE)stMSG.lParam,(LPVOID)((SIZE_T)(stProcessInfo.dwThreadId)),0,NULL);
-                                CloseHandle(hThread);
-                                break;
-                            }
-                        }
     }
     else
     {
+        STARTUPINFO stStartUp;
+        PROCESS_INFORMATION stProcessInfo;
+
+        stStartUp.cb = sizeof(stStartUp);
+        GetStartupInfo(&stStartUp);
+
         switch (MachineType)
         {
             case WAFFLE_PORT_MACHINE_I386:
             {
-                STARTUPINFO stStartUp;
-                PROCESS_INFORMATION stProcessInfo;
-
-                stStartUp.cb = sizeof(stStartUp);
-                GetStartupInfo(&stStartUp);
-
                 lstrcat(szLoader,TEXT("\\..\\I386\\Waffle.exe"));
-                HGLOBAL lpszArgument = GlobalAlloc(GPTR,(lstrlen(szLoader) + lstrlen(WaffleArgp(2)) + 3 + 1) * sizeof(TCHAR));
-                wsprintf(lpszArgument,TEXT("\"%s\" %s"),szLoader,WaffleArgp(2));
-                CreateProcess(szLoader,lpszArgument,NULL,NULL,TRUE,0,0,szDirectory,&stStartUp,&stProcessInfo);
-                GlobalFree(lpszArgument);
                 break;
             }
             case WAFFLE_PORT_MACHINE_AMD64:
             {
-                STARTUPINFO stStartUp;
-                PROCESS_INFORMATION stProcessInfo;
-
-                stStartUp.cb = sizeof(stStartUp);
-                GetStartupInfo(&stStartUp);
-            
                 lstrcat(szLoader,TEXT("\\..\\AMD64\\Waffle.exe"));
-                HGLOBAL lpszArgument = GlobalAlloc(GPTR,(lstrlen(szLoader) + lstrlen(WaffleArgp(2)) + 3 + 1) * sizeof(TCHAR));
-                wsprintf(lpszArgument,TEXT("\"%s\" %s"),szLoader,WaffleArgp(2));
-                CreateProcess(szLoader,lpszArgument,NULL,NULL,TRUE,0,0,szDirectory,&stStartUp,&stProcessInfo);
-                GlobalFree(lpszArgument);
                 break;
             }
             case 0xFFFF:
             {
                 MessageBox(0,TEXT("FIXME:Unable to open the target"),0,0);
+                ExitProcess(0);
                 break;
             }
             default:
             {
-                MessageBox(0,TEXT("FIXME:Unsupported file or .net program"),0,0);       //Can be .net program
+                MessageBox(0,TEXT("FIXME:Unsupported file or .net program"),0,0);       //Could be .net program
+                ExitProcess(0);
             }
         }
+
+        HGLOBAL lpszArgument = GlobalAlloc(GPTR,(lstrlen(szLoader) + lstrlen(WaffleArgp(2)) + 3 + 1) * sizeof(TCHAR));
+        wsprintf(lpszArgument,TEXT("\"%s\" %s"),szLoader,WaffleArgp(2));
+        CreateProcess(szLoader,lpszArgument,NULL,NULL,TRUE,0,0,szDirectory,&stStartUp,&stProcessInfo);
+        GlobalFree(lpszArgument);
     }
 
     ExitProcess(0);

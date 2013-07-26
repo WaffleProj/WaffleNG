@@ -3,6 +3,10 @@
 #define LIBRARY_EXPORTS
 #include <waffle.h>
 
+extern	HINSTANCE hWaffleCommonDll;
+extern TCHAR szWaffleCommonDll[MAX_PATH];
+extern LPWAFFLE_PROCESS_SETTING lpstProcessSetting;
+
 #ifdef __cplusplus
 extern "C" {
 #endif
