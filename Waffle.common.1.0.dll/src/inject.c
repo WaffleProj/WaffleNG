@@ -1,6 +1,19 @@
 ﻿#define  UNICODE
 #define  _UNICODE
 #include "..\common.h"
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+
+LIBRARY_EXPORT BOOL WINAPI WaffleCreateProcess(
+  _In_  HINSTANCE hinstDLL,
+  _In_  DWORD fdwReason,
+  _In_  LPVOID lpvReserved
+){
+    if (fdwReason == DLL_PROCESS_ATTACH) 
+    {
+        DisableThreadLibraryCalls(hinstDLL);
+    }
+    return TRUE;
+}
 
 LIBRARY_EXPORT PROCESS_INFORMATION WINAPI WaffleInjectDll(LPCTSTR lpszTarget, LPTSTR lpszArgument, LPCTSTR lpszDirectory, LPCTSTR lpszDllFull, LPWAFFLE_PROCESS_SETTING lpstProcessSetting)
 {

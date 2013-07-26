@@ -51,21 +51,13 @@ VOID WINAPI Main()
     WORD MachineType = WaffleGetMachineType(szTarget);
     if (MachineType == WAFFLE_PORT_MACHINE)
     {
-                        TCHAR szValueProcessSetting[64];
+                        
                         TCHAR szPluginName[64];
                         if (WaffleArgv(2,szPluginName,sizeof(szPluginName)))
                         {
-                            wsprintf(szValueProcessSetting,szFmtValueProcessSetting,GetCurrentThreadId(),GetTickCount());
-                            HANDLE hFileMapping = CreateFileMapping(INVALID_HANDLE_VALUE,NULL,PAGE_READWRITE,0,WAFFLE_PROCESS_SETTING_SIZE,szValueProcessSetting);
-                            SetEnvironmentVariable(szNameProcessSetting,szValueProcessSetting);
-                            LPWAFFLE_PROCESS_SETTING lpstProcessSetting = MapViewOfFile(hFileMapping,FILE_MAP_ALL_ACCESS,0,0,0);
-
-                            lpstProcessSetting->wVersionMajor = WAFFLE_SDK_VERSION_MAJOR;
-                            lpstProcessSetting->wVersionMinor = WAFFLE_SDK_VERSION_MINOR;
-                            lpstProcessSetting->cbSize = sizeof(WAFFLE_PROCESS_SETTING);
-                            lpstProcessSetting->offsetszPluginName = sizeof(WAFFLE_PROCESS_SETTING);
-                            lpstProcessSetting->lpszPluginName = (LPTSTR)((SIZE_T)lpstProcessSetting + lpstProcessSetting->offsetszPluginName);
-                            lstrcpy(lpstProcessSetting->lpszPluginName,szPluginName);
+                            WAFFLE_PROCESS_SETTING stProcessSetting;
+                            stProcessSetting.lpszPluginName = szPluginName;
+                            LPWAFFLE_PROCESS_SETTING lpstProcessSetting = WaffleCreateProcessSetting(&stProcessSetting);
 
                             HGLOBAL lpszArgument = GlobalAlloc(GPTR,(lstrlen(szTarget) + lstrlen(WaffleArgp(4)) + 3 + 1) * sizeof(TCHAR));
                             lstrcpy(lpszArgument,TEXT("\""));
