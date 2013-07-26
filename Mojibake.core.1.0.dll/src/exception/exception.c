@@ -217,11 +217,11 @@ LONG CALLBACK BreakpointHandler(
                     if  (lpHookTable[j].lpOriginalFunction == ExceptionInfo->ExceptionRecord->ExceptionAddress)
                     {
                         //((LPMESSAGEBOXA)stUser32Table[MESSAGEBOXA].lpNewFunction)(0,lpHookTable[j].lpszFunction,"BreakpointHandler",0);
-                        WAFFLE_PORT_INSTRUCTION_POINTER(ExceptionInfo) = (SIZE_T)lpHookTable[j].lpDetourFunction;
+                        WAFFLE_PORT_PROGRAM_COUNTER(ExceptionInfo) = (SIZE_T)lpHookTable[j].lpDetourFunction;
                         return EXCEPTION_CONTINUE_EXECUTION;
                     }
                 }
-                WAFFLE_PORT_INSTRUCTION_POINTER(ExceptionInfo) = (SIZE_T)ExceptionInfo->ExceptionRecord->ExceptionAddress - (SIZE_T)stLibraryTable[i].hModule + (SIZE_T)stLibraryTable[i].lpLibrary;
+                WAFFLE_PORT_PROGRAM_COUNTER(ExceptionInfo) = (SIZE_T)ExceptionInfo->ExceptionRecord->ExceptionAddress - (SIZE_T)stLibraryTable[i].hModule + (SIZE_T)stLibraryTable[i].lpLibrary;
                 return EXCEPTION_CONTINUE_EXECUTION;
             }
         }

@@ -50,13 +50,13 @@ VOID WINAPI KeepLastErrorAndFree(
     DWORD LastError = GetLastError();
     HeapFree(hHeap,0,lpMem);
     SetLastError(LastError);
-   return;
+    return;
 }
 
 LIBRARY_EXPORT SIZE_T WINAPI ComponentInit(
   _In_  LPWAFFLE_PROCESS_SETTING lpstProcessSetting
 ){
-    PostThreadMessage(lpstProcessSetting->dwThreadId,TM_GETTID,0,(LPARAM)InitLibrary);
+    InitLibrary(lpstProcessSetting->dwThreadId);
     return 0;
 }
 
