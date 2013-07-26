@@ -156,6 +156,11 @@ LIBRARY_EXPORT HMODULE WINAPI DetourGetModuleHandleA(
     return Result;
 }
 
+LIBRARY_EXPORT UINT WINAPI DetourGetOEMCP(void)
+{
+    return stNewEnvir.OEMCP;
+}
+
 LIBRARY_EXPORT HMODULE WINAPI DetourLoadLibraryA(
     _In_    LPCSTR lpFileName
     )
@@ -189,8 +194,15 @@ LIBRARY_EXPORT int WINAPI DetourMultiByteToWideChar(
     _In_        int cchWideChar
     )
 {
-    if (!CodePage)
+    switch (CodePage)
+    {
+    case CP_ACP:
         CodePage = stNewEnvir.ACP;
+        break;
+    case CP_OEMCP:
+        CodePage = stNewEnvir.OEMCP;
+        break;
+    }
 
     return ((LPMULTIBYTETOWIDECHAR) stKernel32Table[MULTIBYTETOWIDECHAR].lpNewFunction)(CodePage, dwFlags, lpMultiByteStr, cbMultiByte, lpWideCharStr, cchWideChar);
 }
@@ -229,8 +241,15 @@ LIBRARY_EXPORT int WINAPI DetourWideCharToMultiByte(
     _Out_opt_   LPBOOL lpUsedDefaultChar
     )
 {
-    if (!CodePage)
+    switch (CodePage)
+    {
+    case CP_ACP:
         CodePage = stNewEnvir.ACP;
+        break;
+    case CP_OEMCP:
+        CodePage = stNewEnvir.OEMCP;
+        break;
+    }
 
     return ((LPWIDECHARTOMULTIBYTE) stKernel32Table[WIDECHARTOMULTIBYTE].lpNewFunction)(CodePage, dwFlags, lpWideCharStr, cchWideChar, lpMultiByteStr, cbMultiByte, lpDefaultChar, lpUsedDefaultChar);
 }

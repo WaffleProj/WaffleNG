@@ -41,12 +41,13 @@ extern	HOOK_TABLE_OBJECT       stKernel32Table [];
 #define GETFILEATTRIBUTESA      8
 #define GETMODULEFILENAMEA      9
 #define GETMODULEHANDLEA        10
-#define LOADLIBRARYA            11
-#define LOADLIBRARYEXA          12
-#define MULTIBYTETOWIDECHAR     13
-#define SETCURRENTDIRECTORYA    14
-#define SETFILEATTRIBUTESA      15
-#define WIDECHARTOMULTIBYTE     16
+#define GETOEMCP                11
+#define LOADLIBRARYA            12
+#define LOADLIBRARYEXA          13
+#define MULTIBYTETOWIDECHAR     14
+#define SETCURRENTDIRECTORYA    15
+#define SETFILEATTRIBUTESA      16
+#define WIDECHARTOMULTIBYTE     17
 extern	HOOK_TABLE_OBJECT       stUser32Table [];
 #define CALLWINDOWPROCA         0
 #define CREATEWINDOWEXA         1

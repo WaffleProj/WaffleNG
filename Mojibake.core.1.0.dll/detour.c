@@ -31,6 +31,7 @@ HOOK_TABLE_OBJECT stKernel32Table [] =
     { "GetFileAttributesA", DetourGetFileAttributesA },
     { "GetModuleFileNameA", DetourGetModuleFileNameA },
     { "GetModuleHandleA", DetourGetModuleHandleA },
+    { "GetOEMCP", DetourGetOEMCP },
     { "LoadLibraryA", DetourLoadLibraryA },
     { "LoadLibraryExA", DetourLoadLibraryExA },
     { "MultiByteToWideChar", DetourMultiByteToWideChar },

@@ -55,6 +55,8 @@ typedef HMODULE(WINAPI *LPGETMODULEHANDLEA)(
     _In_opt_    LPCSTR lpModuleName
     );
 
+typedef UINT(WINAPI *LPGETOEMCP)(void) ;
+
 typedef HMODULE(WINAPI *LPLOADLIBRARYA)(
     _In_    LPCSTR lpFileName
     );
