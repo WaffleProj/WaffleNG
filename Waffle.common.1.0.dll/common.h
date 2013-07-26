@@ -1,9 +1,8 @@
 #ifndef __WAFFLE_COMMON_DLL_H_
 #define __WAFFLE_COMMON_DLL_H_
-#define LIBRARY_EXPORTS
 #include <waffle.h>
 
-extern	HINSTANCE hWaffleCommonDll;
+extern HINSTANCE hWaffleCommonDll;
 extern TCHAR szWaffleCommonDll[MAX_PATH];
 extern LPWAFFLE_PROCESS_SETTING lpstProcessSetting;
 

@@ -3,71 +3,76 @@
 #include "..\common.h"
 #include <Wincrypt.h>
 
-#define CHECK_NULL_RET(bCondition) if (!bCondition) goto Exit0
-#define BUFSIZE 1024
-#define MD5LEN  16
-
-LIBRARY_EXPORT void WINAPI WaffleGetFileHash(LPTSTR lpszFile, LPTSTR lpszResult)
+LIBRARY_EXPORT void WINAPI WaffleGetFileHash(
+    _In_    LPTSTR lpszFile,
+    _In_    LPTSTR lpszResult
+    )
 {
-    BOOL bResult = FALSE;
-    HCRYPTPROV hProv = 0;
-    HCRYPTHASH hHash = 0;
-    HANDLE hFile = NULL;
-    BYTE rgbFile[BUFSIZE];
-    DWORD cbRead = 0;
-    BYTE rgbHash[MD5LEN];
-    DWORD cbHash = 0;
-    CHAR rgbDigitsU[] = "0123456789ABCDEF";
-    TCHAR szResult[MD5LEN*2+1] = {0};
- 
-    bResult = CryptAcquireContext(&hProv,
-        NULL,
-        NULL,
-        PROV_RSA_FULL,
-        CRYPT_VERIFYCONTEXT);
-    CHECK_NULL_RET(bResult);
- 
-    bResult = CryptCreateHash(hProv, CALG_MD5, 0, 0, &hHash);
-    CHECK_NULL_RET(bResult);
+    lpszResult[0] = 0;
 
-    hFile = CreateFile(lpszFile,
-        GENERIC_READ,
-        FILE_SHARE_READ,
-        NULL,
-        OPEN_EXISTING,
-        FILE_FLAG_SEQUENTIAL_SCAN,
-        NULL);
-    CHECK_NULL_RET(!(INVALID_HANDLE_VALUE == hFile));
-
-    while (ReadFile(hFile, rgbFile, BUFSIZE, &cbRead, NULL))
+    HANDLE hFile = CreateFile(lpszFile, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_FLAG_SEQUENTIAL_SCAN, NULL);
+    if (hFile == INVALID_HANDLE_VALUE)
     {
-        if (0 == cbRead)
+        return;
+    }
+
+    HCRYPTPROV hProv;
+    if (!CryptAcquireContext(&hProv, NULL, NULL, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT))
+    {
+        CloseHandle(hFile);
+        return;
+    }
+
+    HCRYPTHASH hHash;
+    if (!CryptCreateHash(hProv, CALG_SHA1, 0, 0, &hHash))
+    {
+        CloseHandle(hFile);
+        CryptReleaseContext(hProv, 0);
+        return;
+    }
+
+    LPVOID lpBuffer = GlobalAlloc(GPTR, 1024);   //BUFSIZE == 1024
+    if (!lpBuffer)
+    {
+        CryptDestroyHash(hHash);
+        CryptReleaseContext(hProv, 0);
+        CloseHandle(hFile);
+        return;
+    }
+
+    DWORD nNumberOfBytesRead;
+    while (ReadFile(hFile, lpBuffer, 1024, &nNumberOfBytesRead, NULL))   //BUFSIZE == 1024
+    {
+        if (nNumberOfBytesRead == 0)
         {
-        break;
+            break;
         }
 
-        bResult = CryptHashData(hHash, rgbFile, cbRead, 0);
-        CHECK_NULL_RET(bResult);
+        if (!CryptHashData(hHash, lpBuffer, nNumberOfBytesRead, 0))
+        {
+            CryptReleaseContext(hProv, 0);
+            CryptDestroyHash(hHash);
+            CloseHandle(hFile);
+            return;
+        }
     }
- 
-    cbHash = MD5LEN;
+
+    BYTE rgbHash[20];      //SHA1LEN == 20
+    DWORD cbHash = 20;     //MD5LEN == 16
     if (CryptGetHashParam(hHash, HP_HASHVAL, rgbHash, &cbHash, 0))
     {
-        TCHAR szTmpBuff[3] = {0};
-        DWORD i;
-        for (i = 0; i < cbHash; i++)
+        CHAR rgbDigitsU [] = "0123456789ABCDEF";
+        DWORD i, n;
+        for (i = 0, n = 0; i < cbHash; i++)
         {
-            szTmpBuff[0] = (TCHAR)(rgbDigitsU[rgbHash[i] >> 4]);
-            szTmpBuff[1] = (TCHAR)(rgbDigitsU[rgbHash[i] & 0xf]);
-            lstrcat(szResult, szTmpBuff);
+            lpszResult[n++] = (TCHAR) (rgbDigitsU[rgbHash[i] >> 4]);
+            lpszResult[n++] = (TCHAR) (rgbDigitsU[rgbHash[i] & 0xf]);
         }
-        bResult = TRUE;
+        lpszResult[n++] = 0;
     }
- 
-Exit0:
+
+    GlobalFree(lpBuffer);
     CryptDestroyHash(hHash);
     CryptReleaseContext(hProv, 0);
     CloseHandle(hFile);
- 
-    lstrcpy(lpszResult, szResult);
 }
