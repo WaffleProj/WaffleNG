@@ -1,5 +1,9 @@
-﻿#define  UNICODE
-#define  _UNICODE
+﻿#ifndef  UNICODE
+#define  UNICODE
+#endif
+#ifndef _UNICODE
+#define _UNICODE
+#endif
 #include "..\common.h"
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
@@ -33,10 +37,10 @@ LIBRARY_EXPORT BOOL WINAPI WaffleCreateProcess(
 
     //Disable redirection if the target is in the "system32"
     HMODULE hKernel32 = GetModuleHandle(TEXT("kernel32.dll"));
-    PVOID OldValue;
+    PVOID OldValue = 0;
 
     //Open the target
-    LPWOW64DISABLEWOW64FSREDIRECTION lpWow64DisableWow64FsRedirection = (LPVOID) GetProcAddress(hKernel32, "Wow64DisableWow64FsRedirection");
+    LPWOW64DISABLEWOW64FSREDIRECTION lpWow64DisableWow64FsRedirection = (LPWOW64DISABLEWOW64FSREDIRECTION) GetProcAddress(hKernel32, "Wow64DisableWow64FsRedirection");
     if (lpWow64DisableWow64FsRedirection)
     {
         lpWow64DisableWow64FsRedirection(&OldValue);
@@ -45,7 +49,7 @@ LIBRARY_EXPORT BOOL WINAPI WaffleCreateProcess(
     BOOL Result = CreateProcess(lpApplicationName, lpCommandLine, lpProcessAttributes, lpThreadAttributes, bInheritHandles, dwCreationFlags, lpEnvironment, lpCurrentDirectory, lpStartupInfo, lpProcessInformation);
     DWORD LastError = GetLastError();
 
-    LPWOW64REVERTWOW64FSREDIRECTION lpWow64RevertWow64FsRedirection = (LPVOID) GetProcAddress(hKernel32, "Wow64RevertWow64FsRedirection");
+    LPWOW64REVERTWOW64FSREDIRECTION lpWow64RevertWow64FsRedirection = (LPWOW64REVERTWOW64FSREDIRECTION) GetProcAddress(hKernel32, "Wow64RevertWow64FsRedirection");
     if (lpWow64RevertWow64FsRedirection)
     {
         lpWow64RevertWow64FsRedirection(OldValue);

@@ -1,0 +1,21 @@
+NAME	Waffle.common.1.0.dll
+EXPORTS
+    WaffleArgc
+    WaffleArgv
+    WaffleArgp
+    
+    WaffleGetModuleDirectory
+    
+    WaffleGetFileHash
+    
+    WaffleInit
+    
+    WaffleCreateProcess
+    WaffleInjectDll
+    WaffleExecute
+    
+    WaffleGetMachineType
+    
+    WaffleOpenProcessSetting
+    WaffleCreateProcessSetting
+    WaffleResumeMainThread

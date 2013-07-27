@@ -1,5 +1,9 @@
+#ifndef  UNICODE
 #define  UNICODE
-#define  _UNICODE
+#endif
+#ifndef _UNICODE
+#define _UNICODE
+#endif
 #include "..\common.h"
 #include <Wincrypt.h>
 
@@ -48,7 +52,7 @@ LIBRARY_EXPORT void WINAPI WaffleGetFileHash(
             break;
         }
 
-        if (!CryptHashData(hHash, lpBuffer, nNumberOfBytesRead, 0))
+        if (!CryptHashData(hHash, (BYTE *) lpBuffer, nNumberOfBytesRead, 0))
         {
             CryptReleaseContext(hProv, 0);
             CryptDestroyHash(hHash);

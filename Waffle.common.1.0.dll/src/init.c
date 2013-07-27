@@ -1,5 +1,9 @@
+#ifndef  UNICODE
 #define  UNICODE
-#define  _UNICODE
+#endif
+#ifndef _UNICODE
+#define _UNICODE
+#endif
 #include "..\common.h"
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
@@ -13,7 +17,7 @@ LIBRARY_EXPORT SIZE_T WINAPI WaffleInit(
     TCHAR szLibrary[MAX_PATH];
     wsprintf(szLibrary, TEXT("%s\\..\\..\\%s\\%s\\Mojibake.core.1.0.dll"), szPath, lpstProcessSetting->szPlugin, WAFFLE_PORT_MACHINE_STRING);
     HMODULE hDll = LoadLibrary(szLibrary);
-    LPCOMPONENTINIT ComponentInit = (LPVOID) GetProcAddress(hDll, "ComponentInit");
+    LPCOMPONENTINIT ComponentInit = (LPCOMPONENTINIT) GetProcAddress(hDll, "ComponentInit");
     if (!ComponentInit)
     {
         MessageBox(0, TEXT("FIXME:Invalid Component"), 0, 0);

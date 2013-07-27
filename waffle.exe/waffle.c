@@ -1,5 +1,9 @@
-﻿#define  UNICODE
-#define  _UNICODE
+﻿#ifndef  UNICODE
+#define  UNICODE
+#endif
+#ifndef _UNICODE
+#define _UNICODE
+#endif
 #include "waffle.h"
 //#include <shellapi.h>
 #pragma GCC diagnostic ignored "-Wmissing-field-initializers"
@@ -48,7 +52,7 @@ VOID WINAPI Main()
         LPWAFFLE_PROCESS_SETTING lpstProcessSetting = WaffleCreateProcessSetting();
         lstrcpy(lpstProcessSetting->szPlugin, szPlugin);
 
-        HGLOBAL lpszArgument = GlobalAlloc(GPTR, (lstrlen(szTarget) + lstrlen(WaffleArgp(4)) + 3 + 1) * sizeof(TCHAR));
+        LPTSTR lpszArgument = (LPTSTR) GlobalAlloc(GPTR, (lstrlen(szTarget) + lstrlen(WaffleArgp(4)) + 3 + 1) * sizeof(TCHAR));
         wsprintf(lpszArgument, TEXT("\"%s\" %s"), szTarget, WaffleArgp(4));
         WaffleExecute(szTarget, lpszArgument, szDirectory, lpstProcessSetting);
         GlobalFree(lpszArgument);
@@ -88,15 +92,15 @@ VOID WINAPI Main()
             }
         }
 
-        HGLOBAL lpszArgument;
+        LPTSTR lpszArgument;
         if (nArg >= 3)
         {
-            lpszArgument = GlobalAlloc(GPTR, (lstrlen(szLoader) + lstrlen(WaffleArgp(2)) + 3 + 1) * sizeof(TCHAR));
+            lpszArgument = (LPTSTR) GlobalAlloc(GPTR, (lstrlen(szLoader) + lstrlen(WaffleArgp(2)) + 3 + 1) * sizeof(TCHAR));
             wsprintf(lpszArgument, TEXT("\"%s\" %s"), szLoader, WaffleArgp(2));
         }
         else
         {
-            lpszArgument = GlobalAlloc(GPTR, (lstrlen(szLoader) + lstrlen(szPlugin) + lstrlen(szTarget) + 6 + 1) * sizeof(TCHAR));
+            lpszArgument = (LPTSTR) GlobalAlloc(GPTR, (lstrlen(szLoader) + lstrlen(szPlugin) + lstrlen(szTarget) + 6 + 1) * sizeof(TCHAR));
             wsprintf(lpszArgument, TEXT("\"%s\" %s \"%s\""), szLoader, szPlugin, szTarget);
         }
         CreateProcess(szLoader, lpszArgument, NULL, NULL, TRUE, 0, 0, szDirectory, &stStartUp, &stProcessInfo);

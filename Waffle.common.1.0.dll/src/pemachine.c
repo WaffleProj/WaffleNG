@@ -1,5 +1,9 @@
+#ifndef  UNICODE
 #define  UNICODE
-#define  _UNICODE
+#endif
+#ifndef _UNICODE
+#define _UNICODE
+#endif
 #include "..\common.h"
 
 LIBRARY_EXPORT WORD WINAPI WaffleGetMachineType(
@@ -8,17 +12,18 @@ LIBRARY_EXPORT WORD WINAPI WaffleGetMachineType(
 {
     //Disable redirection if the target is in the "system32"
     HMODULE hKernel32 = GetModuleHandle(TEXT("kernel32.dll"));
-    PVOID OldValue;
+    PVOID OldValue = 0;
 
     //Open the target
-    LPWOW64DISABLEWOW64FSREDIRECTION lpWow64DisableWow64FsRedirection = (LPVOID) GetProcAddress(hKernel32, "Wow64DisableWow64FsRedirection");
-    LPWOW64REVERTWOW64FSREDIRECTION lpWow64RevertWow64FsRedirection = (LPVOID) GetProcAddress(hKernel32, "Wow64RevertWow64FsRedirection");
-
+    LPWOW64DISABLEWOW64FSREDIRECTION lpWow64DisableWow64FsRedirection = (LPWOW64DISABLEWOW64FSREDIRECTION) GetProcAddress(hKernel32, "Wow64DisableWow64FsRedirection");
     if (lpWow64DisableWow64FsRedirection)
     {
         lpWow64DisableWow64FsRedirection(&OldValue);
     }
+
     HANDLE hFile = CreateFile(lpszFile, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+
+    LPWOW64REVERTWOW64FSREDIRECTION lpWow64RevertWow64FsRedirection = (LPWOW64REVERTWOW64FSREDIRECTION) GetProcAddress(hKernel32, "Wow64RevertWow64FsRedirection");
     if (lpWow64RevertWow64FsRedirection)
     {
         lpWow64RevertWow64FsRedirection(OldValue);
@@ -43,7 +48,7 @@ LIBRARY_EXPORT WORD WINAPI WaffleGetMachineType(
     WORD Machine;
     if (((PIMAGE_DOS_HEADER) lpFile)->e_magic == IMAGE_DOS_SIGNATURE)
     {
-        PIMAGE_NT_HEADERS lpNtHeader = lpFile + ((PIMAGE_DOS_HEADER) lpFile)->e_lfanew;
+        PIMAGE_NT_HEADERS lpNtHeader = (PIMAGE_NT_HEADERS) ((SIZE_T) lpFile + ((PIMAGE_DOS_HEADER) lpFile)->e_lfanew);
         if (lpNtHeader->Signature == IMAGE_NT_SIGNATURE)
         {
             if (lpNtHeader->FileHeader.Characteristics & IMAGE_FILE_DLL)    //DLL File
