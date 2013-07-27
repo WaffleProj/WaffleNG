@@ -1,7 +1,7 @@
 ﻿#define  UNICODE
 #define  _UNICODE
 #include "waffle.h"
-#include <shellapi.h>
+//#include <shellapi.h>
 #pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 
 VOID WINAPI Main()
@@ -42,31 +42,21 @@ VOID WINAPI Main()
     for (; szDirectory[i] != '\\'; i--);
     szDirectory[i] = '\0';
 
-    TCHAR szLoader[MAX_PATH];
-    lstrcpy(szLoader, szPath);
     WORD MachineType = WaffleGetMachineType(szTarget);
     if (MachineType == WAFFLE_PORT_MACHINE)
     {
-        WAFFLE_PROCESS_SETTING stProcessSetting;
-        stProcessSetting.lpszPlugin = szPlugin;
-        LPWAFFLE_PROCESS_SETTING lpstProcessSetting = WaffleCreateProcessSetting(&stProcessSetting);
+        LPWAFFLE_PROCESS_SETTING lpstProcessSetting = WaffleCreateProcessSetting();
+        lstrcpy(lpstProcessSetting->szPlugin, szPlugin);
 
         HGLOBAL lpszArgument = GlobalAlloc(GPTR, (lstrlen(szTarget) + lstrlen(WaffleArgp(4)) + 3 + 1) * sizeof(TCHAR));
-        lstrcpy(lpszArgument, TEXT("\""));
-        lstrcat(lpszArgument, szTarget);
-        lstrcat(lpszArgument, TEXT("\""));
-        lstrcat(lpszArgument, TEXT(" "));
-        lstrcat(lpszArgument, WaffleArgp(4));
-
-        TCHAR szDllFull[MAX_PATH];
-        lstrcpy(szDllFull, szPath);
-        lstrcat(szDllFull, TEXT("\\Waffle.common.1.0.dll"));
-
-        WaffleInjectDll(szTarget, lpszArgument, szDirectory, szDllFull, lpstProcessSetting);
+        wsprintf(lpszArgument, TEXT("\"%s\" %s"), szTarget, WaffleArgp(4));
+        WaffleExecute(szTarget, lpszArgument, szDirectory, lpstProcessSetting);
         GlobalFree(lpszArgument);
     }
     else
     {
+        TCHAR szLoader[MAX_PATH];
+
         STARTUPINFO stStartUp;
         PROCESS_INFORMATION stProcessInfo;
 
@@ -77,12 +67,12 @@ VOID WINAPI Main()
         {
         case WAFFLE_PORT_MACHINE_I386:
             {
-                lstrcat(szLoader, TEXT("\\..\\I386\\Waffle.exe"));
+                wsprintf(szLoader, TEXT("%s%s"), szPath, TEXT("\\..\\I386\\Waffle.exe"));
                 break;
             }
         case WAFFLE_PORT_MACHINE_AMD64:
             {
-                lstrcat(szLoader, TEXT("\\..\\AMD64\\Waffle.exe"));
+                wsprintf(szLoader, TEXT("%s%s"), szPath, TEXT("\\..\\AMD64\\Waffle.exe"));
                 break;
             }
         case 0xFFFF:

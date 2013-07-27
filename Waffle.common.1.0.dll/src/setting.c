@@ -14,18 +14,11 @@ LIBRARY_EXPORT LPWAFFLE_PROCESS_SETTING WINAPI WaffleOpenProcessSetting(void)
         HANDLE hFileMapping = OpenFileMapping(FILE_MAP_WRITE, FALSE, szValueProcessSetting);
 
         lpstProcessSetting = MapViewOfFile(hFileMapping, FILE_MAP_WRITE, 0, 0, 0);
-
-        if (lpstProcessSetting)
-        {
-            lpstProcessSetting->lpszPlugin = (LPTSTR) ((SIZE_T) lpstProcessSetting + lpstProcessSetting->offsetszPlugin);
-        }
     }
     return lpstProcessSetting;
 }
 
-LIBRARY_EXPORT LPWAFFLE_PROCESS_SETTING WINAPI WaffleCreateProcessSetting(
-    _In_    LPWAFFLE_PROCESS_SETTING lpstNewSetting
-    )
+LIBRARY_EXPORT LPWAFFLE_PROCESS_SETTING WINAPI WaffleCreateProcessSetting(void)
 {
     TCHAR szValueProcessSetting[64];
     wsprintf(szValueProcessSetting, szFmtValueProcessSetting, GetCurrentThreadId(), GetTickCount());
@@ -38,9 +31,6 @@ LIBRARY_EXPORT LPWAFFLE_PROCESS_SETTING WINAPI WaffleCreateProcessSetting(
         lpstProcessSetting->wVersionMajor = WAFFLE_SDK_VERSION_MAJOR;
         lpstProcessSetting->wVersionMinor = WAFFLE_SDK_VERSION_MINOR;
         lpstProcessSetting->cbSize = sizeof(WAFFLE_PROCESS_SETTING);
-        lpstProcessSetting->offsetszPlugin = sizeof(WAFFLE_PROCESS_SETTING);
-        lpstProcessSetting->lpszPlugin = (LPTSTR) ((SIZE_T) lpstProcessSetting + lpstProcessSetting->offsetszPlugin);
-        lstrcpy(lpstProcessSetting->lpszPlugin, lpstNewSetting->lpszPlugin);
     }
 
     return lpstProcessSetting;
