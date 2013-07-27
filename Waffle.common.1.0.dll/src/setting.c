@@ -17,7 +17,7 @@ LIBRARY_EXPORT LPWAFFLE_PROCESS_SETTING WINAPI WaffleOpenProcessSetting(void)
 
         if (lpstProcessSetting)
         {
-            lpstProcessSetting->lpszPluginName = (LPTSTR) ((SIZE_T) lpstProcessSetting + lpstProcessSetting->offsetszPluginName);
+            lpstProcessSetting->lpszPlugin = (LPTSTR) ((SIZE_T) lpstProcessSetting + lpstProcessSetting->offsetszPlugin);
         }
     }
     return lpstProcessSetting;
@@ -38,9 +38,9 @@ LIBRARY_EXPORT LPWAFFLE_PROCESS_SETTING WINAPI WaffleCreateProcessSetting(
         lpstProcessSetting->wVersionMajor = WAFFLE_SDK_VERSION_MAJOR;
         lpstProcessSetting->wVersionMinor = WAFFLE_SDK_VERSION_MINOR;
         lpstProcessSetting->cbSize = sizeof(WAFFLE_PROCESS_SETTING);
-        lpstProcessSetting->offsetszPluginName = sizeof(WAFFLE_PROCESS_SETTING);
-        lpstProcessSetting->lpszPluginName = (LPTSTR) ((SIZE_T) lpstProcessSetting + lpstProcessSetting->offsetszPluginName);
-        lstrcpy(lpstProcessSetting->lpszPluginName, lpstNewSetting->lpszPluginName);
+        lpstProcessSetting->offsetszPlugin = sizeof(WAFFLE_PROCESS_SETTING);
+        lpstProcessSetting->lpszPlugin = (LPTSTR) ((SIZE_T) lpstProcessSetting + lpstProcessSetting->offsetszPlugin);
+        lstrcpy(lpstProcessSetting->lpszPlugin, lpstNewSetting->lpszPlugin);
     }
 
     return lpstProcessSetting;

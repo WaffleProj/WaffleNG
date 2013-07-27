@@ -12,72 +12,58 @@ VOID WINAPI Main()
 
     //Pickup target
     int nArg = WaffleArgc();
-    TCHAR szPluginName[64];
+    TCHAR szPlugin[MAX_PATH];
     TCHAR szTarget[MAX_PATH];
     TCHAR szDirectory[MAX_PATH];
-    if (nArg > 1)
+    if (nArg >= 3)
     {
         //1.文件名 2.插件名 3.目标
-        WaffleArgv(2, szPluginName, sizeof(szPluginName));
+        WaffleArgv(2, szPlugin, sizeof(szPlugin));
 
         WaffleArgv(3, szTarget, sizeof(szTarget));
-
-        lstrcpy(szDirectory, szTarget);
-        int i = lstrlen(szTarget);
-        for (; szDirectory[i] != '\\'; i--);
-        szDirectory[i] = '\0';
     }
-    else if (nArg == 1)
+    else
     {
-        MessageBox(0, TEXT("FIXME:A proper window"), 0, 0);
-        ExitProcess(0);
-        return;
-        OPENFILENAME stOpenFile = {};
+        OPENFILENAME stOpenFile;
+        RtlZeroMemory(&stOpenFile, sizeof(stOpenFile));
+        RtlZeroMemory(szTarget, sizeof(szTarget));
+
         stOpenFile.lStructSize = sizeof(stOpenFile);
         stOpenFile.lpstrFile = szTarget;
         stOpenFile.nMaxFile = sizeof(szTarget) / sizeof(TCHAR);
         stOpenFile.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
         GetOpenFileName(&stOpenFile);
+        
+        lstrcpy(szPlugin, TEXT("Mojibake"));
     }
-    else // if (nArg == 0)
-    {
-        MessageBox(0, TEXT("FIXME:argc failed"), 0, 0);
-        ExitProcess(0);
-        return;
-    }
+
+    lstrcpy(szDirectory, szTarget);
+    int i = lstrlen(szTarget);
+    for (; szDirectory[i] != '\\'; i--);
+    szDirectory[i] = '\0';
 
     TCHAR szLoader[MAX_PATH];
     lstrcpy(szLoader, szPath);
     WORD MachineType = WaffleGetMachineType(szTarget);
     if (MachineType == WAFFLE_PORT_MACHINE)
     {
+        WAFFLE_PROCESS_SETTING stProcessSetting;
+        stProcessSetting.lpszPlugin = szPlugin;
+        LPWAFFLE_PROCESS_SETTING lpstProcessSetting = WaffleCreateProcessSetting(&stProcessSetting);
 
-        TCHAR szPluginName[64];
-        if (WaffleArgv(2, szPluginName, sizeof(szPluginName)))
-        {
-            WAFFLE_PROCESS_SETTING stProcessSetting;
-            stProcessSetting.lpszPluginName = szPluginName;
-            LPWAFFLE_PROCESS_SETTING lpstProcessSetting = WaffleCreateProcessSetting(&stProcessSetting);
+        HGLOBAL lpszArgument = GlobalAlloc(GPTR, (lstrlen(szTarget) + lstrlen(WaffleArgp(4)) + 3 + 1) * sizeof(TCHAR));
+        lstrcpy(lpszArgument, TEXT("\""));
+        lstrcat(lpszArgument, szTarget);
+        lstrcat(lpszArgument, TEXT("\""));
+        lstrcat(lpszArgument, TEXT(" "));
+        lstrcat(lpszArgument, WaffleArgp(4));
 
-            HGLOBAL lpszArgument = GlobalAlloc(GPTR, (lstrlen(szTarget) + lstrlen(WaffleArgp(4)) + 3 + 1) * sizeof(TCHAR));
-            lstrcpy(lpszArgument, TEXT("\""));
-            lstrcat(lpszArgument, szTarget);
-            lstrcat(lpszArgument, TEXT("\""));
-            lstrcat(lpszArgument, TEXT(" "));
-            lstrcat(lpszArgument, WaffleArgp(4));
+        TCHAR szDllFull[MAX_PATH];
+        lstrcpy(szDllFull, szPath);
+        lstrcat(szDllFull, TEXT("\\Waffle.common.1.0.dll"));
 
-            TCHAR szDllFull[MAX_PATH];
-            lstrcpy(szDllFull, szPath);
-            lstrcat(szDllFull, TEXT("\\Waffle.common.1.0.dll"));
-
-            WaffleInjectDll(szTarget, lpszArgument, szDirectory, szDllFull, lpstProcessSetting);
-            GlobalFree(lpszArgument);
-        }
-        else
-        {
-            MessageBox(0, TEXT("FIXME:No plugin"), 0, 0);
-            ExitProcess(0);
-        }
+        WaffleInjectDll(szTarget, lpszArgument, szDirectory, szDllFull, lpstProcessSetting);
+        GlobalFree(lpszArgument);
     }
     else
     {
@@ -112,8 +98,17 @@ VOID WINAPI Main()
             }
         }
 
-        HGLOBAL lpszArgument = GlobalAlloc(GPTR, (lstrlen(szLoader) + lstrlen(WaffleArgp(2)) + 3 + 1) * sizeof(TCHAR));
-        wsprintf(lpszArgument, TEXT("\"%s\" %s"), szLoader, WaffleArgp(2));
+        HGLOBAL lpszArgument;
+        if (nArg >= 3)
+        {
+            lpszArgument = GlobalAlloc(GPTR, (lstrlen(szLoader) + lstrlen(WaffleArgp(2)) + 3 + 1) * sizeof(TCHAR));
+            wsprintf(lpszArgument, TEXT("\"%s\" %s"), szLoader, WaffleArgp(2));
+        }
+        else
+        {
+            lpszArgument = GlobalAlloc(GPTR, (lstrlen(szLoader) + lstrlen(szPlugin) + lstrlen(szTarget) + 6 + 1) * sizeof(TCHAR));
+            wsprintf(lpszArgument, TEXT("\"%s\" %s \"%s\""), szLoader, szPlugin, szTarget);
+        }
         CreateProcess(szLoader, lpszArgument, NULL, NULL, TRUE, 0, 0, szDirectory, &stStartUp, &stProcessInfo);
         GlobalFree(lpszArgument);
     }
