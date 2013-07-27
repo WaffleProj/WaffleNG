@@ -1,9 +1,13 @@
+#ifndef  UNICODE
 #define  UNICODE
+#endif
+#ifndef _UNICODE
 #define _UNICODE
+#endif
 #include "mojibake.h"
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
-LPVOID WINAPI AnsiToUnicode(
+LPWSTR WINAPI AnsiToUnicode(
     _In_    LPCSTR lpszText
     )
 {
@@ -13,7 +17,7 @@ LPVOID WINAPI AnsiToUnicode(
         if (intText)
         {
             intText++;
-            LPVOID lpuszText = HeapAlloc(hHeap, HEAP_ZERO_MEMORY, 2 * intText);
+            LPWSTR lpuszText = (LPWSTR) HeapAlloc(hHeap, HEAP_ZERO_MEMORY, 2 * intText);
             MultiByteToWideChar(stNewEnvir.ACP, 0, lpszText, -1, lpuszText, intText);
             return lpuszText;
         }
@@ -28,15 +32,15 @@ LPVOID WINAPI AnsiToUnicode(
     }
 }
 
-LPVOID WINAPI ProgramCPToWindowsCP(
+LPSTR WINAPI ProgramCPToWindowsCP(
     _In_    LPCSTR lpszText
     )
 {
     if (lpszText)
     {
         int intText = lstrlenA(lpszText) + 1;
-        LPVOID lpuszText = HeapAlloc(hHeap, HEAP_ZERO_MEMORY, 2 * intText);
-        LPVOID lpszNewText = HeapAlloc(hHeap, HEAP_ZERO_MEMORY, 2 * intText);
+        LPWSTR lpuszText = (LPWSTR) HeapAlloc(hHeap, HEAP_ZERO_MEMORY, 2 * intText);
+        LPSTR lpszNewText = (LPSTR) HeapAlloc(hHeap, HEAP_ZERO_MEMORY, 2 * intText);
         MultiByteToWideChar(stNewEnvir.ACP, 0, lpszText, -1, lpuszText, intText);
         WideCharToMultiByte(stOldEnvir.ACP, 0, lpuszText, -1, lpszNewText, intText, NULL, FALSE);
         return lpszNewText;

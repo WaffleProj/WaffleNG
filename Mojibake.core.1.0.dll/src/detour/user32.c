@@ -1,5 +1,9 @@
+#ifndef  UNICODE
 #define  UNICODE
-#define  _UNICODE
+#endif
+#ifndef _UNICODE
+#define _UNICODE
+#endif
 #include "..\..\mojibake.h"
 
 LIBRARY_EXPORT LRESULT WINAPI DetourCallWindowProcA(
@@ -17,9 +21,9 @@ LIBRARY_EXPORT LRESULT WINAPI DetourCallWindowProcA(
         DWORD LastError = GetLastError();
         int sizeString = DefWindowProcA(hWnd, WM_GETTEXTLENGTH, 0, 0);
         sizeString++;
-        LPVOID lpszString = HeapAlloc(hHeap, HEAP_ZERO_MEMORY, sizeString);
+        LPSTR lpszString = (LPSTR) HeapAlloc(hHeap, HEAP_ZERO_MEMORY, sizeString);
         DefWindowProcA(hWnd, WM_GETTEXT, sizeString, (LPARAM) lpszString);
-        LPVOID lpuszString = AnsiToUnicode(lpszString);
+        LPWSTR lpuszString = AnsiToUnicode(lpszString);
         DefWindowProc(hWnd, WM_SETTEXT, 0, (LPARAM) lpuszString);
         HeapFree(hHeap, 0, lpuszString);
         HeapFree(hHeap, 0, lpszString);
@@ -47,8 +51,8 @@ LIBRARY_EXPORT HWND WINAPI DetourCreateWindowExA(
     _In_opt_    LPVOID lpParam
     )
 {
-    LPVOID lpuszClassName = AnsiToUnicode(lpClassName);
-    LPVOID lpuszWindowName = AnsiToUnicode(lpWindowName);
+    LPWSTR lpuszClassName = AnsiToUnicode(lpClassName);
+    LPWSTR lpuszWindowName = AnsiToUnicode(lpWindowName);
     //if  (!lstrcmpA("TFormView",lpClassName))
     //MessageBox(0,lpuszWindowName,TEXT("DetourCreateWindowExA"),0);
     HWND Result = CreateWindowEx(dwExStyle, lpuszClassName, lpuszWindowName, dwStyle, x, y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam);
@@ -67,8 +71,8 @@ LIBRARY_EXPORT int WINAPI DetourMessageBoxA(
     _In_        UINT uType
     )
 {
-    LPVOID lpuszText = AnsiToUnicode(lpText);
-    LPVOID lpuszCaption = AnsiToUnicode(lpCaption);
+    LPWSTR lpuszText = AnsiToUnicode(lpText);
+    LPWSTR lpuszCaption = AnsiToUnicode(lpCaption);
     int Result = MessageBox(hWnd, lpuszText, lpuszCaption, uType);
 
     DWORD LastError = GetLastError();
@@ -86,8 +90,8 @@ LIBRARY_EXPORT int WINAPI DetourMessageBoxExA(
     _In_        WORD wLanguageId
     )
 {
-    LPVOID lpuszText = AnsiToUnicode(lpText);
-    LPVOID lpuszCaption = AnsiToUnicode(lpCaption);
+    LPWSTR lpuszText = AnsiToUnicode(lpText);
+    LPWSTR lpuszCaption = AnsiToUnicode(lpCaption);
     int Result = MessageBoxEx(hWnd, lpuszText, lpuszCaption, uType, wLanguageId);
 
     DWORD LastError = GetLastError();
@@ -126,7 +130,7 @@ LIBRARY_EXPORT BOOL WINAPI DetourSetWindowTextA(
     _In_opt_    LPCSTR lpString
     )
 {
-    LPVOID lpuszString = AnsiToUnicode(lpString);
+    LPWSTR lpuszString = AnsiToUnicode(lpString);
     //MessageBox(0,lpuszString,TEXT("DetourSetWindowTextA"),0);
     BOOL Result = SetWindowText(hWnd, lpuszString);
 

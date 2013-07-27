@@ -9,7 +9,7 @@
 
 extern HINSTANCE    hDLL;
 extern HANDLE       hHeap;
-extern HGLOBAL      lpszCommandLineA;
+extern LPSTR        lpszCommandLineA;
 
 typedef struct
 {
@@ -67,7 +67,7 @@ typedef struct
 {
     LPCWSTR             lpszLibrary;
     LPHOOK_TABLE_OBJECT lpHookTable;
-    LPVOID              lpLibrary;
+    HMODULE             lpLibrary;
     HMODULE             hModule;
     LPVOID              lpEndOfModule;
 } LIBRARY_TABLE_OBJECT, *LPLIBRARY_TABLE_OBJECT;

@@ -1,5 +1,9 @@
-﻿#define  UNICODE
-#define  _UNICODE
+﻿#ifndef  UNICODE
+#define  UNICODE
+#endif
+#ifndef _UNICODE
+#define _UNICODE
+#endif
 #include "..\..\mojibake.h"
 
 LIBRARY_EXPORT HFONT WINAPI DetourCreateFontA(
@@ -19,7 +23,7 @@ LIBRARY_EXPORT HFONT WINAPI DetourCreateFontA(
     _In_    LPCSTR lpszFace
     )
 {
-    LPVOID lpuszFace = AnsiToUnicode(lpszFace);
+    LPWSTR lpuszFace = AnsiToUnicode(lpszFace);
     HFONT Result = CreateFont(nHeight, nWidth, nEscapement, nOrientation, fnWeight, fdwItalic, fdwUnderline, fdwStrikeOut, fdwCharSet, fdwOutputPrecision, fdwClipPrecision, fdwQuality, fdwPitchAndFamily, lpuszFace);
 
     KeepLastErrorAndFree(lpuszFace);
@@ -34,7 +38,7 @@ LIBRARY_EXPORT BOOL WINAPI DetourTextOutA(
     _In_    int cchString
     )
 {
-    LPVOID lpuszString = AnsiToUnicode(lpString);
+    LPWSTR lpuszString = AnsiToUnicode(lpString);
     BOOL Result = TextOut(hdc, nXStart, nYStart, lpuszString, cchString);
 
     KeepLastErrorAndFree(lpuszString);

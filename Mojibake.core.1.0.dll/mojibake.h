@@ -1,5 +1,7 @@
 #ifndef __MOJIBAKE_MAIN_MOJIBAKE_H_
 #define __MOJIBAKE_MAIN_MOJIBAKE_H_
+
+#define WAFFLE_COMPONENT_BUILD
 #include <waffle.h>
 #include "detour.h"
 #include "init.h"
@@ -12,10 +14,10 @@
 extern "C" {
 #endif
 
-    LPVOID WINAPI AnsiToUnicode(
+    LPWSTR WINAPI AnsiToUnicode(
         _In_    LPCSTR lpszText
         );
-    LPVOID WINAPI ProgramCPToWindowsCP(
+    LPSTR WINAPI ProgramCPToWindowsCP(
         _In_    LPCSTR lpszText
         );
     VOID WINAPI KeepLastErrorAndFree(

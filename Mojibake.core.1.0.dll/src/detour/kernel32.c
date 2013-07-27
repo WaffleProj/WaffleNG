@@ -1,12 +1,16 @@
+#ifndef  UNICODE
 #define  UNICODE
-#define  _UNICODE
+#endif
+#ifndef _UNICODE
+#define _UNICODE
+#endif
 #include "..\..\mojibake.h"
 
 LIBRARY_EXPORT BOOL WINAPI DetourCreateDirectoryA(
     _In_        LPCSTR lpPathName,
     _In_opt_    LPSECURITY_ATTRIBUTES lpSecurityAttributes
     ){
-        LPVOID lpuszPathName = AnsiToUnicode(lpPathName);
+        LPWSTR lpuszPathName = AnsiToUnicode(lpPathName);
         BOOL Result = CreateDirectory(lpuszPathName, lpSecurityAttributes);
 
         KeepLastErrorAndFree(lpuszPathName);
@@ -23,7 +27,7 @@ LIBRARY_EXPORT HANDLE WINAPI DetourCreateFileA(
     _In_opt_    HANDLE hTemplateFile
     )
 {
-    LPVOID lpuszFileName = AnsiToUnicode(lpFileName);
+    LPWSTR lpuszFileName = AnsiToUnicode(lpFileName);
     //MessageBox(0,lpuszFileName,TEXT("DetourCreateFileA"),0);
     HANDLE Result = CreateFile(lpuszFileName, dwDesiredAccess, dwShareMode, lpSecurityAttributes, dwCreationDisposition, dwFlagsAndAttributes, hTemplateFile);
 
@@ -35,7 +39,7 @@ LIBRARY_EXPORT BOOL WINAPI DetourDeleteFileA(
     _In_    LPCSTR lpFileName
     )
 {
-    LPVOID lpuszFileName = AnsiToUnicode(lpFileName);
+    LPWSTR lpuszFileName = AnsiToUnicode(lpFileName);
     BOOL Result = DeleteFile(lpuszFileName);
 
     KeepLastErrorAndFree(lpuszFileName);
@@ -47,7 +51,7 @@ LIBRARY_EXPORT HANDLE WINAPI DetourFindFirstFileA(
     _Out_   LPWIN32_FIND_DATAA lpFindFileData
     )
 {
-    LPVOID lpuszFileName = AnsiToUnicode(lpFileName);
+    LPWSTR lpuszFileName = AnsiToUnicode(lpFileName);
     WIN32_FIND_DATA FindFileData;
     HANDLE Result = FindFirstFile(lpuszFileName, &FindFileData);
 
@@ -119,7 +123,7 @@ LIBRARY_EXPORT DWORD WINAPI DetourGetFileAttributesA(
     _In_    LPCSTR lpFileName
     )
 {
-    LPVOID lpuszFileName = AnsiToUnicode(lpFileName);
+    LPWSTR lpuszFileName = AnsiToUnicode(lpFileName);
     DWORD Result = GetFileAttributes(lpuszFileName);
 
     KeepLastErrorAndFree(lpuszFileName);
@@ -132,9 +136,9 @@ LIBRARY_EXPORT DWORD WINAPI DetourGetModuleFileNameA(
     _In_        DWORD nSize
     )
 {
-    LPVOID lpuszFilename = 0;
+    LPWSTR lpuszFilename = 0;
     if (lpFilename)
-        lpuszFilename = HeapAlloc(hHeap, HEAP_ZERO_MEMORY, 4 * nSize);
+        lpuszFilename = (LPWSTR) HeapAlloc(hHeap, HEAP_ZERO_MEMORY, 4 * nSize);
 
     GetModuleFileName(hModule, lpuszFilename, nSize);
 
@@ -149,7 +153,7 @@ LIBRARY_EXPORT HMODULE WINAPI DetourGetModuleHandleA(
     _In_opt_    LPCSTR lpModuleName
     )
 {
-    LPVOID lpuszModuleName = AnsiToUnicode(lpModuleName);
+    LPWSTR lpuszModuleName = AnsiToUnicode(lpModuleName);
     HMODULE Result = GetModuleHandle(lpuszModuleName);
 
     KeepLastErrorAndFree(lpuszModuleName);
@@ -165,7 +169,7 @@ LIBRARY_EXPORT HMODULE WINAPI DetourLoadLibraryA(
     _In_    LPCSTR lpFileName
     )
 {
-    LPVOID lpuszFileName = AnsiToUnicode(lpFileName);
+    LPWSTR lpuszFileName = AnsiToUnicode(lpFileName);
     HMODULE Result = LoadLibrary(lpuszFileName);
 
     KeepLastErrorAndFree(lpuszFileName);
@@ -178,7 +182,7 @@ LIBRARY_EXPORT HMODULE WINAPI DetourLoadLibraryExA(
     _In_        DWORD dwFlags
     )
 {
-    LPVOID lpuszFileName = AnsiToUnicode(lpFileName);
+    LPWSTR lpuszFileName = AnsiToUnicode(lpFileName);
     HMODULE Result = LoadLibraryEx(lpuszFileName, hFile, dwFlags);
 
     KeepLastErrorAndFree(lpuszFileName);
@@ -211,7 +215,7 @@ LIBRARY_EXPORT BOOL WINAPI DetourSetCurrentDirectoryA(
     _In_    LPCSTR lpPathName
     )
 {
-    LPVOID lpuszPathName = AnsiToUnicode(lpPathName);
+    LPWSTR lpuszPathName = AnsiToUnicode(lpPathName);
     BOOL Result = SetCurrentDirectory(lpuszPathName);
 
     KeepLastErrorAndFree(lpuszPathName);
@@ -223,7 +227,7 @@ LIBRARY_EXPORT BOOL WINAPI DetourSetFileAttributesA(
     _In_    DWORD dwFileAttributes
     )
 {
-    LPVOID lpuszFileName = AnsiToUnicode(lpFileName);
+    LPWSTR lpuszFileName = AnsiToUnicode(lpFileName);
     BOOL Result = SetFileAttributes(lpuszFileName, dwFileAttributes);
 
     KeepLastErrorAndFree(lpuszFileName);

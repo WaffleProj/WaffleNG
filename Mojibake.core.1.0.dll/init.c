@@ -1,5 +1,9 @@
+#ifndef  UNICODE
 #define  UNICODE
+#endif
+#ifndef _UNICODE
 #define _UNICODE
+#endif
 #include "mojibake.h"
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
@@ -18,7 +22,7 @@ VOID WINAPI ResetThread(
     GlobalFree(stContext.lpstContext);
 }
 
-VOID FASTCALL SetThreadEnvironment(
+void __fastcall SetThreadEnvironment(
     _In_    HANDLE   hThread,
     _In_    PCONTEXT lpstContext
     )
@@ -28,7 +32,7 @@ VOID FASTCALL SetThreadEnvironment(
     SetThreadLocale(stNewEnvir.ThreadLocale);
 
     CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE) ResetThread, &stThread, 0, NULL);
-    while (TRUE);
+    for (;;);
 }
 
 int WINAPI SetBreakpoint(
@@ -41,8 +45,8 @@ int WINAPI SetBreakpoint(
     {
         CopyLibraryEx(&stLibraryTable[i]);
     }
-    _wsprintfA = GetFunctionAddressA(stLibraryTable[USER32].lpLibrary, "wsprintfA");
-    _VirtualProtect = GetFunctionAddressA(stLibraryTable[KERNEL32].lpLibrary, "VirtualProtect");
+    _wsprintfA = (LPWSPRINTFA) GetFunctionAddressA(stLibraryTable[USER32].lpLibrary, "wsprintfA");
+    _VirtualProtect = (LPVIRTUALPROTECT) GetFunctionAddressA(stLibraryTable[KERNEL32].lpLibrary, "VirtualProtect");
 
     //stUser32Table[MESSAGEBOXA].lpDetourFunction = HookedMessageBoxA;
     //stUser32Table[MESSAGEBOXA].lpOriginalFunction = GetProcAddress(GetModuleHandle(TEXT("User32.dll")),"MessageBoxA");
@@ -95,9 +99,9 @@ VOID WINAPI InitLibrary(
     stOldEnvir.ThreadLocale = GetThreadLocale();
     stNewEnvir.ThreadLocale = LOCALE_JA_JP;
 
-    LPTSTR lpszCommandLineW = GetCommandLineW();
+    LPWSTR lpszCommandLineW = GetCommandLineW();
     int intSize = 4 * lstrlenW(lpszCommandLineW);
-    lpszCommandLineA = GlobalAlloc(GPTR, intSize);
+    lpszCommandLineA = (LPSTR) GlobalAlloc(GPTR, intSize);
     WideCharToMultiByte(stNewEnvir.ACP, 0, lpszCommandLineW, -1, lpszCommandLineA, intSize, NULL, NULL);
 
     SetBreakpoint(stLibraryTable);
@@ -108,7 +112,7 @@ VOID WINAPI InitLibrary(
     stContext.ContextFlags = CONTEXT_FULL;
     GetThreadContext(hThread, &stContext);
 
-    PCONTEXT lpstContext = GlobalAlloc(GPTR, sizeof(CONTEXT));
+    PCONTEXT lpstContext = (PCONTEXT) GlobalAlloc(GPTR, sizeof(CONTEXT));
     RtlMoveMemory(lpstContext, &stContext, sizeof(stContext));
 #if defined(_WIN64)
     stContext.Rsp -= 8 * sizeof(SIZE_T);        //Protect stack

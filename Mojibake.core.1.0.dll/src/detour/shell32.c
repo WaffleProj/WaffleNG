@@ -1,5 +1,9 @@
+#ifndef  UNICODE
 #define  UNICODE
-#define  _UNICODE
+#endif
+#ifndef _UNICODE
+#define _UNICODE
+#endif
 #include "..\..\mojibake.h"
 
 LIBRARY_EXPORT int DetourShellAboutW(

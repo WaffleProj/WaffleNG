@@ -1,5 +1,9 @@
+#ifndef  UNICODE
 #define  UNICODE
-#define  _UNICODE
+#endif
+#ifndef _UNICODE
+#define _UNICODE
+#endif
 #include "..\..\mojibake.h"
 #include <psapi.h>
 
@@ -10,9 +14,9 @@ LIBRARY_EXPORT DWORD WINAPI DetourGetModuleFileNameExA(
     _In_        DWORD nSize
     )
 {
-    LPVOID lpuszFilename = 0;
+    LPWSTR lpuszFilename = 0;
     if (lpFilename)
-        lpuszFilename = HeapAlloc(hHeap, HEAP_ZERO_MEMORY, 4 * nSize);
+        lpuszFilename = (LPWSTR) HeapAlloc(hHeap, HEAP_ZERO_MEMORY, 4 * nSize);
 
     GetModuleFileNameEx(hProcess, hModule, lpuszFilename, nSize);
 

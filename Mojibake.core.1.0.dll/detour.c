@@ -1,5 +1,9 @@
+#ifndef  UNICODE
 #define  UNICODE
+#endif
+#ifndef _UNICODE
 #define _UNICODE
+#endif
 #pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #include "mojibake.h"
@@ -15,7 +19,7 @@ HANDLE      hHeap;
 ENVIRONMENT_BLOCK   stOldEnvir;
 ENVIRONMENT_BLOCK   stNewEnvir;
 
-HGLOBAL lpszCommandLineA;
+LPSTR lpszCommandLineA;
 
 HOOK_TABLE_OBJECT stKernel32Table [] =
 {

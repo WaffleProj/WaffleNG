@@ -1,0 +1,36 @@
+NAME	Mojibake.core.1.0.dll
+EXPORTS
+    ComponentInit
+
+    DetourCreateDirectoryA
+    DetourCreateFileA
+    DetourDeleteFileA
+    DetourFindFirstFileA
+    DetourFindNextFileA
+    DetourGetACP
+    DetourGetCommandLineA
+    DetourGetCPInfo
+    DetourGetFileAttributesA
+    DetourGetModuleFileNameA
+    DetourGetModuleHandleA
+    DetourGetOEMCP
+    DetourLoadLibraryA
+    DetourLoadLibraryExA
+    DetourMultiByteToWideChar
+    DetourSetCurrentDirectoryA
+    DetourSetFileAttributesA
+    DetourWideCharToMultiByte
+
+    DetourCallWindowProcA
+    DetourCreateWindowExA
+    DetourMessageBoxA
+    DetourMessageBoxExA
+    DetourSendMessageA
+    DetourSetWindowTextA
+
+    DetourCreateFontA
+    DetourTextOutA
+
+    DetourGetModuleFileNameExA
+
+    DetourShellAboutW

@@ -1,8 +1,13 @@
-﻿#define UNICODE
+﻿#ifndef  UNICODE
+#define  UNICODE
+#endif
+#ifndef _UNICODE
 #define _UNICODE
+#endif
 #include "..\..\mojibake.h"
 #include <psapi.h>
 #pragma GCC diagnostic ignored "-Wpointer-to-int-cast"
+#pragma GCC diagnostic ignored "-Wparentheses"
 
 int WINAPI _lstrcmpiW(
     _In_    LPCWSTR lpString1,
@@ -11,16 +16,12 @@ int WINAPI _lstrcmpiW(
 {
     if (lpString1 && lpString2)
     {
-        int i = 0;
-        while (TRUE)
+        int i;
+        for (i = 0;; i++)
         {
             if (((lpString1[i] | 0x20) != (lpString2[i] | 0x20)) || (lpString1[i] == 0) || (lpString2[i] == 0))
             {
                 break;
-            }
-            else
-            {
-                i++;
             }
         }
         return lpString1[i] - lpString2[i];
@@ -35,29 +36,25 @@ HMODULE WINAPI GetModuleAddressW(
     _In_    LPCWSTR lpszModule
     )
 {
+    if (!lpszModule)
+    {
+        return 0;
+    }
     PPEB lpPeb = WAFFLE_PORT_PEB_ADDRESS;
 
     PLIST_ENTRY lpListEntry = lpPeb->Ldr->InMemoryOrderModuleList.Flink;
-    while (TRUE)
+    for (;((PLDR_DATA_TABLE_ENTRY) lpListEntry)->FullDllName.Buffer;)
     {
-        WCHAR *lpszFullDllName = ((PLDR_DATA_TABLE_ENTRY) lpListEntry)->FullDllName.Buffer;
-
-        if (lpszFullDllName && lpszModule)
+        if (_lstrcmpiW(lpszModule, ((PLDR_DATA_TABLE_ENTRY) lpListEntry)->FullDllName.Buffer) == 0)
         {
-            if (_lstrcmpiW(lpszModule, lpszFullDllName) == 0)
-            {
-                return (HMODULE) ((PLDR_DATA_TABLE_ENTRY) ((SIZE_T) lpListEntry - FIELD_OFFSET(LDR_DATA_TABLE_ENTRY, InMemoryOrderLinks)))->DllBase;
-            }
-            else
-            {
-                lpListEntry = lpListEntry->Flink;
-            }
+            return (HMODULE) ((PLDR_DATA_TABLE_ENTRY) ((SIZE_T) lpListEntry - FIELD_OFFSET(LDR_DATA_TABLE_ENTRY, InMemoryOrderLinks)))->DllBase;
         }
         else
         {
-            return 0;
+            lpListEntry = lpListEntry->Flink;
         }
     }
+    return 0;
 }
 
 LPVOID WINAPI GetFunctionAddressA(
@@ -93,16 +90,16 @@ LPVOID WINAPI GetFunctionAddressA(
 
         PIMAGE_EXPORT_DIRECTORY lpExportTable = (PIMAGE_EXPORT_DIRECTORY) ((SIZE_T) hDll + lpDataDirectory->VirtualAddress);
 
-        DWORD *lpName = (LPVOID) ((SIZE_T) hDll + lpExportTable->AddressOfNames);
-        WORD *lpOrdinal = (LPVOID) ((SIZE_T) hDll + lpExportTable->AddressOfNameOrdinals);
-        DWORD *lpFunction = (LPVOID) ((SIZE_T) hDll + lpExportTable->AddressOfFunctions);
+        DWORD *lpName = (DWORD *) ((SIZE_T) hDll + lpExportTable->AddressOfNames);
+        WORD *lpOrdinal = (WORD *) ((SIZE_T) hDll + lpExportTable->AddressOfNameOrdinals);
+        DWORD *lpFunction = (DWORD *) ((SIZE_T) hDll + lpExportTable->AddressOfFunctions);
 
         if ((SIZE_T) lpszFuncName >= 0x00010000)
         {
             DWORD i;
             for (i = 0; i < lpExportTable->NumberOfFunctions; i++)
             {
-                if (!lstrcmpA((LPVOID) ((SIZE_T) hDll + lpName[i]), lpszFuncName))
+                if (!lstrcmpA((LPSTR) ((SIZE_T) hDll + lpName[i]), lpszFuncName))
                 {
                     return (LPVOID) ((SIZE_T) hDll + lpFunction[lpOrdinal[i]]);
                 }
@@ -209,7 +206,7 @@ LONG CALLBACK BreakpointHandler(
     _In_    PEXCEPTION_POINTERS ExceptionInfo
     )
 {
-    if ((ExceptionInfo->ExceptionRecord->ExceptionCode == EXCEPTION_PRIV_INSTRUCTION) && (*(char *) (ExceptionInfo->ExceptionRecord->ExceptionAddress) == (char) 0xF4))
+    if ((ExceptionInfo->ExceptionRecord->ExceptionCode == EXCEPTION_PRIV_INSTRUCTION) && (*(WAFFLE_PORT_PRIVILEGED_INSTRUCTION_DATA *) (ExceptionInfo->ExceptionRecord->ExceptionAddress) == (WAFFLE_PORT_PRIVILEGED_INSTRUCTION_DATA) WAFFLE_PORT_PRIVILEGED_INSTRUCTION))
     {
         int i;
         for (i = 0; stLibraryTable[i].lpszLibrary; i++)
