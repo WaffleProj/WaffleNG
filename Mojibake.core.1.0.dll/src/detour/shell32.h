@@ -2,7 +2,6 @@
 #define __SHELL32_H_
 
 #include "..\..\mojibake.h"
-#include <shellapi.h>
 
 typedef int (WINAPI *LPSHELLABOUTW)(
     _In_opt_    HWND hWnd,

@@ -1,7 +1,6 @@
 #define  UNICODE
 #define _UNICODE
 #include "mojibake.h"
-#include <shlwapi.h>
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
 LPVOID WINAPI AnsiToUnicode(

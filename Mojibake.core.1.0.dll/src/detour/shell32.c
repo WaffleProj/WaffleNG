@@ -1,7 +1,6 @@
 #define  UNICODE
 #define  _UNICODE
 #include "..\..\mojibake.h"
-#include <shellapi.h>
 
 LIBRARY_EXPORT int DetourShellAboutW(
     _In_opt_    HWND hWnd,
