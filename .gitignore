@@ -6,5 +6,5 @@
 *.a
 
 # Visual Studio files
-*/Debug
-*/Release
+*Win32*
+*x64*
