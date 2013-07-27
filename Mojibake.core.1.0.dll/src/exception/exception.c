@@ -28,7 +28,7 @@ int WINAPI _lstrcmpiW(
     }
     else
     {
-        return lpString1 - lpString2;
+        return (int) (lpString1 - lpString2);
     }
 }
 
@@ -43,7 +43,7 @@ HMODULE WINAPI GetModuleAddressW(
     PPEB lpPeb = WAFFLE_PORT_PEB_ADDRESS;
 
     PLIST_ENTRY lpListEntry = lpPeb->Ldr->InMemoryOrderModuleList.Flink;
-    for (;((PLDR_DATA_TABLE_ENTRY) lpListEntry)->FullDllName.Buffer;)
+    for (; ((PLDR_DATA_TABLE_ENTRY) lpListEntry)->FullDllName.Buffer;)
     {
         if (_lstrcmpiW(lpszModule, ((PLDR_DATA_TABLE_ENTRY) lpListEntry)->FullDllName.Buffer) == 0)
         {

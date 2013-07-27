@@ -19,7 +19,7 @@ LIBRARY_EXPORT LRESULT WINAPI DetourCallWindowProcA(
         LRESULT Result = ((LPCALLWINDOWPROCA) stUser32Table[CALLWINDOWPROCA].lpNewFunction)(lpPrevWndFunc, hWnd, Msg, wParam, lParam);
 
         DWORD LastError = GetLastError();
-        int sizeString = DefWindowProcA(hWnd, WM_GETTEXTLENGTH, 0, 0);
+        LRESULT sizeString = DefWindowProcA(hWnd, WM_GETTEXTLENGTH, 0, 0);
         sizeString++;
         LPSTR lpszString = (LPSTR) HeapAlloc(hHeap, HEAP_ZERO_MEMORY, sizeString);
         DefWindowProcA(hWnd, WM_GETTEXT, sizeString, (LPARAM) lpszString);
