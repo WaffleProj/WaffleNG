@@ -88,6 +88,7 @@
     <LibraryPath>$(SolutionDir)SDK\Lib\I386;$(LibraryPath)</LibraryPath>
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <TargetName>Mojibake.core.1.0</TargetName>
@@ -95,6 +96,7 @@
     <LibraryPath>$(SolutionDir)SDK\Lib\AMD64;$(LibraryPath)</LibraryPath>
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <OutDir>$(SolutionDir)Component\Mojibake\AMD64\</OutDir>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -125,7 +127,6 @@
       <CompileAs>CompileAsCpp</CompileAs>
       <DisableSpecificWarnings>4068;4100</DisableSpecificWarnings>
       <EnablePREfast>true</EnablePREfast>
-      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -134,7 +135,8 @@
       <EntryPointSymbol>DllMain</EntryPointSymbol>
       <ImportLibrary>$(SolutionDir)SDK\Lib\AMD64\$(TargetName).lib</ImportLibrary>
       <AdditionalDependencies>Waffle.common.1.0.lib;psapi.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ModuleDefinitionFile>mojibake.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>
+      </ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -182,25 +184,19 @@
       <EntryPointSymbol>DllMain</EntryPointSymbol>
       <ImportLibrary>$(SolutionDir)SDK\Lib\AMD64\$(TargetName).lib</ImportLibrary>
       <AdditionalDependencies>Waffle.common.1.0.lib;psapi.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ModuleDefinitionFile>mojibake.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>
+      </ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="detour.h" />
     <ClInclude Include="init.h" />
     <ClInclude Include="mojibake.h" />
-    <ClInclude Include="src\detour\gdi32.h" />
-    <ClInclude Include="src\detour\kernel32.h" />
-    <ClInclude Include="src\detour\psapi.h" />
-    <ClInclude Include="src\detour\shell32.h" />
-    <ClInclude Include="src\detour\user32.h" />
-    <ClInclude Include="src\exception\exception.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="detour.c" />
     <ClCompile Include="init.c" />
     <ClCompile Include="mojibake.c" />
-    <ClCompile Include="src\exception\exception.c" />
   </ItemGroup>
   <ItemGroup>
     <None Include="mojibake.def" />

@@ -24,24 +24,6 @@
     <ClInclude Include="mojibake.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\exception\exception.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\detour\gdi32.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\detour\kernel32.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\detour\psapi.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\detour\shell32.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\detour\user32.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="detour.c">
@@ -51,9 +33,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="mojibake.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\exception\exception.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

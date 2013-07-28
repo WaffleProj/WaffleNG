@@ -4,7 +4,7 @@
 #ifndef _UNICODE
 #define _UNICODE
 #endif
-#include "..\..\mojibake.h"
+#include "..\mojibake.h"
 #include <psapi.h>
 
 LIBRARY_EXPORT DWORD WINAPI DetourGetModuleFileNameExA(

@@ -4,7 +4,7 @@
 #ifndef _UNICODE
 #define _UNICODE
 #endif
-#include "..\..\mojibake.h"
+#include "..\mojibake.h"
 
 LIBRARY_EXPORT LRESULT WINAPI DetourCallWindowProcA(
     _In_    WNDPROC lpPrevWndFunc,

@@ -5,7 +5,6 @@
 #include <waffle.h>
 #include "detour.h"
 #include "init.h"
-#include "src\exception\exception.h"
 
 #define	CP_SHIFT_JIS    932
 #define LOCALE_JA_JP    0x0411

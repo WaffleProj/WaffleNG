@@ -43,15 +43,16 @@ int WINAPI SetBreakpoint(
     int i;
     for (i = 0; stLibraryTable[i].lpszLibrary; i++)
     {
-        CopyLibraryEx(&stLibraryTable[i]);
+        WaffleCopyLibraryEx(&stLibraryTable[i]);
     }
-    _wsprintfA = (LPWSPRINTFA) GetFunctionAddressA(stLibraryTable[USER32].lpLibrary, "wsprintfA");
-    _VirtualProtect = (LPVIRTUALPROTECT) GetFunctionAddressA(stLibraryTable[KERNEL32].lpLibrary, "VirtualProtect");
+    _wsprintfA = (LPWSPRINTFA) WaffleGetFunctionAddressA(stLibraryTable[USER32].lpLibrary, "wsprintfA");
+    _VirtualProtect = (LPVIRTUALPROTECT) WaffleGetFunctionAddressA(stLibraryTable[KERNEL32].lpLibrary, "VirtualProtect");
 
     //stUser32Table[MESSAGEBOXA].lpDetourFunction = HookedMessageBoxA;
     //stUser32Table[MESSAGEBOXA].lpOriginalFunction = GetProcAddress(GetModuleHandle(TEXT("User32.dll")),"MessageBoxA");
 
-    AddVectoredExceptionHandler(TRUE, BreakpointHandler);
+    WaffleSetLibraryTable(stLibraryTable);
+    AddVectoredExceptionHandler(TRUE, WaffleBreakpointHandler);
     for (i = 0; stLibraryTable[i].lpszLibrary; i++)
     {
         LPHOOK_TABLE_OBJECT lpHookTable = stLibraryTable[i].lpHookTable;

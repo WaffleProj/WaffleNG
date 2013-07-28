@@ -4,7 +4,7 @@
 #ifndef _UNICODE
 #define _UNICODE
 #endif
-#include "..\..\mojibake.h"
+#include "..\mojibake.h"
 
 LIBRARY_EXPORT int DetourShellAboutW(
     _In_opt_    HWND hWnd,

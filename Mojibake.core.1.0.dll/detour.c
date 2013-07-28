@@ -7,11 +7,18 @@
 #pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #include "mojibake.h"
-#include "src\detour\kernel32.c"
-#include "src\detour\user32.c"
-#include "src\detour\gdi32.c"
-#include "src\detour\psapi.c"
-#include "src\detour\shell32.c"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+#include "src\kernel32.c"
+#include "src\user32.c"
+#include "src\gdi32.c"
+#include "src\psapi.c"
+#include "src\shell32.c"
+#ifdef __cplusplus
+};
+#endif
 
 HINSTANCE   hDLL;
 HANDLE      hHeap;

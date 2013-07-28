@@ -1,12 +1,6 @@
 #ifndef __GLOBAL_H_
 #define __GLOBAL_H_
 
-#include "src\detour\kernel32.h"
-#include "src\detour\user32.h"
-#include "src\detour\gdi32.h"
-#include "src\detour\psapi.h"
-#include "src\detour\shell32.h"
-
 extern HINSTANCE    hDLL;
 extern HANDLE       hHeap;
 extern LPSTR        lpszCommandLineA;
@@ -20,14 +14,6 @@ typedef struct
 
 extern ENVIRONMENT_BLOCK    stOldEnvir;
 extern ENVIRONMENT_BLOCK    stNewEnvir;
-
-typedef struct
-{
-    LPCSTR lpszFunction;
-    LPVOID lpDetourFunction;
-    LPVOID lpNewFunction;
-    LPVOID lpOriginalFunction;
-} HOOK_TABLE_OBJECT, *LPHOOK_TABLE_OBJECT;
 
 extern	HOOK_TABLE_OBJECT       stKernel32Table [];
 #define CREATEDIRECTORYA        0
@@ -63,16 +49,7 @@ extern	HOOK_TABLE_OBJECT       stPsapiTable [];
 extern	HOOK_TABLE_OBJECT       stShell32Table [];
 #define SHELLABOUTW             0
 
-typedef struct
-{
-    LPCWSTR             lpszLibrary;
-    LPHOOK_TABLE_OBJECT lpHookTable;
-    HMODULE             lpLibrary;
-    HMODULE             hModule;
-    LPVOID              lpEndOfModule;
-} LIBRARY_TABLE_OBJECT, *LPLIBRARY_TABLE_OBJECT;
-
-extern LIBRARY_TABLE_OBJECT    stLibraryTable [];
+extern LIBRARY_TABLE_OBJECT     stLibraryTable [];
 #define KERNEL32                0
 #define USER32                  1
 #define GDI32                   2
@@ -80,20 +57,7 @@ extern LIBRARY_TABLE_OBJECT    stLibraryTable [];
 #define NTDLL                   4
 #define SHELL32                 5
 
-typedef int (__cdecl *LPWSPRINTFA)(
-    _Out_  LPSTR lpOut,
-    _In_   LPCSTR lpFmt,
-    _In_   ...
-    );
-
 extern LPWSPRINTFA _wsprintfA;
-
-typedef BOOL(WINAPI *LPVIRTUALPROTECT)(
-    _In_   LPVOID lpAddress,
-    _In_   SIZE_T dwSize,
-    _In_   DWORD flNewProtect,
-    _Out_  PDWORD lpflOldProtect
-    );
 
 extern LPVIRTUALPROTECT _VirtualProtect;
 
