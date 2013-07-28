@@ -19,6 +19,9 @@ VOID WINAPI Main()
     TCHAR szPlugin[MAX_PATH];
     TCHAR szTarget[MAX_PATH];
     TCHAR szDirectory[MAX_PATH];
+    RtlZeroMemory(szPlugin, sizeof(szPlugin));
+    RtlZeroMemory(szTarget, sizeof(szTarget));
+    RtlZeroMemory(szDirectory, sizeof(szDirectory));
     if (nArg >= 3)
     {
         //1.文件名 2.插件名 3.目标
@@ -30,7 +33,6 @@ VOID WINAPI Main()
     {
         OPENFILENAME stOpenFile;
         RtlZeroMemory(&stOpenFile, sizeof(stOpenFile));
-        RtlZeroMemory(szTarget, sizeof(szTarget));
 
         stOpenFile.lStructSize = sizeof(stOpenFile);
         stOpenFile.lpstrFile = szTarget;
@@ -53,9 +55,17 @@ VOID WINAPI Main()
         lstrcpy(lpstProcessSetting->szPlugin, szPlugin);
 
         LPTSTR lpszArgument = (LPTSTR) GlobalAlloc(GPTR, (lstrlen(szTarget) + lstrlen(WaffleArgp(4)) + 3 + 1) * sizeof(TCHAR));
-        wsprintf(lpszArgument, TEXT("\"%s\" %s"), szTarget, WaffleArgp(4));
-        WaffleExecute(szTarget, lpszArgument, szDirectory, lpstProcessSetting);
-        GlobalFree(lpszArgument);
+        if (lpszArgument)
+        {
+            wsprintf(lpszArgument, TEXT("\"%s\" %s"), szTarget, WaffleArgp(4));
+            WaffleExecute(szTarget, lpszArgument, szDirectory, lpstProcessSetting);
+            GlobalFree(lpszArgument);
+        }
+        else
+        {
+            MessageBox(0, TEXT("FIXME:Unable to allocate memory"), 0, 0);
+            ExitProcess(0);
+        }
     }
     else
     {
@@ -96,14 +106,32 @@ VOID WINAPI Main()
         if (nArg >= 3)
         {
             lpszArgument = (LPTSTR) GlobalAlloc(GPTR, (lstrlen(szLoader) + lstrlen(WaffleArgp(2)) + 3 + 1) * sizeof(TCHAR));
-            wsprintf(lpszArgument, TEXT("\"%s\" %s"), szLoader, WaffleArgp(2));
+            if (lpszArgument)
+            {
+                wsprintf(lpszArgument, TEXT("\"%s\" %s"), szLoader, WaffleArgp(2));
+            }
+            else
+            {
+                MessageBox(0,TEXT("FIXME:Unable to allocate memory"),0,0);
+                ExitProcess(0);
+            }
         }
         else
         {
             lpszArgument = (LPTSTR) GlobalAlloc(GPTR, (lstrlen(szLoader) + lstrlen(szPlugin) + lstrlen(szTarget) + 6 + 1) * sizeof(TCHAR));
-            wsprintf(lpszArgument, TEXT("\"%s\" %s \"%s\""), szLoader, szPlugin, szTarget);
+            if (lpszArgument)
+            {
+                wsprintf(lpszArgument, TEXT("\"%s\" %s \"%s\""), szLoader, szPlugin, szTarget);
+            }
+            else
+            {
+                MessageBox(0, TEXT("FIXME:Unable to allocate memory"), 0, 0);
+                ExitProcess(0);
+            }
         }
         CreateProcess(szLoader, lpszArgument, NULL, NULL, TRUE, 0, 0, szDirectory, &stStartUp, &stProcessInfo);
+        CloseHandle(stProcessInfo.hThread);
+        CloseHandle(stProcessInfo.hProcess);
         GlobalFree(lpszArgument);
     }
 
