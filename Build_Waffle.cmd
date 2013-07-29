@@ -26,10 +26,10 @@ call	Common	CleanUp
 call	Common	ChangeDirectory	%Project%.exe
 call	Common	Compile	waffle.c
 if	"%Machine%" == "I386"	(
-ld	--subsystem windows -L%MinGW%\lib -L%OUTPUT_PATH%\Component\Waffle\%Machine% --enable-stdcall-fixup -e _Main --dynamicbase --nxcompat -o %OUTPUT_PATH%\Component\%Project%\%Machine%\%Project%.exe waffle.o -lWaffle.common.1.0 -lkernel32 -luser32 -lcomdlg32
+ld	--subsystem windows -L%MinGW%\lib -L%OUTPUT_PATH%\Component\Waffle\%Machine% --enable-stdcall-fixup -kill-at -e _Main -o %OUTPUT_PATH%\Component\%Project%\%Machine%\%Project%.exe waffle.o -lWaffle.common.1.0 -lkernel32 -luser32 -lcomdlg32
 	)
 if	"%Machine%" == "AMD64"	(
-ld	--subsystem windows -L%MinGW%\lib -L%OUTPUT_PATH%\Component\Waffle\%Machine% --enable-stdcall-fixup -e  Main --dynamicbase --nxcompat -o %OUTPUT_PATH%\Component\%Project%\%Machine%\%Project%.exe waffle.o -lWaffle.common.1.0 -lkernel32 -luser32 -lcomdlg32
+ld	--subsystem windows -L%MinGW%\lib -L%OUTPUT_PATH%\Component\Waffle\%Machine% --enable-stdcall-fixup -kill-at -e  Main -o %OUTPUT_PATH%\Component\%Project%\%Machine%\%Project%.exe waffle.o -lWaffle.common.1.0 -lkernel32 -luser32 -lcomdlg32
 	)
 call	Common	CleanUp
 :nowaffleexe

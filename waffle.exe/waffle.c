@@ -5,7 +5,6 @@
 #define _UNICODE
 #endif
 #include "waffle.h"
-//#include <shellapi.h>
 #pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 
 VOID WINAPI Main()
