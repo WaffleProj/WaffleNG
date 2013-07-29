@@ -20,13 +20,8 @@ extern "C" {
 };
 #endif
 
-HINSTANCE   hDLL;
-HANDLE      hHeap;
-
 ENVIRONMENT_BLOCK   stOldEnvir;
 ENVIRONMENT_BLOCK   stNewEnvir;
-
-LPSTR lpszCommandLineA;
 
 HOOK_TABLE_OBJECT stKernel32Table [] =
 {

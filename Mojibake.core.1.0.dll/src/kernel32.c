@@ -68,7 +68,7 @@ LIBRARY_EXPORT HANDLE WINAPI DetourFindFirstFileA(
     WideCharToMultiByte(stNewEnvir.ACP, 0, FindFileData.cFileName, -1, lpFindFileData->cFileName, sizeof(lpFindFileData->cFileName), NULL, NULL);
     WideCharToMultiByte(stNewEnvir.ACP, 0, FindFileData.cAlternateFileName, -1, lpFindFileData->cAlternateFileName, sizeof(lpFindFileData->cAlternateFileName), NULL, NULL);
 
-    HeapFree(hHeap, 0, lpuszFileName);
+    GlobalFree(lpuszFileName);
     SetLastError(LastError);
     return Result;
 }
@@ -105,6 +105,14 @@ LIBRARY_EXPORT UINT WINAPI DetourGetACP(void)
 
 LIBRARY_EXPORT LPSTR WINAPI DetourGetCommandLineA(void)   //由于这个函数直接返回指针无需释放,所以只能这么做
 {
+    static LPSTR lpszCommandLineA;
+    if (!lpszCommandLineA)
+    {
+        LPWSTR lpszCommandLineW = GetCommandLineW();
+        int intSize = 4 * lstrlenW(lpszCommandLineW);
+        lpszCommandLineA = (LPSTR) HeapAlloc(hHeap, HEAP_ZERO_MEMORY, intSize);
+        WideCharToMultiByte(stNewEnvir.ACP, 0, lpszCommandLineW, -1, lpszCommandLineA, intSize, NULL, NULL);
+    }
     return lpszCommandLineA;
 }
 
@@ -138,15 +146,16 @@ LIBRARY_EXPORT DWORD WINAPI DetourGetModuleFileNameA(
 {
     LPWSTR lpuszFilename = 0;
     if (lpFilename)
-        lpuszFilename = (LPWSTR) HeapAlloc(hHeap, HEAP_ZERO_MEMORY, 4 * nSize);
+        lpuszFilename = (LPWSTR) GlobalAlloc(GPTR, 4 * nSize);
 
     GetModuleFileName(hModule, lpuszFilename, nSize);
 
     DWORD LastError = GetLastError();
     WideCharToMultiByte(stNewEnvir.ACP, 0, lpuszFilename, -1, lpFilename, nSize, NULL, NULL);
-    HeapFree(hHeap, 0, lpuszFilename);
+    GlobalFree(lpuszFilename);
+    int Result = lstrlenA(lpFilename);
     SetLastError(LastError);
-    return lstrlenA(lpFilename);
+    return Result;
 }
 
 LIBRARY_EXPORT HMODULE WINAPI DetourGetModuleHandleA(

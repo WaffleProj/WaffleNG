@@ -1,19 +1,11 @@
 #ifndef __INIT_H_
 #define __INIT_H_
 
-typedef struct
-{
-    HANDLE   hThread;
-    PCONTEXT lpstContext;
-} THREAD_CONTEXT, *LPTHREAD_CONTEXT;
+extern HANDLE       hHeap;
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-    VOID WINAPI InitLibrary(
-        _In_    DWORD dwThreadId
-        );
 
 #ifdef __cplusplus
 };

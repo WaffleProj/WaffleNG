@@ -6,6 +6,8 @@
 #include "detour.h"
 #include "init.h"
 
+extern HINSTANCE    hComponent;
+
 #define	CP_SHIFT_JIS    932
 #define LOCALE_JA_JP    0x0411
 

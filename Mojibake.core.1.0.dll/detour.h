@@ -1,10 +1,6 @@
 #ifndef __GLOBAL_H_
 #define __GLOBAL_H_
 
-extern HINSTANCE    hDLL;
-extern HANDLE       hHeap;
-extern LPSTR        lpszCommandLineA;
-
 typedef struct
 {
     UINT ACP;

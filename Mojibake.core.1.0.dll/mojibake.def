@@ -1,6 +1,7 @@
 NAME	Mojibake.core.1.0.dll
 EXPORTS
     ComponentInit
+    ThreadInit
 
     DetourCreateDirectoryA
     DetourCreateFileA

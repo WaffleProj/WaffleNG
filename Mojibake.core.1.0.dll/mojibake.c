@@ -7,6 +7,8 @@
 #include "mojibake.h"
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
+HINSTANCE   hComponent;
+
 LPWSTR WINAPI AnsiToUnicode(
     _In_    LPCSTR lpszText
     )
@@ -59,14 +61,6 @@ VOID WINAPI KeepLastErrorAndFree(
     return;
 }
 
-LIBRARY_EXPORT SIZE_T WINAPI ComponentInit(
-    _In_    LPWAFFLE_PROCESS_SETTING lpstProcessSetting
-    )
-{
-    InitLibrary(lpstProcessSetting->dwThreadId);
-    return 0;
-}
-
 BOOL WINAPI DllMain(
     _In_    HINSTANCE hinstDLL,
     _In_    DWORD fdwReason,
@@ -76,10 +70,7 @@ BOOL WINAPI DllMain(
     if (fdwReason == DLL_PROCESS_ATTACH)
     {
         DisableThreadLibraryCalls(hinstDLL);
-        //Save hinstDLL
-        //No. Can not get the correct function address in new library
-        //InitLibraryWithTID();
-        //ComponentInit();
+        hComponent = hinstDLL;
     }
     return TRUE;
 }
