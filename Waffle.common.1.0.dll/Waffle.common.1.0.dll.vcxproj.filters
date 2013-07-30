@@ -50,6 +50,9 @@
     <ClCompile Include="src\rtl.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\option.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="common.def">

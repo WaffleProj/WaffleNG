@@ -23,12 +23,19 @@ EXPORTS
     WaffleInjectDll
     WaffleExecute
     
+    WaffleGetOptionString
+    WaffleSetOptionString
+    WaffleGetOptionInt
+    WaffleSetOptionInt
+    
     WaffleGetMachineType
     
     WafflelstrcmpiW
     WafflelstrcmpiA
     WafflelstrcmpW
     WafflelstrcmpA
+    WaffleStrToIntW
+    WaffleStrToIntA
     
     WaffleOpenProcessSetting
     WaffleCreateProcessSetting

@@ -52,6 +52,10 @@ LIBRARY_EXPORT SIZE_T WINAPI WaffleInit(
     }
     else
     {
+        TCHAR szExecutable[MAX_PATH];
+        GetModuleFileName(NULL, szExecutable, sizeof(szExecutable) / sizeof(szExecutable[0]));
+        WaffleSetOptionString(lpstProcessSetting, TEXT("ProgramName"), szExecutable, FALSE);
+
         ComponentInit(lpstProcessSetting);
 
         WaffleSetBreakpoint();
@@ -66,6 +70,7 @@ LIBRARY_EXPORT SIZE_T WINAPI WaffleInit(
         LPTHREAD_CONTEXT lpstThread = (LPTHREAD_CONTEXT) GlobalAlloc(GPTR, sizeof(THREAD_CONTEXT));
         lpstThread->hThread = hThread;
         lpstThread->lpstContext = lpstContext;
+        lpstThread->lpstProcessSetting = lpstProcessSetting;
 
         RtlMoveMemory(lpstContext, &stContext, sizeof(stContext));
         stContext.WAFFLE_PORT_STACK_POINTER -= 8 * sizeof(SIZE_T);        //Protect stack

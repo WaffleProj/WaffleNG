@@ -281,6 +281,7 @@
     <ClCompile Include="src\hash.c" />
     <ClCompile Include="src\init.c" />
     <ClCompile Include="src\inject.c" />
+    <ClCompile Include="src\option.c" />
     <ClCompile Include="src\pemachine.c" />
     <ClCompile Include="src\rtl.c" />
     <ClCompile Include="src\setting.c" />
