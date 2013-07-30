@@ -105,10 +105,10 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <TargetName>Mojibake.core.1.0</TargetName>
     <IncludePath>$(SolutionDir)SDK\Include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)SDK\Lib\ARM;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)SDK\Lib\ARMNT;$(LibraryPath)</LibraryPath>
     <LibraryWPath>$(WindowsSDK_MetadataPath)</LibraryWPath>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
-    <OutDir>$(SolutionDir)Component\Mojibake\ARM\</OutDir>
+    <OutDir>$(SolutionDir)Component\Mojibake\ARMNT\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <TargetName>Mojibake.core.1.0</TargetName>
@@ -129,11 +129,11 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <TargetName>Mojibake.core.1.0</TargetName>
     <IncludePath>$(SolutionDir)SDK\Include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)SDK\Lib\ARM;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)SDK\Lib\ARMNT;$(LibraryPath)</LibraryPath>
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <OutDir>$(SolutionDir)Component\Mojibake\ARM\</OutDir>
+    <OutDir>$(SolutionDir)Component\Mojibake\ARMNT\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <TargetName>Mojibake.core.1.0</TargetName>
@@ -178,7 +178,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <EntryPointSymbol>DllMain</EntryPointSymbol>
-      <ImportLibrary>$(SolutionDir)SDK\Lib\ARM\$(TargetName).lib</ImportLibrary>
+      <ImportLibrary>$(SolutionDir)SDK\Lib\ARMNT\$(TargetName).lib</ImportLibrary>
       <AdditionalDependencies>Waffle.common.1.0.lib;kernel32.lib;gdi32.lib;psapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -244,7 +244,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <SubSystem>Windows</SubSystem>
       <EntryPointSymbol>DllMain</EntryPointSymbol>
-      <ImportLibrary>$(SolutionDir)SDK\Lib\ARM\$(TargetName).lib</ImportLibrary>
+      <ImportLibrary>$(SolutionDir)SDK\Lib\ARMNT\$(TargetName).lib</ImportLibrary>
       <AdditionalDependencies>Waffle.common.1.0.lib;kernel32.lib;gdi32.lib;psapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
