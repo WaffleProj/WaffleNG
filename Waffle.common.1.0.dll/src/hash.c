@@ -8,13 +8,17 @@
 #include <Wincrypt.h>
 
 LIBRARY_EXPORT void WINAPI WaffleGetFileHash(
-    _In_    LPTSTR lpszFile,
-    _In_    LPTSTR lpszResult
+    _In_    LPCTSTR lpszFile,
+    _Out_   LPTSTR lpszResult
     )
 {
     lpszResult[0] = 0;
 
+    PVOID OldValue = 0;
+    WaffleDisableWow64FsRedirection(&OldValue);
     HANDLE hFile = CreateFile(lpszFile, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_FLAG_SEQUENTIAL_SCAN, NULL);
+    WaffleRevertWow64FsRedirection(OldValue);
+
     if (hFile == INVALID_HANDLE_VALUE)
     {
         return;
@@ -61,8 +65,8 @@ LIBRARY_EXPORT void WINAPI WaffleGetFileHash(
         }
     }
 
-    BYTE rgbHash[20];      //SHA1LEN == 20
-    DWORD cbHash = 20;     //MD5LEN == 16
+    BYTE rgbHash[WAFFLE_HASH_LENGTH];      //SHA1LEN == 20
+    DWORD cbHash = WAFFLE_HASH_LENGTH;     //MD5LEN == 16
     if (CryptGetHashParam(hHash, HP_HASHVAL, rgbHash, &cbHash, 0))
     {
         CHAR rgbDigitsU [] = "0123456789ABCDEF";

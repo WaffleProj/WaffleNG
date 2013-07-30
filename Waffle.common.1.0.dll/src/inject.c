@@ -35,25 +35,11 @@ LIBRARY_EXPORT BOOL WINAPI WaffleCreateProcess(
         lpProcessInformation = &stProcessInfo;
     }
 
-    //Disable redirection if the target is in the "system32"
-    HMODULE hKernel32 = GetModuleHandle(TEXT("kernel32.dll"));
     PVOID OldValue = 0;
-
-    //Open the target
-    LPWOW64DISABLEWOW64FSREDIRECTION lpWow64DisableWow64FsRedirection = (LPWOW64DISABLEWOW64FSREDIRECTION) GetProcAddress(hKernel32, "Wow64DisableWow64FsRedirection");
-    if (lpWow64DisableWow64FsRedirection)
-    {
-        lpWow64DisableWow64FsRedirection(&OldValue);
-    }
-
+    WaffleDisableWow64FsRedirection(&OldValue);
     BOOL Result = CreateProcess(lpApplicationName, lpCommandLine, lpProcessAttributes, lpThreadAttributes, bInheritHandles, dwCreationFlags, lpEnvironment, lpCurrentDirectory, lpStartupInfo, lpProcessInformation);
     DWORD LastError = GetLastError();
-
-    LPWOW64REVERTWOW64FSREDIRECTION lpWow64RevertWow64FsRedirection = (LPWOW64REVERTWOW64FSREDIRECTION) GetProcAddress(hKernel32, "Wow64RevertWow64FsRedirection");
-    if (lpWow64RevertWow64FsRedirection)
-    {
-        lpWow64RevertWow64FsRedirection(OldValue);
-    }
+    WaffleRevertWow64FsRedirection(OldValue);
     
     SetLastError(LastError);
     return Result;
@@ -91,6 +77,7 @@ LIBRARY_EXPORT void WINAPI WaffleExecute(
 
         lpstProcessSetting->dwThreadId = stProcessInfo.dwThreadId;
         lpstProcessSetting->dwProcessId = stProcessInfo.dwProcessId;
+        WaffleGetFileHash(lpApplicationName, lpstProcessSetting->szHash);
         CloseHandle(stProcessInfo.hThread);
 
         WaffleInjectDll(stProcessInfo.hProcess, szWaffleCommonDll);

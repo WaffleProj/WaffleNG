@@ -52,24 +52,40 @@ LIBRARY_EXPORT LPVOID WINAPI WaffleGetProcAddress(
 
         PIMAGE_EXPORT_DIRECTORY lpExportTable = (PIMAGE_EXPORT_DIRECTORY) ((SIZE_T) hModule + lpDataDirectory->VirtualAddress);
 
+        DWORD nName = lpExportTable->NumberOfNames;
+        DWORD nFunction = lpExportTable->NumberOfFunctions;
         DWORD *lpName = (DWORD *) ((SIZE_T) hModule + lpExportTable->AddressOfNames);
         WORD *lpOrdinal = (WORD *) ((SIZE_T) hModule + lpExportTable->AddressOfNameOrdinals);
         DWORD *lpFunction = (DWORD *) ((SIZE_T) hModule + lpExportTable->AddressOfFunctions);
 
-        if ((SIZE_T) lpszFuncName >= 0x00010000)
+        if ((SIZE_T) lpszFuncName > 0xFFFF)
         {
+            int Direction = 1;
+            DWORD Begin = 0;
+            DWORD End = nName;
             DWORD i;
-            for (i = 0; i < lpExportTable->NumberOfFunctions; i++)
+            while (Direction)
             {
-                if (!lstrcmpA((LPSTR) ((SIZE_T) hModule + lpName[i]), lpszFuncName))
+                if (Begin == End)
                 {
-                    return (LPVOID) ((SIZE_T) hModule + lpFunction[lpOrdinal[i]]);
+                    return NULL;
+                }
+                i = (Begin + End) / 2;
+                Direction = WafflelstrcmpA(lpszFuncName, (LPSTR) ((SIZE_T) hModule + lpName[i]));
+                if (Direction > 0)
+                {
+                    Begin = i;
+                }
+                else if (Direction < 0)
+                {
+                    End = i;
                 }
             }
+            return (LPVOID) ((SIZE_T) hModule + lpFunction[lpOrdinal[i]]);
         }
         else
         {
-            if ((SIZE_T) lpszFuncName <= lpExportTable->NumberOfFunctions)
+            if ((SIZE_T) lpszFuncName <= nFunction)
             {
                 return (LPVOID) ((SIZE_T) hModule + lpFunction[(SIZE_T) lpszFuncName - lpExportTable->Base]);
             }
@@ -178,7 +194,7 @@ LIBRARY_EXPORT void WINAPI WaffleSetBreakpoint(void)
     //stUser32Table[MESSAGEBOXA].lpDetourFunction = HookedMessageBoxA;
     //stUser32Table[MESSAGEBOXA].lpOriginalFunction = GetProcAddress(GetModuleHandle(TEXT("User32.dll")),"MessageBoxA");
 
-    AddVectoredExceptionHandler(TRUE, WaffleBreakpointHandler);
+    AddVectoredExceptionHandler(TRUE, WaffleExceptionHandler);
     for (i = 0; stLibraryTable[i].lpszLibrary; i++)
     {
         LPHOOK_TABLE_OBJECT lpHookTable = stLibraryTable[i].lpHookTable;
@@ -212,7 +228,7 @@ LIBRARY_EXPORT void WINAPI WaffleSetBreakpoint(void)
     return;
 }
 
-LIBRARY_EXPORT LONG CALLBACK WaffleBreakpointHandler(
+LIBRARY_EXPORT LONG CALLBACK WaffleExceptionHandler(
     _In_    PEXCEPTION_POINTERS ExceptionInfo
     )
 {

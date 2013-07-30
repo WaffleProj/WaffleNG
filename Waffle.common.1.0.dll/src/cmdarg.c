@@ -13,20 +13,20 @@ LIBRARY_EXPORT int WINAPI WaffleArgc(void)
     LPTSTR szCommandLine = GetCommandLine();
 loop:
     i++;
-    if (szCommandLine[i] == '\0')
+    if (szCommandLine[i] == TEXT('\0'))
         goto end;
-    else if ((szCommandLine[i] == ' ') || (szCommandLine[i] == '\t'))
+    else if ((szCommandLine[i] == TEXT(' ')) || (szCommandLine[i] == TEXT('\t')))
         goto loop;
 
     intArg++;
 argloop:
-    if (szCommandLine[i] == '\0')
+    if (szCommandLine[i] == TEXT('\0'))
         goto end;
-    else if ((szCommandLine[i] == ' ') || (szCommandLine[i] == '\t'))
+    else if ((szCommandLine[i] == TEXT(' ')) || (szCommandLine[i] == TEXT('\t')))
         goto loop;
-    else if (szCommandLine[i] == '\"')
+    else if (szCommandLine[i] == TEXT('\"'))
     {
-        for (i++; szCommandLine[i] != '\"'; i++);
+        for (i++; szCommandLine[i] != TEXT('\"'); i++);
         i++;
         goto argloop;
     }
@@ -48,9 +48,9 @@ LIBRARY_EXPORT SIZE_T WINAPI WaffleArgv(
     LPTSTR szCommandLine = GetCommandLine();
 loop:
     i++;
-    if (szCommandLine[i] == '\0')
+    if (szCommandLine[i] == TEXT('\0'))
         goto end;
-    else if ((szCommandLine[i] == ' ') || (szCommandLine[i] == '\t'))
+    else if ((szCommandLine[i] == TEXT(' ')) || (szCommandLine[i] == TEXT('\t')))
         goto loop;
 
     intArg++;
@@ -59,11 +59,11 @@ loop:
     else
         FLAG = FALSE;
 argloop:
-    if (szCommandLine[i] == '\0')
+    if (szCommandLine[i] == TEXT('\0'))
         goto end;
-    else if ((szCommandLine[i] == ' ') || (szCommandLine[i] == '\t'))
+    else if ((szCommandLine[i] == TEXT(' ')) || (szCommandLine[i] == TEXT('\t')))
         goto loop;
-    else if (szCommandLine[i] == '\"')
+    else if (szCommandLine[i] == TEXT('\"'))
     {
         i++;
         goto deliloop;
@@ -76,9 +76,9 @@ argloop:
     i++;
     goto argloop;
 deliloop:
-    if (szCommandLine[i] == '\0')
+    if (szCommandLine[i] == TEXT('\0'))
         goto end;
-    else if (szCommandLine[i] == '\"')
+    else if (szCommandLine[i] == TEXT('\"'))
     {
         i++;
         goto argloop;
@@ -92,7 +92,7 @@ deliloop:
     goto deliloop;
 end:
     j++;
-    lpString[j] = '\0';
+    lpString[j] = TEXT('\0');
     return j;   //返回复制的字符数(不含末尾0)
 }
 
@@ -105,9 +105,9 @@ LIBRARY_EXPORT LPCTSTR WINAPI WaffleArgp(
     LPTSTR szCommandLine = GetCommandLine();
 loop:
     i++;
-    if (szCommandLine[i] == '\0')
+    if (szCommandLine[i] == TEXT('\0'))
         return NULL;
-    else if ((szCommandLine[i] == ' ') || (szCommandLine[i] == '\t'))
+    else if ((szCommandLine[i] == TEXT(' ')) || (szCommandLine[i] == TEXT('\t')))
         goto loop;
 
     intArg++;
@@ -115,13 +115,13 @@ loop:
         return &szCommandLine[i];
 
 argloop:
-    if (szCommandLine[i] == '\0')
+    if (szCommandLine[i] == TEXT('\0'))
         return NULL;
-    else if ((szCommandLine[i] == ' ') || (szCommandLine[i] == '\t'))
+    else if ((szCommandLine[i] == TEXT(' ')) || (szCommandLine[i] == TEXT('\t')))
         goto loop;
-    else if (szCommandLine[i] == '\"')
+    else if (szCommandLine[i] == TEXT('\"'))
     {
-        for (i++; szCommandLine[i] != '\"'; i++);
+        for (i++; szCommandLine[i] != TEXT('\"'); i++);
         i++;
         goto argloop;
     }

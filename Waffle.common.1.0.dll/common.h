@@ -6,6 +6,7 @@
 
 extern HINSTANCE hWaffleCommonDll;
 extern TCHAR szWaffleCommonDll[MAX_PATH];
+extern TCHAR szComponentPath[MAX_PATH];
 extern LPWAFFLE_PROCESS_SETTING lpstProcessSetting;
 
 #ifdef __cplusplus

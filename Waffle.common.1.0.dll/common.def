@@ -4,7 +4,16 @@ EXPORTS
     WaffleArgv
     WaffleArgp
     
+    WaffleSetLibraryTable
+    WaffleGetProcAddress
+    WaffleCopyLibrary
+    WaffleCopyLibraryEx
+    WaffleSetBreakpoint
+    WaffleExceptionHandler
+    
     WaffleGetModuleDirectory
+    WaffleDisableWow64FsRedirection
+    WaffleRevertWow64FsRedirection
     
     WaffleGetFileHash
     
@@ -15,6 +24,11 @@ EXPORTS
     WaffleExecute
     
     WaffleGetMachineType
+    
+    WafflelstrcmpiW
+    WafflelstrcmpiA
+    WafflelstrcmpW
+    WafflelstrcmpA
     
     WaffleOpenProcessSetting
     WaffleCreateProcessSetting

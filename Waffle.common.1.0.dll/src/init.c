@@ -41,11 +41,8 @@ LIBRARY_EXPORT SIZE_T WINAPI WaffleInit(
     _In_    LPVOID lpReserved
     )
 {
-    TCHAR szPath[MAX_PATH];
-    WaffleGetModuleDirectory(hWaffleCommonDll, szPath, sizeof(szPath) / sizeof(szPath[0]));
-
     TCHAR szLibrary[MAX_PATH];
-    wsprintf(szLibrary, TEXT("%s\\..\\..\\%s\\%s\\Mojibake.core.1.0.dll"), szPath, lpstProcessSetting->szPlugin, WAFFLE_PORT_MACHINE_STRING);
+    wsprintf(szLibrary, TEXT("%s\\%s\\%s\\Mojibake.core.1.0.dll"), szComponentPath, lpstProcessSetting->szPlugin, WAFFLE_PORT_MACHINE_STRING);
     hComponent = LoadLibrary(szLibrary);
     LPCOMPONENTINIT ComponentInit = (LPCOMPONENTINIT) GetProcAddress(hComponent, "ComponentInit");
     if (!ComponentInit)

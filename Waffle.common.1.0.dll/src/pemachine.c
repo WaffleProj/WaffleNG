@@ -10,24 +10,10 @@ LIBRARY_EXPORT WORD WINAPI WaffleGetMachineType(
     _In_    LPCTSTR lpszFile
     )
 {
-    //Disable redirection if the target is in the "system32"
-    HMODULE hKernel32 = GetModuleHandle(TEXT("kernel32.dll"));
     PVOID OldValue = 0;
-
-    //Open the target
-    LPWOW64DISABLEWOW64FSREDIRECTION lpWow64DisableWow64FsRedirection = (LPWOW64DISABLEWOW64FSREDIRECTION) GetProcAddress(hKernel32, "Wow64DisableWow64FsRedirection");
-    if (lpWow64DisableWow64FsRedirection)
-    {
-        lpWow64DisableWow64FsRedirection(&OldValue);
-    }
-
-    HANDLE hFile = CreateFile(lpszFile, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-
-    LPWOW64REVERTWOW64FSREDIRECTION lpWow64RevertWow64FsRedirection = (LPWOW64REVERTWOW64FSREDIRECTION) GetProcAddress(hKernel32, "Wow64RevertWow64FsRedirection");
-    if (lpWow64RevertWow64FsRedirection)
-    {
-        lpWow64RevertWow64FsRedirection(OldValue);
-    }
+    WaffleDisableWow64FsRedirection(&OldValue);
+    HANDLE hFile = CreateFile(lpszFile, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+    WaffleRevertWow64FsRedirection(OldValue);
 
     if (hFile == INVALID_HANDLE_VALUE)
     {
