@@ -1,4 +1,4 @@
-#ifndef  UNICODE
+Ôªø#ifndef  UNICODE
 #define  UNICODE
 #endif
 #ifndef _UNICODE
@@ -22,14 +22,16 @@ LIBRARY_EXPORT SIZE_T WINAPI ComponentInit(
     )
 {
     hHeap = HeapCreate(0, 0, 0);
-    //∂¡»°≥Ã–Ú≈‰÷√
-    //CryptCATAdminCalcHashFromFileHandle
+
+    //Read config files
     stOldEnvir.ACP = GetACP();
-    stNewEnvir.ACP = CP_SHIFT_JIS;
+    stNewEnvir.ACP = WaffleGetOptionInt(lpstProcessSetting, TEXT("ACP"), stOldEnvir.ACP);
+
     stOldEnvir.OEMCP = GetOEMCP();
-    stNewEnvir.OEMCP = CP_SHIFT_JIS;
+    stNewEnvir.OEMCP = WaffleGetOptionInt(lpstProcessSetting, TEXT("OEMCP"), stOldEnvir.OEMCP);
+
     stOldEnvir.ThreadLocale = GetThreadLocale();
-    stNewEnvir.ThreadLocale = LOCALE_JA_JP;
+    stNewEnvir.ThreadLocale = WaffleGetOptionInt(lpstProcessSetting, TEXT("ThreadLocale"), stOldEnvir.ThreadLocale);
 
     WaffleSetLibraryTable(stLibraryTable);
 
