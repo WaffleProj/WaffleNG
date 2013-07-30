@@ -88,6 +88,11 @@ VOID WINAPI Main()
                 wsprintf(szLoader, TEXT("%s%s"), szPath, TEXT("\\..\\AMD64\\Waffle.exe"));
                 break;
             }
+        case WAFFLE_PORT_MACHINE_ARMNT:
+            {
+                wsprintf(szLoader, TEXT("%s%s"), szPath, TEXT("\\..\\ARMNT\\Waffle.exe"));
+                break;
+            }
         case 0xFFFF:
             {
                 MessageBox(0, TEXT("FIXME:Unable to open the target"), 0, 0);

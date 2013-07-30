@@ -104,10 +104,10 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <TargetName>Waffle</TargetName>
     <IncludePath>$(SolutionDir)SDK\Include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)SDK\Lib\ARM;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)SDK\Lib\ARMNT;$(LibraryPath)</LibraryPath>
     <LibraryWPath>$(WindowsSDK_MetadataPath)</LibraryWPath>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
-    <OutDir>$(SolutionDir)Component\Waffle\ARM\</OutDir>
+    <OutDir>$(SolutionDir)Component\Waffle\ARMNT\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <TargetName>Waffle</TargetName>
@@ -128,11 +128,11 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <TargetName>Waffle</TargetName>
     <IncludePath>$(SolutionDir)SDK\Include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)SDK\Lib\ARM;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)SDK\Lib\ARMNT;$(LibraryPath)</LibraryPath>
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <OutDir>$(SolutionDir)Component\Waffle\ARM\</OutDir>
+    <OutDir>$(SolutionDir)Component\Waffle\ARMNT\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <TargetName>Waffle</TargetName>

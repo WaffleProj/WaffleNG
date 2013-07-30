@@ -104,10 +104,10 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <TargetName>Waffle.common.1.0</TargetName>
     <IncludePath>$(SolutionDir)SDK\Include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)SDK\Lib\ARM;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)SDK\Lib\ARMNT;$(LibraryPath)</LibraryPath>
     <LibraryWPath>$(WindowsSDK_MetadataPath)</LibraryWPath>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
-    <OutDir>$(SolutionDir)Component\Waffle\ARM\</OutDir>
+    <OutDir>$(SolutionDir)Component\Waffle\ARMNT\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <TargetName>Waffle.common.1.0</TargetName>
@@ -127,12 +127,12 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <IncludePath>$(SolutionDir)SDK\Include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)SDK\Lib\ARM;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)SDK\Lib\ARMNT;$(LibraryPath)</LibraryPath>
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <TargetName>Waffle.common.1.0</TargetName>
-    <OutDir>$(SolutionDir)Component\Waffle\ARM\</OutDir>
+    <OutDir>$(SolutionDir)Component\Waffle\ARMNT\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>$(SolutionDir)SDK\Include;$(IncludePath)</IncludePath>
@@ -177,7 +177,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <EntryPointSymbol>DllMain</EntryPointSymbol>
-      <ImportLibrary>$(SolutionDir)SDK\Lib\ARM\$(TargetName).lib</ImportLibrary>
+      <ImportLibrary>$(SolutionDir)SDK\Lib\ARMNT\$(TargetName).lib</ImportLibrary>
       <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;shell32.lib;psapi.lib;advapi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -243,7 +243,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <SubSystem>Windows</SubSystem>
       <EntryPointSymbol>DllMain</EntryPointSymbol>
-      <ImportLibrary>$(SolutionDir)SDK\Lib\ARM\$(TargetName).lib</ImportLibrary>
+      <ImportLibrary>$(SolutionDir)SDK\Lib\ARMNT\$(TargetName).lib</ImportLibrary>
       <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;shell32.lib;psapi.lib;advapi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
