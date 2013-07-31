@@ -102,14 +102,13 @@ LIBRARY_EXPORT SIZE_T WINAPI WaffleInit(
             if (hLibrary)
             {
                 nLibrary++;
+                WAFFLE_LIBRARY_ARRAY stLibrary;
+                RtlZeroMemory(&stLibrary, sizeof(stLibrary));
+                stLibrary.lpszLibrary = lpszNextSection;
+                WaffleCopyLibrary(&stLibrary);
+                WaffleCreateFunctionArray(&stLibrary);
+                WaffleAddLibrary(&stLibrary);
             }
-
-            WAFFLE_LIBRARY_ARRAY stLibrary;
-            RtlZeroMemory(&stLibrary, sizeof(stLibrary));
-            stLibrary.lpszLibrary = lpszNextSection;
-            WaffleCopyLibrary(&stLibrary);
-            WaffleCreateFunctionArray(&stLibrary);
-            WaffleAddLibrary(&stLibrary);
 
             lpszNextSection = lpszNextSection + nSizeOfSection + 1;
             nSizeOfSection = lstrlen(lpszNextSection);
