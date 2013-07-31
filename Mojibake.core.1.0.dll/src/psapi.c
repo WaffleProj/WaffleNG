@@ -7,6 +7,9 @@
 #include "..\mojibake.h"
 #include <psapi.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 LIBRARY_EXPORT DWORD WINAPI DetourGetModuleFileNameExA(
     _In_        HANDLE hProcess,
     _In_opt_    HMODULE hModule,
@@ -26,3 +29,6 @@ LIBRARY_EXPORT DWORD WINAPI DetourGetModuleFileNameExA(
     SetLastError(LastError);
     return lstrlenA(lpFilename);
 }
+#ifdef __cplusplus
+};
+#endif

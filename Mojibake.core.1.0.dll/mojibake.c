@@ -8,6 +8,8 @@
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
 HANDLE      hHeap;
+ENVIRONMENT_BLOCK   stOldEnvir;
+ENVIRONMENT_BLOCK   stNewEnvir;
 
 LIBRARY_EXPORT SIZE_T WINAPI ThreadInit(
     _In_    LPWAFFLE_THREAD_CONTEXT lpstThread
@@ -32,8 +34,6 @@ LIBRARY_EXPORT SIZE_T WINAPI ComponentInit(
 
     stOldEnvir.ThreadLocale = GetThreadLocale();
     stNewEnvir.ThreadLocale = WaffleGetOptionInt(lpstProcessSetting, TEXT("ThreadLocale"), stOldEnvir.ThreadLocale);
-
-    WaffleSetLibraryTable(stLibraryTable);
 
     return 0;
 }

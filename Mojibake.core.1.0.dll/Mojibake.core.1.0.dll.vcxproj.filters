@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="detour.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="mojibake.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -26,13 +23,25 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="detour.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="mojibake.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\rtl.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\gdi32.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\kernel32.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\psapi.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\shell32.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\user32.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

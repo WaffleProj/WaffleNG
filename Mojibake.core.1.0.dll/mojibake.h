@@ -3,10 +3,19 @@
 
 #define WAFFLE_COMPONENT_BUILD
 #include <waffle.h>
-#include "detour.h"
 #include "src\rtl.h"
 
 extern HANDLE       hHeap;
+
+typedef struct
+{
+    UINT ACP;
+    UINT OEMCP;
+    LCID ThreadLocale;
+} ENVIRONMENT_BLOCK, *LPENVIRONMENT_BLOCK;
+
+extern ENVIRONMENT_BLOCK    stOldEnvir;
+extern ENVIRONMENT_BLOCK    stNewEnvir;
 
 #ifdef __cplusplus
 extern "C" {

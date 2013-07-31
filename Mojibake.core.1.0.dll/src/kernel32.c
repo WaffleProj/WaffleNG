@@ -6,6 +6,9 @@
 #endif
 #include "..\mojibake.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 LIBRARY_EXPORT BOOL WINAPI DetourCreateDirectoryA(
     _In_        LPCSTR lpPathName,
     _In_opt_    LPSECURITY_ATTRIBUTES lpSecurityAttributes
@@ -121,10 +124,18 @@ LIBRARY_EXPORT BOOL WINAPI DetourGetCPInfo(
     _Out_   LPCPINFO lpCPInfo
     )
 {
-    if (!CodePage)
-        CodePage = stNewEnvir.ACP;
+    static LPGETCPINFO BackupGetCPInfo;
+    if (!BackupGetCPInfo)
+    {
+        BackupGetCPInfo = (LPGETCPINFO) WaffleGetBackupAddress(TEXT("kernel32.dll"), TEXT("GetCPInfo"));
+    }
 
-    return ((LPGETCPINFO) stKernel32Table[GETCPINFO].lpNewFunction)(CodePage, lpCPInfo);
+    if (!CodePage)
+    {
+        CodePage = stNewEnvir.ACP;
+    }
+
+    return BackupGetCPInfo(CodePage, lpCPInfo);
 }
 
 LIBRARY_EXPORT DWORD WINAPI DetourGetFileAttributesA(
@@ -207,6 +218,12 @@ LIBRARY_EXPORT int WINAPI DetourMultiByteToWideChar(
     _In_        int cchWideChar
     )
 {
+    static LPMULTIBYTETOWIDECHAR BackupMultiByteToWideChar;
+    if (!BackupMultiByteToWideChar)
+    {
+        BackupMultiByteToWideChar = (LPMULTIBYTETOWIDECHAR) WaffleGetBackupAddress(TEXT("kernel32.dll"), TEXT("MultiByteToWideChar"));
+    }
+
     switch (CodePage)
     {
     case CP_ACP:
@@ -217,7 +234,7 @@ LIBRARY_EXPORT int WINAPI DetourMultiByteToWideChar(
         break;
     }
 
-    return ((LPMULTIBYTETOWIDECHAR) stKernel32Table[MULTIBYTETOWIDECHAR].lpNewFunction)(CodePage, dwFlags, lpMultiByteStr, cbMultiByte, lpWideCharStr, cchWideChar);
+    return BackupMultiByteToWideChar(CodePage, dwFlags, lpMultiByteStr, cbMultiByte, lpWideCharStr, cchWideChar);
 }
 
 LIBRARY_EXPORT BOOL WINAPI DetourSetCurrentDirectoryA(
@@ -254,6 +271,12 @@ LIBRARY_EXPORT int WINAPI DetourWideCharToMultiByte(
     _Out_opt_   LPBOOL lpUsedDefaultChar
     )
 {
+    static LPWIDECHARTOMULTIBYTE BackupWideCharToMultiByte;
+    if (!BackupWideCharToMultiByte)
+    {
+        BackupWideCharToMultiByte = (LPWIDECHARTOMULTIBYTE) WaffleGetBackupAddress(TEXT("kernel32.dll"), TEXT("WideCharToMultiByte"));
+    }
+
     switch (CodePage)
     {
     case CP_ACP:
@@ -264,5 +287,8 @@ LIBRARY_EXPORT int WINAPI DetourWideCharToMultiByte(
         break;
     }
 
-    return ((LPWIDECHARTOMULTIBYTE) stKernel32Table[WIDECHARTOMULTIBYTE].lpNewFunction)(CodePage, dwFlags, lpWideCharStr, cchWideChar, lpMultiByteStr, cbMultiByte, lpDefaultChar, lpUsedDefaultChar);
+    return BackupWideCharToMultiByte(CodePage, dwFlags, lpWideCharStr, cchWideChar, lpMultiByteStr, cbMultiByte, lpDefaultChar, lpUsedDefaultChar);
 }
+#ifdef __cplusplus
+};
+#endif

@@ -6,6 +6,9 @@
 #endif
 #include "..\mojibake.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 LIBRARY_EXPORT LRESULT WINAPI DetourCallWindowProcA(
     _In_    WNDPROC lpPrevWndFunc,
     _In_    HWND hWnd,
@@ -14,9 +17,15 @@ LIBRARY_EXPORT LRESULT WINAPI DetourCallWindowProcA(
     _In_    LPARAM lParam
     )
 {
+    static LPCALLWINDOWPROCA BackupCallWindowProcA;
+    if (!BackupCallWindowProcA)
+    {
+        BackupCallWindowProcA = (LPCALLWINDOWPROCA) WaffleGetBackupAddress(TEXT("user32.dll"), TEXT("CallWindowProcA"));
+    }
+
     if (Msg == WM_SETTEXT)
     {
-        LRESULT Result = ((LPCALLWINDOWPROCA) stUser32Table[CALLWINDOWPROCA].lpNewFunction)(lpPrevWndFunc, hWnd, Msg, wParam, lParam);
+        LRESULT Result = BackupCallWindowProcA(lpPrevWndFunc, hWnd, Msg, wParam, lParam);
 
         DWORD LastError = GetLastError();
         LRESULT sizeString = DefWindowProcA(hWnd, WM_GETTEXTLENGTH, 0, 0);
@@ -32,7 +41,7 @@ LIBRARY_EXPORT LRESULT WINAPI DetourCallWindowProcA(
     }
     else
     {
-        return ((LPCALLWINDOWPROCA) stUser32Table[CALLWINDOWPROCA].lpNewFunction)(lpPrevWndFunc, hWnd, Msg, wParam, lParam);
+        return BackupCallWindowProcA(lpPrevWndFunc, hWnd, Msg, wParam, lParam);
     }
 }
 
@@ -121,7 +130,13 @@ LIBRARY_EXPORT LRESULT WINAPI DetourSendMessageA(
     else
     {
     */
-    return ((LPSENDMESSAGEA) stUser32Table[SENDMESSAGEA].lpNewFunction)(hWnd, Msg, wParam, lParam);
+    static LPSENDMESSAGEA BackupSendMessageA;
+    if (!BackupSendMessageA)
+    {
+        BackupSendMessageA = (LPSENDMESSAGEA) WaffleGetBackupAddress(TEXT("user32.dll"), TEXT("SendMessageA"));
+    }
+
+    return BackupSendMessageA(hWnd, Msg, wParam, lParam);
     //    }
 }
 
@@ -137,3 +152,6 @@ LIBRARY_EXPORT BOOL WINAPI DetourSetWindowTextA(
     KeepLastErrorAndFree(lpuszString);
     return Result;
 }
+#ifdef __cplusplus
+};
+#endif

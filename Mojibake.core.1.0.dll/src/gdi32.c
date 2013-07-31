@@ -6,6 +6,9 @@
 #endif
 #include "..\mojibake.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 LIBRARY_EXPORT HFONT WINAPI DetourCreateFontA(
     _In_    int nHeight,
     _In_    int nWidth,
@@ -44,3 +47,6 @@ LIBRARY_EXPORT BOOL WINAPI DetourTextOutA(
     KeepLastErrorAndFree(lpuszString);
     return Result;
 }
+#ifdef __cplusplus
+};
+#endif
