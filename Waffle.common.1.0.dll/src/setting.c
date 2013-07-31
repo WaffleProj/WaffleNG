@@ -7,7 +7,7 @@
 #include "..\common.h"
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 
-LIBRARY_EXPORT LPWAFFLE_PROCESS_SETTING WINAPI WaffleCreateProcessSetting(void)
+LIBRARY_EXPORT LPWAFFLE_PROCESS_SETTING WINAPI WaffleCreateProcessSetting(VOID)
 {
     TCHAR szValueProcessSetting[64];
     wsprintf(szValueProcessSetting, szFmtValueProcessSetting, GetCurrentThreadId(), GetTickCount());
@@ -17,16 +17,17 @@ LIBRARY_EXPORT LPWAFFLE_PROCESS_SETTING WINAPI WaffleCreateProcessSetting(void)
 
     if (lpstProcessSetting)
     {
-        lpstProcessSetting->wVersionMajor = WAFFLE_SDK_VERSION_MAJOR;
-        lpstProcessSetting->wVersionMinor = WAFFLE_SDK_VERSION_MINOR;
+        lpstProcessSetting->dwVersionMajor = WAFFLE_SDK_VERSION_MAJOR;
+        lpstProcessSetting->dwVersionMinor = WAFFLE_SDK_VERSION_MINOR;
         lpstProcessSetting->cbSize = sizeof(WAFFLE_PROCESS_SETTING);
     }
 
     return lpstProcessSetting;
 }
 
-LIBRARY_EXPORT LPWAFFLE_PROCESS_SETTING WINAPI WaffleOpenProcessSetting(void)
+LIBRARY_EXPORT LPWAFFLE_PROCESS_SETTING WINAPI WaffleOpenProcessSetting(VOID)
 {
+    static LPWAFFLE_PROCESS_SETTING lpstProcessSetting;
     if (!lpstProcessSetting)
     {
         TCHAR szValueProcessSetting[64];
@@ -40,8 +41,9 @@ LIBRARY_EXPORT LPWAFFLE_PROCESS_SETTING WINAPI WaffleOpenProcessSetting(void)
     return lpstProcessSetting;
 }
 
-LIBRARY_EXPORT void WINAPI WaffleResumeMainThread(void)
+LIBRARY_EXPORT VOID WINAPI WaffleResumeMainThread(VOID)
 {
+    LPWAFFLE_PROCESS_SETTING lpstProcessSetting = WaffleOpenProcessSetting();
     HANDLE hThread = OpenThread(THREAD_ALL_ACCESS, FALSE, lpstProcessSetting->dwThreadId);    //WinXP may return ERROR_ACCESS_DENIED
     ResumeThread(hThread);
 }

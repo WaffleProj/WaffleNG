@@ -38,9 +38,6 @@
     <ClCompile Include="src\inject.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\pemachine.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\setting.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -51,6 +48,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\option.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\platform.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\environment.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\array.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -40,12 +40,12 @@ LIBRARY_EXPORT BOOL WINAPI WaffleCreateProcess(
     BOOL Result = CreateProcess(lpApplicationName, lpCommandLine, lpProcessAttributes, lpThreadAttributes, bInheritHandles, dwCreationFlags, lpEnvironment, lpCurrentDirectory, lpStartupInfo, lpProcessInformation);
     DWORD LastError = GetLastError();
     WaffleRevertWow64FsRedirection(OldValue);
-    
+
     SetLastError(LastError);
     return Result;
 }
 
-LIBRARY_EXPORT void WINAPI WaffleInjectDll(
+LIBRARY_EXPORT VOID WINAPI WaffleInjectDll(
     _In_    HANDLE hProcess,
     _In_    LPCTSTR lpszDllFull
     )
@@ -53,10 +53,10 @@ LIBRARY_EXPORT void WINAPI WaffleInjectDll(
     LPVOID lpszRemoteDll = VirtualAllocEx(hProcess, NULL, MAX_PATH*sizeof(TCHAR), MEM_COMMIT, PAGE_READWRITE);
     if (lpszRemoteDll)
     {
-        FARPROC lpLoadLibrary = GetProcAddress(GetModuleHandle(TEXT("kernel32.dll")), "LoadLibraryW");
+        LPTHREAD_START_ROUTINE lpLoadLibrary = (LPTHREAD_START_ROUTINE) WaffleGetProcAddress(GetModuleHandle(TEXT("kernel32.dll")), "LoadLibraryW");
 
         WriteProcessMemory(hProcess, lpszRemoteDll, lpszDllFull, lstrlen(lpszDllFull)*sizeof(TCHAR), NULL);
-        HANDLE hThread = CreateRemoteThread(hProcess, NULL, 0, (LPTHREAD_START_ROUTINE) lpLoadLibrary, lpszRemoteDll, 0, NULL);
+        HANDLE hThread = CreateRemoteThread(hProcess, NULL, 0, lpLoadLibrary, lpszRemoteDll, 0, NULL);
         WaitForSingleObject(hThread, INFINITE);
 
         VirtualFreeEx(hProcess, lpszRemoteDll, 0, MEM_RELEASE);
@@ -64,23 +64,25 @@ LIBRARY_EXPORT void WINAPI WaffleInjectDll(
     }
 }
 
-LIBRARY_EXPORT void WINAPI WaffleExecute(
+LIBRARY_EXPORT VOID WINAPI WaffleExecute(
+    _Out_opt_   LPWAFFLE_PROCESS_SETTING lpstProcessSetting,
     _In_opt_    LPCTSTR lpApplicationName,
     _Inout_opt_ LPTSTR lpCommandLine,
-    _In_opt_    LPCTSTR lpCurrentDirectory,
-    _Out_opt_   LPWAFFLE_PROCESS_SETTING lpstProcessSetting
+    _In_opt_    LPCTSTR lpCurrentDirectory
     )
 {
-        PROCESS_INFORMATION stProcessInfo;
+    PROCESS_INFORMATION stProcessInfo;
 
-        WaffleCreateProcess(lpApplicationName, lpCommandLine, NULL, NULL, TRUE, CREATE_SUSPENDED, 0, lpCurrentDirectory, NULL, &stProcessInfo);
+    WaffleCreateProcess(lpApplicationName, lpCommandLine, NULL, NULL, TRUE, CREATE_SUSPENDED, 0, lpCurrentDirectory, NULL, &stProcessInfo);
 
-        lpstProcessSetting->dwThreadId = stProcessInfo.dwThreadId;
-        lpstProcessSetting->dwProcessId = stProcessInfo.dwProcessId;
-        WaffleGetFileHash(lpApplicationName, lpstProcessSetting->szHash);
-        CloseHandle(stProcessInfo.hThread);
+    lpstProcessSetting->dwThreadId = stProcessInfo.dwThreadId;
+    lpstProcessSetting->dwProcessId = stProcessInfo.dwProcessId;
+    WaffleGetFileHash(lpApplicationName, lpstProcessSetting->szHash);
+    CloseHandle(stProcessInfo.hThread);
 
-        WaffleInjectDll(stProcessInfo.hProcess, szWaffleCommonDll);
+    TCHAR szWaffleCommonDll[MAX_PATH];
+    wsprintf(szWaffleCommonDll, TEXT("%s\\Waffle\\%s\\Waffle.common.1.0.dll"), WaffleGetComponentDirectory(), WAFFLE_PORT_MACHINE_STRING);
+    WaffleInjectDll(stProcessInfo.hProcess, szWaffleCommonDll);
 
-        CloseHandle(stProcessInfo.hProcess);
+    CloseHandle(stProcessInfo.hProcess);
 }

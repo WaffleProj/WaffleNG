@@ -263,9 +263,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="waffle.h" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="waffle.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

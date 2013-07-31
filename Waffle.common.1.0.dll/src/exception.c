@@ -9,10 +9,10 @@
 #pragma GCC diagnostic ignored "-Wpointer-to-int-cast"
 #pragma GCC diagnostic ignored "-Wparentheses"
 
-LPLIBRARY_TABLE_OBJECT stLibraryTable;
+LPWAFFLE_LIBRARY_ARRAY stLibraryTable;
 
-LIBRARY_EXPORT void WINAPI WaffleSetLibraryTable(
-    _In_    LPLIBRARY_TABLE_OBJECT lpstLibraryTable
+LIBRARY_EXPORT VOID WINAPI WaffleSetLibraryTable(
+    _In_    LPWAFFLE_LIBRARY_ARRAY lpstLibraryTable
     )
 {
     stLibraryTable = lpstLibraryTable;
@@ -66,7 +66,7 @@ LIBRARY_EXPORT LPVOID WINAPI WaffleGetProcAddress(
             DWORD i;
             while (Direction)
             {
-                if (Begin == End)
+                if (Begin > End)
                 {
                     return NULL;
                 }
@@ -74,11 +74,11 @@ LIBRARY_EXPORT LPVOID WINAPI WaffleGetProcAddress(
                 Direction = WafflelstrcmpA(lpszFuncName, (LPSTR) ((SIZE_T) hModule + lpName[i]));
                 if (Direction > 0)
                 {
-                    Begin = i;
+                    Begin = i + 1;
                 }
                 else if (Direction < 0)
                 {
-                    End = i;
+                    End = i - 1;
                 }
             }
             return (LPVOID) ((SIZE_T) hModule + lpFunction[lpOrdinal[i]]);
@@ -94,46 +94,8 @@ LIBRARY_EXPORT LPVOID WINAPI WaffleGetProcAddress(
     return NULL;
 }
 
-LIBRARY_EXPORT HMODULE WINAPI WaffleCopyLibrary(
-    _In_    HMODULE hModule
-    )
-{
-    if (!hModule)
-    {
-        return NULL;
-    }
-
-    //Get dll base address and size
-    HANDLE hProcess = GetCurrentProcess();
-    MODULEINFO  stModuleInfo;
-    GetModuleInformation(hProcess, hModule, &stModuleInfo, sizeof(stModuleInfo));
-
-    //Reserve memory address
-    HMODULE hDll = (HMODULE) VirtualAlloc(NULL, stModuleInfo.SizeOfImage, MEM_RESERVE, PAGE_NOACCESS);
-
-    LPVOID addrPointer = stModuleInfo.lpBaseOfDll;
-    LPVOID addrEnd = (LPVOID) ((SIZE_T) stModuleInfo.lpBaseOfDll + stModuleInfo.SizeOfImage);
-    while (addrPointer < addrEnd)
-    {
-        MEMORY_BASIC_INFORMATION stMemInfo;
-        VirtualQuery(addrPointer, &stMemInfo, sizeof(stMemInfo));
-        if (stMemInfo.State == MEM_COMMIT)
-        {
-            //Get offset of the memory
-            LPVOID addrNew = (LPVOID) ((SIZE_T) stMemInfo.BaseAddress - (SIZE_T) stMemInfo.AllocationBase + (SIZE_T) hDll);
-
-            VirtualAlloc(addrNew, stMemInfo.RegionSize, MEM_COMMIT, PAGE_READWRITE);
-            RtlMoveMemory(addrNew, stMemInfo.BaseAddress, stMemInfo.RegionSize);
-            VirtualProtect(addrNew, stMemInfo.RegionSize, stMemInfo.Protect, &stMemInfo.AllocationProtect);
-        }
-        addrPointer = (PBYTE) stMemInfo.BaseAddress + stMemInfo.RegionSize;
-    }
-
-    return hDll;
-}
-
 LIBRARY_EXPORT HMODULE WINAPI WaffleCopyLibraryEx(
-    _In_    LPLIBRARY_TABLE_OBJECT stLibrary
+    _In_    LPWAFFLE_LIBRARY_ARRAY stLibrary
     )
 {
     stLibrary->hModule = GetModuleHandle(stLibrary->lpszLibrary);
@@ -169,7 +131,7 @@ LIBRARY_EXPORT HMODULE WINAPI WaffleCopyLibraryEx(
         addrPointer = (PBYTE) stMemInfo.BaseAddress + stMemInfo.RegionSize;
     }
 
-    LPHOOK_TABLE_OBJECT stFunction = stLibrary->lpHookTable;
+    LPWAFFLE_FUNCTION_ARRAY stFunction = stLibrary->lpHookTable;
     int i;
     for (i = 0; stFunction[i].lpszFunction; i++)
     {
@@ -180,51 +142,30 @@ LIBRARY_EXPORT HMODULE WINAPI WaffleCopyLibraryEx(
     return stLibrary->lpLibrary;
 }
 
-LIBRARY_EXPORT void WINAPI WaffleSetBreakpoint(void)
+LIBRARY_EXPORT VOID WINAPI WaffleSetBreakpoint(VOID)
 {
-    //MessageBox(0,TEXT("Start Hooking"),TEXT("Debugger"),0);
     int i;
     for (i = 0; stLibraryTable[i].lpszLibrary; i++)
     {
         WaffleCopyLibraryEx(&stLibraryTable[i]);
     }
-    //_wsprintfA = (LPWSPRINTFA) WaffleGetProcAddress(stLibraryTable[USER32].lpLibrary, "wsprintfA");
-    //_VirtualProtect = (LPVIRTUALPROTECT) WaffleGetProcAddress(stLibraryTable[KERNEL32].lpLibrary, "VirtualProtect");
-
-    //stUser32Table[MESSAGEBOXA].lpDetourFunction = HookedMessageBoxA;
-    //stUser32Table[MESSAGEBOXA].lpOriginalFunction = GetProcAddress(GetModuleHandle(TEXT("User32.dll")),"MessageBoxA");
 
     AddVectoredExceptionHandler(TRUE, WaffleExceptionHandler);
     for (i = 0; stLibraryTable[i].lpszLibrary; i++)
     {
-        LPHOOK_TABLE_OBJECT lpHookTable = stLibraryTable[i].lpHookTable;
+        LPWAFFLE_FUNCTION_ARRAY lpHookTable = stLibraryTable[i].lpHookTable;
         int j;
         for (j = 0; lpHookTable[j].lpszFunction; j++)
         {
             DWORD flOldProtect;
-            //if  (_VirtualProtect(lpHookTable[j].lpOriginalFunction,1,PAGE_EXECUTE_READWRITE,&flOldProtect))
-            //{
             if (lpHookTable[j].lpDetourFunction)
             {
                 VirtualProtect(lpHookTable[j].lpOriginalFunction, 1, PAGE_EXECUTE_READWRITE, &flOldProtect);
                 WAFFLE_PORT_WRITE_EXCEPTION_INSTRUCTION(lpHookTable[j].lpOriginalFunction);
                 VirtualProtect(lpHookTable[j].lpOriginalFunction, 1, flOldProtect, &flOldProtect);
             }
-            //}
-            //else
-            //{
-            //((LPMESSAGEBOXA)stUser32Table[MESSAGEBOXA].lpNewFunction)(0,lpHookTable[j].lpszFunction,"Unable to hook",0);
-            //}
         }
     }
-
-    //MessageBoxA(0,"MessageBoxA","Dll Copy Example",0);
-    //((LPMESSAGEBOXA)stUser32Table[MESSAGEBOXA].lpNewFunction)(0,"lpMessageBoxA","Dll Copy Example",0);
-
-    //VirtualProtect(stUser32Table[MESSAGEBOXA].lpOriginalFunction,1,flOldProtect,&flOldProtect);
-    //RemoveVectoredExceptionHandler(hBreakpoint);
-
-    //((LPMESSAGEBOXA)stUser32Table[MESSAGEBOXA].lpNewFunction)(0,"Finish Hooking","Debugger",0);
     return;
 }
 
@@ -237,7 +178,7 @@ LIBRARY_EXPORT LONG CALLBACK WaffleExceptionHandler(
         int i;
         for (i = 0; stLibraryTable[i].lpszLibrary; i++)
         {
-            LPHOOK_TABLE_OBJECT lpHookTable = stLibraryTable[i].lpHookTable;    //kernel32中的api可能是ntdll的存根
+            LPWAFFLE_FUNCTION_ARRAY lpHookTable = stLibraryTable[i].lpHookTable;    //kernel32中的api可能是ntdll的存根
             if (((SIZE_T) ExceptionInfo->ExceptionRecord->ExceptionAddress >= (SIZE_T) stLibraryTable[i].hModule) && ((SIZE_T) ExceptionInfo->ExceptionRecord->ExceptionAddress <= (SIZE_T) stLibraryTable[i].lpEndOfModule))
             {
                 int j;

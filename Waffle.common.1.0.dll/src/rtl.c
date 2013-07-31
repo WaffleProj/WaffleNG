@@ -73,7 +73,6 @@ LIBRARY_EXPORT int WINAPI WafflelstrcmpA(
         return (int) (lpString1 - lpString2);
     }
 }
-
 LIBRARY_EXPORT int WINAPI WaffleStrToIntW(
     _In_    LPCWSTR lpString,
     _In_    int nDefault
@@ -86,6 +85,10 @@ LIBRARY_EXPORT int WINAPI WaffleStrToIntW(
     {
         bHex = TRUE;
         i = 2;
+    }
+    else if (lpString[0] == L'-')
+    {
+        i = 1;
     }
     while (lpString[i])
     {
@@ -114,9 +117,13 @@ LIBRARY_EXPORT int WINAPI WaffleStrToIntW(
 
         i++;
     }
-    if ((i == 0) || (i == 2 && bHex))
+    if ((i == 0) || (i == 2 && bHex) || (i == 1 && lpString[0] == L'-'))
     {
         return nDefault;
+    }
+    else if (lpString[0] == L'-')
+    {
+        return -nResult;
     }
     else
     {
@@ -136,6 +143,10 @@ LIBRARY_EXPORT int WINAPI WaffleStrToIntA(
     {
         bHex = TRUE;
         i = 2;
+    }
+    else if (lpString[0] == '-')
+    {
+        i = 1;
     }
     while (lpString[i])
     {
@@ -164,12 +175,91 @@ LIBRARY_EXPORT int WINAPI WaffleStrToIntA(
 
         i++;
     }
-    if ((i == 0) || (i == 2 && bHex))
+    if ((i == 0) || (i == 2 && bHex) || (i == 1 && lpString[0] == '-'))
     {
         return nDefault;
+    }
+    else if (lpString[0] == '-')
+    {
+        return -nResult;
     }
     else
     {
         return nResult;
     }
+}
+
+LIBRARY_EXPORT VOID WaffleCreateRWLock(
+    LPWAFFLE_RWLOCK lpstRWLock
+    )
+{
+    if (!lpstRWLock->hReader)
+    {
+        InitializeCriticalSectionAndSpinCount(&lpstRWLock->csRead, 5120);
+        InitializeCriticalSectionAndSpinCount(&lpstRWLock->csWrite, 3072);
+        lpstRWLock->hReader = CreateEvent(NULL, TRUE, FALSE, NULL);
+        lpstRWLock->dwReader = 0;
+    }
+}
+
+LIBRARY_EXPORT VOID WaffleReleaseRWLock(
+    LPWAFFLE_RWLOCK lpstRWLock
+    )
+{
+    if (lpstRWLock->hReader)
+    {
+        WaitForSingleObject(lpstRWLock->hReader, INFINITE);
+        CloseHandle(lpstRWLock->hReader);
+        lpstRWLock->hReader = NULL;
+        DeleteCriticalSection(&lpstRWLock->csWrite);
+        DeleteCriticalSection(&lpstRWLock->csRead);
+    }
+}
+
+LIBRARY_EXPORT VOID WaffleEnterWriterLock(
+    LPWAFFLE_RWLOCK lpstRWLock
+    )
+{
+    EnterCriticalSection(&lpstRWLock->csRead);
+    for (EnterCriticalSection(&lpstRWLock->csWrite); lpstRWLock->dwReader; EnterCriticalSection(&lpstRWLock->csWrite))
+    {
+        LeaveCriticalSection(&lpstRWLock->csWrite);
+        WaitForSingleObject(lpstRWLock->hReader, INFINITE);
+    }
+    LeaveCriticalSection(&lpstRWLock->csRead);
+}
+
+LIBRARY_EXPORT VOID WaffleLeaveWriterLock(
+    LPWAFFLE_RWLOCK lpstRWLock
+    )
+{
+    LeaveCriticalSection(&lpstRWLock->csWrite);
+}
+
+LIBRARY_EXPORT VOID WaffleEnterReaderLock(
+    LPWAFFLE_RWLOCK lpstRWLock
+    )
+{
+    EnterCriticalSection(&lpstRWLock->csRead);
+    EnterCriticalSection(&lpstRWLock->csWrite);
+    lpstRWLock->dwReader++;
+    if (lpstRWLock->dwReader == 1)
+    {
+        ResetEvent(lpstRWLock->hReader);    //nonsignaled, need to wait
+    }
+    LeaveCriticalSection(&lpstRWLock->csWrite);
+    LeaveCriticalSection(&lpstRWLock->csRead);
+}
+
+LIBRARY_EXPORT VOID WaffleLeaveReaderLock(
+    LPWAFFLE_RWLOCK lpstRWLock
+    )
+{
+    EnterCriticalSection(&lpstRWLock->csWrite);
+    lpstRWLock->dwReader--;
+    if (lpstRWLock->dwReader == 0)
+    {
+        SetEvent(lpstRWLock->hReader);      //signaled
+    }
+    LeaveCriticalSection(&lpstRWLock->csWrite);
 }

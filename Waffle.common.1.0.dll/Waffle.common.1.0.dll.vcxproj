@@ -275,14 +275,16 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="common.c" />
+    <ClCompile Include="src\array.c" />
     <ClCompile Include="src\cmdarg.c" />
+    <ClCompile Include="src\environment.c" />
     <ClCompile Include="src\exception.c" />
     <ClCompile Include="src\filesystem.c" />
     <ClCompile Include="src\hash.c" />
     <ClCompile Include="src\init.c" />
     <ClCompile Include="src\inject.c" />
     <ClCompile Include="src\option.c" />
-    <ClCompile Include="src\pemachine.c" />
+    <ClCompile Include="src\platform.c" />
     <ClCompile Include="src\rtl.c" />
     <ClCompile Include="src\setting.c" />
   </ItemGroup>

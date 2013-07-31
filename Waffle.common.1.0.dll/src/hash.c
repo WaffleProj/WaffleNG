@@ -7,7 +7,7 @@
 #include "..\common.h"
 #include <Wincrypt.h>
 
-LIBRARY_EXPORT void WINAPI WaffleGetFileHash(
+LIBRARY_EXPORT VOID WINAPI WaffleGetFileHash(
     _In_    LPCTSTR lpszFile,
     _Out_   LPTSTR lpszResult
     )

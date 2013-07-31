@@ -6,7 +6,7 @@
 #endif
 #include "..\common.h"
 
-LIBRARY_EXPORT int WINAPI WaffleArgc(void)
+LIBRARY_EXPORT int WINAPI WaffleArgc(VOID)
 {
     int intArg = 0;
     int i = -1;

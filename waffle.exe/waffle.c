@@ -4,10 +4,10 @@
 #ifndef _UNICODE
 #define _UNICODE
 #endif
-#include "waffle.h"
+#include <waffle.h>
 #pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 
-VOID WINAPI Main()
+VOID WINAPI Main(VOID)
 {
     //Get base directory
     TCHAR szPath[MAX_PATH];
@@ -38,7 +38,7 @@ VOID WINAPI Main()
         stOpenFile.nMaxFile = sizeof(szTarget) / sizeof(TCHAR);
         stOpenFile.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
         GetOpenFileName(&stOpenFile);
-        
+
         lstrcpy(szPlugin, TEXT("Mojibake"));
     }
 
@@ -57,7 +57,7 @@ VOID WINAPI Main()
         if (lpszArgument)
         {
             wsprintf(lpszArgument, TEXT("\"%s\" %s"), szTarget, WaffleArgp(4));
-            WaffleExecute(szTarget, lpszArgument, szDirectory, lpstProcessSetting);
+            WaffleExecute(lpstProcessSetting, szTarget, lpszArgument, szDirectory);
             GlobalFree(lpszArgument);
         }
         else
@@ -116,7 +116,7 @@ VOID WINAPI Main()
             }
             else
             {
-                MessageBox(0,TEXT("FIXME:Unable to allocate memory"),0,0);
+                MessageBox(0, TEXT("FIXME:Unable to allocate memory"), 0, 0);
                 ExitProcess(0);
             }
         }
