@@ -86,6 +86,11 @@ LIBRARY_EXPORT VOID WINAPI WaffleAddFunction(
     _In_    LPCTSTR lpszDetour
     )
 {
+    LPVOID lpSource = WaffleGetProcAddress(lpstNewLibrary->hSource, lpszFunction);
+    if (!lpSource)  //This function doesn't exist
+    {
+        return;
+    }
     if (!lpstNewLibrary->lpstFunction)
     {
         lpstNewLibrary->lpstFunction = (LPWAFFLE_FUNCTION_ARRAY) GlobalAlloc(GPTR, sizeof(WAFFLE_FUNCTION_ARRAY));
@@ -112,7 +117,7 @@ LIBRARY_EXPORT VOID WINAPI WaffleAddFunction(
 
     lpstNewLibrary->lpstFunction[lpstNewLibrary->lpstFunction[0].dwBehind].dwBehind = 0;
     lpstNewLibrary->lpstFunction[lpstNewLibrary->lpstFunction[0].dwBehind].lpszFunction = lpszFunction;
-    lpstNewLibrary->lpstFunction[lpstNewLibrary->lpstFunction[0].dwBehind].lpSource = WaffleGetProcAddress(lpstNewLibrary->hSource, lpszFunction);
+    lpstNewLibrary->lpstFunction[lpstNewLibrary->lpstFunction[0].dwBehind].lpSource = lpSource;
     lpstNewLibrary->lpstFunction[lpstNewLibrary->lpstFunction[0].dwBehind].lpBackup = WaffleGetProcAddress(lpstNewLibrary->hBackup, lpszFunction);
     if (!hDetour)
     {
