@@ -7,58 +7,35 @@
 #include "mojibake.h"
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
-HINSTANCE   hComponent;
+HANDLE      hHeap;
 
-LPWSTR WINAPI AnsiToUnicode(
-    _In_    LPCSTR lpszText
+LIBRARY_EXPORT SIZE_T WINAPI ThreadInit(
+    _In_    LPWAFFLE_THREAD_CONTEXT lpstThread
     )
 {
-    if (lpszText)
-    {
-        int intText = lstrlenA(lpszText);
-        if (intText)
-        {
-            intText++;
-            LPWSTR lpuszText = (LPWSTR) HeapAlloc(hHeap, HEAP_ZERO_MEMORY, 2 * intText);
-            MultiByteToWideChar(stNewEnvir.ACP, 0, lpszText, -1, lpuszText, intText);
-            return lpuszText;
-        }
-        else
-        {
-            return 0;
-        }
-    }
-    else
-    {
-        return 0;
-    }
+    SetThreadLocale(stNewEnvir.ThreadLocale);
+    return 0;
 }
 
-LPSTR WINAPI ProgramCPToWindowsCP(
-    _In_    LPCSTR lpszText
+LIBRARY_EXPORT SIZE_T WINAPI ComponentInit(
+    _In_    LPWAFFLE_PROCESS_SETTING lpstProcessSetting
     )
 {
-    if (lpszText)
-    {
-        int intText = lstrlenA(lpszText) + 1;
-        LPWSTR lpuszText = (LPWSTR) HeapAlloc(hHeap, HEAP_ZERO_MEMORY, 2 * intText);
-        LPSTR lpszNewText = (LPSTR) HeapAlloc(hHeap, HEAP_ZERO_MEMORY, 2 * intText);
-        MultiByteToWideChar(stNewEnvir.ACP, 0, lpszText, -1, lpuszText, intText);
-        WideCharToMultiByte(stOldEnvir.ACP, 0, lpuszText, -1, lpszNewText, intText, NULL, FALSE);
-        return lpszNewText;
-    }
-    else
-        return 0;
-}
+    hHeap = HeapCreate(0, 0, 0);
 
-VOID WINAPI KeepLastErrorAndFree(
-    _In_    LPVOID lpMem
-    )
-{
-    DWORD LastError = GetLastError();
-    HeapFree(hHeap, 0, lpMem);
-    SetLastError(LastError);
-    return;
+    //Read config files
+    stOldEnvir.ACP = GetACP();
+    stNewEnvir.ACP = WaffleGetOptionInt(lpstProcessSetting, TEXT("ACP"), stOldEnvir.ACP);
+
+    stOldEnvir.OEMCP = GetOEMCP();
+    stNewEnvir.OEMCP = WaffleGetOptionInt(lpstProcessSetting, TEXT("OEMCP"), stOldEnvir.OEMCP);
+
+    stOldEnvir.ThreadLocale = GetThreadLocale();
+    stNewEnvir.ThreadLocale = WaffleGetOptionInt(lpstProcessSetting, TEXT("ThreadLocale"), stOldEnvir.ThreadLocale);
+
+    WaffleSetLibraryTable(stLibraryTable);
+
+    return 0;
 }
 
 BOOL WINAPI DllMain(
@@ -70,7 +47,6 @@ BOOL WINAPI DllMain(
     if (fdwReason == DLL_PROCESS_ATTACH)
     {
         DisableThreadLibraryCalls(hinstDLL);
-        hComponent = hinstDLL;
     }
     return TRUE;
 }

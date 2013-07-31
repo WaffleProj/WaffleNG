@@ -23,7 +23,7 @@ extern "C" {
 ENVIRONMENT_BLOCK   stOldEnvir;
 ENVIRONMENT_BLOCK   stNewEnvir;
 
-HOOK_TABLE_OBJECT stKernel32Table [] =
+WAFFLE_FUNCTION_ARRAY stKernel32Table [] =
 {
     //lpszFunction lpDetourFunction lpNewFunction lpOriginalFunction
     {"CreateDirectoryA", DetourCreateDirectoryA},
@@ -46,7 +46,7 @@ HOOK_TABLE_OBJECT stKernel32Table [] =
     { "WideCharToMultiByte", DetourWideCharToMultiByte },
     { NULL },
 };
-HOOK_TABLE_OBJECT stUser32Table [] =
+WAFFLE_FUNCTION_ARRAY stUser32Table [] =
 {
     //lpszFunction lpDetourFunction lpNewFunction lpOriginalFunction
     {"CallWindowProcA", DetourCallWindowProcA},
@@ -57,34 +57,34 @@ HOOK_TABLE_OBJECT stUser32Table [] =
     { "SetWindowTextA", DetourSetWindowTextA },
     { NULL },
 };
-HOOK_TABLE_OBJECT stGdi32Table [] =
+WAFFLE_FUNCTION_ARRAY stGdi32Table [] =
 {
     //lpszFunction lpDetourFunction lpNewFunction lpOriginalFunction
     {"CreateFontA", DetourCreateFontA},
     { "TextOutA", DetourTextOutA },
     { NULL },
 };
-HOOK_TABLE_OBJECT stPsapiTable [] =
+WAFFLE_FUNCTION_ARRAY stPsapiTable [] =
 {
     //lpszFunction lpDetourFunction lpNewFunction lpOriginalFunction
     {"GetModuleFileNameExA", DetourGetModuleFileNameExA},
     { NULL },
 };
 
-HOOK_TABLE_OBJECT stNtdllTable [] =
+WAFFLE_FUNCTION_ARRAY stNtdllTable [] =
 {
     //lpszFunction lpDetourFunction lpNewFunction lpOriginalFunction
     {NULL},
 };
 
-HOOK_TABLE_OBJECT stShell32Table [] =
+WAFFLE_FUNCTION_ARRAY stShell32Table [] =
 {
     //lpszFunction lpDetourFunction lpNewFunction lpOriginalFunction
     {"ShellAboutW", DetourShellAboutW},
     { NULL },
 };
 
-LIBRARY_TABLE_OBJECT stLibraryTable [] =
+WAFFLE_LIBRARY_ARRAY stLibraryTable [] =
 {
     //lpszLibrary lpHookTable lpLibrary hModule lpEndOfModule
     {L"kernel32.dll", stKernel32Table},

@@ -1,12 +1,5 @@
-#ifndef __MOJIBAKE_MAIN_MOJIBAKE_H_
-#define __MOJIBAKE_MAIN_MOJIBAKE_H_
-
-#define WAFFLE_COMPONENT_BUILD
-#include <waffle.h>
-#include "detour.h"
-#include "src\rtl.h"
-
-extern HANDLE       hHeap;
+#ifndef __RTL_H_
+#define __RTL_H_
 
 #ifdef __cplusplus
 extern "C" {
@@ -15,9 +8,11 @@ extern "C" {
     LPWSTR WINAPI AnsiToUnicode(
         _In_    LPCSTR lpszText
         );
+
     LPSTR WINAPI ProgramCPToWindowsCP(
         _In_    LPCSTR lpszText
         );
+
     VOID WINAPI KeepLastErrorAndFree(
         _In_    LPVOID lpMem
         );
@@ -26,4 +21,4 @@ extern "C" {
 };
 #endif
 
-#endif /* __MOJIBAKE_MAIN_MOJIBAKE_H_ */
+#endif /* __RTL_H_ */

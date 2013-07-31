@@ -18,10 +18,10 @@
     <ClInclude Include="detour.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="init.h">
+    <ClInclude Include="mojibake.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="mojibake.h">
+    <ClInclude Include="src\rtl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -29,10 +29,10 @@
     <ClCompile Include="detour.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="init.c">
+    <ClCompile Include="mojibake.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="mojibake.c">
+    <ClCompile Include="src\rtl.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

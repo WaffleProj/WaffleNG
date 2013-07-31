@@ -273,13 +273,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="detour.h" />
-    <ClInclude Include="init.h" />
     <ClInclude Include="mojibake.h" />
+    <ClInclude Include="src\rtl.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="detour.c" />
-    <ClCompile Include="init.c" />
     <ClCompile Include="mojibake.c" />
+    <ClCompile Include="src\rtl.c" />
   </ItemGroup>
   <ItemGroup>
     <None Include="mojibake.def" />
