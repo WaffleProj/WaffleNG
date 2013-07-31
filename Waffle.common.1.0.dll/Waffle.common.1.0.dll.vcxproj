@@ -278,7 +278,6 @@
     <ClCompile Include="src\array.c" />
     <ClCompile Include="src\cmdarg.c" />
     <ClCompile Include="src\environment.c" />
-    <ClCompile Include="src\exception.c" />
     <ClCompile Include="src\filesystem.c" />
     <ClCompile Include="src\hash.c" />
     <ClCompile Include="src\init.c" />

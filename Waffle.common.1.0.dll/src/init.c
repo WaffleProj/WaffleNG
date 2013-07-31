@@ -28,7 +28,7 @@ VOID __fastcall SetThreadEnvironment(
     static LPTHREADINIT ThreadInit;
     if (!ThreadInit)
     {
-        ThreadInit = (LPTHREADINIT) WaffleGetProcAddress(hComponent, "ThreadInit");
+        ThreadInit = (LPTHREADINIT) WaffleGetProcAddress(hComponent, TEXT("ThreadInit"));
     }
 
     ThreadInit(lpstThread);
@@ -51,7 +51,7 @@ LIBRARY_EXPORT HMODULE WINAPI WaffleLoadComponent(
     LPWAFFLE_PROCESS_SETTING lpstProcessSetting = WaffleOpenProcessSetting();
     wsprintf(szComponent, TEXT("%s\\%s\\%s\\%s"), WaffleGetComponentDirectory(), lpstProcessSetting->szPlugin, WAFFLE_PORT_MACHINE_STRING, lpszComponent);
     hComponent = LoadLibrary(szComponent);
-    LPCOMPONENTINIT ComponentInit = (LPCOMPONENTINIT) WaffleGetProcAddress(hComponent, "ComponentInit");
+    LPCOMPONENTINIT ComponentInit = (LPCOMPONENTINIT) WaffleGetProcAddress(hComponent, TEXT("ComponentInit"));
     if (!ComponentInit)
     {
         FreeLibrary(hComponent);
@@ -69,73 +69,60 @@ LIBRARY_EXPORT SIZE_T WINAPI WaffleInit(
     )
 {
     LPWAFFLE_PROCESS_SETTING lpstProcessSetting = WaffleOpenProcessSetting();
+    TCHAR szExecutable[MAX_PATH];
+    GetModuleFileName(NULL, szExecutable, sizeof(szExecutable) / sizeof(szExecutable[0]));
+    WaffleSetOptionString(lpstProcessSetting, TEXT("ProgramName"), szExecutable, FALSE);
+
+    hComponent = WaffleLoadComponent(TEXT("Mojibake.core.1.0.dll"));
+    if (!hComponent)
     {
-        TCHAR szExecutable[MAX_PATH];
-        GetModuleFileName(NULL, szExecutable, sizeof(szExecutable) / sizeof(szExecutable[0]));
-        WaffleSetOptionString(lpstProcessSetting, TEXT("ProgramName"), szExecutable, FALSE);
+        MessageBox(0, TEXT("FIXME:Invalid Component"), 0, 0);
+        WaffleResumeMainThread();
+        return 0;
     }
 
+    LPTSTR lpszSection = WaffleGetOptionSectionNames(lpstProcessSetting, TEXT("Detour.ini"));
+    if (!lpszSection)
     {
-        hComponent = WaffleLoadComponent(TEXT("Mojibake.core.1.0.dll"));
-        if (!hComponent)
-        {
-            MessageBox(0, TEXT("FIXME:Invalid Component"), 0, 0);
-            WaffleResumeMainThread();
-            return 0;
-        }
+        MessageBox(0, TEXT("FIXME:Unable to allocate more memory"), 0, 0);
+        WaffleResumeMainThread();
+        return 0;
     }
-
-    TCHAR szFilter[MAX_PATH];
-    wsprintf(szFilter, TEXT("%s\\%s\\Config\\Filter.ini"), WaffleGetComponentDirectory(), lpstProcessSetting->szPlugin);
-    LPTSTR lpszLibrary;
-    {
-        DWORD nSize = 4;
-        lpszLibrary = (LPTSTR) GlobalAlloc(GPTR, nSize*sizeof(TCHAR));
-        if (!lpszLibrary)
-        {
-            MessageBox(0, TEXT("FIXME:Unable to allocate more memory"), 0, 0);
-            WaffleResumeMainThread();
-            return 0;
-        }
-        while (GetPrivateProfileSectionNames(lpszLibrary, nSize, szFilter) == nSize - 2)
-        {
-            nSize = nSize * 2;
-            lpszLibrary = (LPTSTR) GlobalReAlloc(lpszLibrary, nSize*sizeof(TCHAR), GHND);
-            if (!lpszLibrary)
-            {
-                MessageBox(0, TEXT("FIXME:Unable to allocate more memory"), 0, 0);
-                WaffleResumeMainThread();
-                return 0;
-            }
-        }
-    }
-
+    
     int nLibrary = 0;
     {
-        LPTSTR lpszNext = lpszLibrary;
-        DWORD nSize = lstrlen(lpszNext);
-        while (nSize)
+        LPTSTR lpszNextSection = lpszSection;
+        DWORD nSizeOfSection = lstrlen(lpszNextSection);
+        while (nSizeOfSection)
         {
             //Check if we already loaded this library
             //for now we just load everything because we don't have a function to work with LoadLibrary
             //HMODULE hLibrary = GetModuleHandle(lpszNext);
-            HMODULE hLibrary = LoadLibrary(lpszNext);
+            HMODULE hLibrary = LoadLibrary(lpszNextSection);
             if (hLibrary)
             {
                 nLibrary++;
             }
 
             WAFFLE_LIBRARY_ARRAY stLibrary;
-            stLibrary.lpszLibrary = lpszNext;
+            RtlZeroMemory(&stLibrary, sizeof(stLibrary));
+            stLibrary.lpszLibrary = lpszNextSection;
             WaffleCopyLibrary(&stLibrary);
+            WaffleCreateFunctionArray(&stLibrary);
             WaffleAddLibrary(&stLibrary);
 
-            lpszNext = lpszNext + nSize + 1;
-            nSize = lstrlen(lpszNext);
+            lpszNextSection = lpszNextSection + nSizeOfSection + 1;
+            nSizeOfSection = lstrlen(lpszNextSection);
         }
     }
-
-    //WaffleSetBreakpoint();
+    
+    AddVectoredExceptionHandler(TRUE, WaffleExceptionHandler);
+    int countLibrary;
+    for (countLibrary = nLibrary; countLibrary >= 0; countLibrary--)
+    {
+        DWORD countFunction;
+        for (countFunction = 0; WaffleSetDetour(countLibrary, countFunction); countFunction++);
+    }
 
     HANDLE hThread = OpenThread(THREAD_ALL_ACCESS, FALSE, lpstProcessSetting->dwThreadId);    //WinXP may return ERROR_ACCESS_DENIED
 
@@ -155,9 +142,6 @@ LIBRARY_EXPORT SIZE_T WINAPI WaffleInit(
     stContext.WAFFLE_PORT_FASTCALL_ARGUMENT = (SIZE_T) lpstThread;
     SetThreadContext(hThread, &stContext);
     ResumeThread(hThread);
-
-    MessageBox(0, 0, 0, 0);
-    WaffleSetBreakpoint();
 
     return 0;
 }

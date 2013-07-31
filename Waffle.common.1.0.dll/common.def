@@ -1,14 +1,11 @@
-NAME	Waffle.common.1.0.dll
+NAME    Waffle.common.1.0.dll
 EXPORTS
     WaffleArgc
     WaffleArgv
     WaffleArgp
     
-    WaffleSetLibraryTable
-    WaffleGetProcAddress
     WaffleCopyLibrary
-    WaffleCopyLibraryEx
-    WaffleSetBreakpoint
+    WaffleSetDetour
     WaffleExceptionHandler
     
     WaffleGetModuleDirectory
@@ -36,6 +33,8 @@ EXPORTS
     WafflelstrcmpA
     WaffleStrToIntW
     WaffleStrToIntA
+    WaffleGetProcAddressW
+    WaffleGetProcAddressA
     
     WaffleOpenProcessSetting
     WaffleCreateProcessSetting

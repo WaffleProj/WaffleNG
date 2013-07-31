@@ -41,9 +41,6 @@
     <ClCompile Include="src\setting.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\exception.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\rtl.c">
       <Filter>Source Files</Filter>
     </ClCompile>

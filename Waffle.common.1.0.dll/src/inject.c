@@ -53,7 +53,7 @@ LIBRARY_EXPORT VOID WINAPI WaffleInjectDll(
     LPVOID lpszRemoteDll = VirtualAllocEx(hProcess, NULL, MAX_PATH*sizeof(TCHAR), MEM_COMMIT, PAGE_READWRITE);
     if (lpszRemoteDll)
     {
-        LPTHREAD_START_ROUTINE lpLoadLibrary = (LPTHREAD_START_ROUTINE) WaffleGetProcAddress(GetModuleHandle(TEXT("kernel32.dll")), "LoadLibraryW");
+        LPTHREAD_START_ROUTINE lpLoadLibrary = (LPTHREAD_START_ROUTINE) WaffleGetProcAddress(GetModuleHandle(TEXT("kernel32.dll")), TEXT("LoadLibraryW"));
 
         WriteProcessMemory(hProcess, lpszRemoteDll, lpszDllFull, lstrlen(lpszDllFull)*sizeof(TCHAR), NULL);
         HANDLE hThread = CreateRemoteThread(hProcess, NULL, 0, lpLoadLibrary, lpszRemoteDll, 0, NULL);

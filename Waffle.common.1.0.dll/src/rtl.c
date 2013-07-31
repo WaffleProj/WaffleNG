@@ -263,3 +263,101 @@ LIBRARY_EXPORT VOID WaffleLeaveReaderLock(
     }
     LeaveCriticalSection(&lpstRWLock->csWrite);
 }
+
+LIBRARY_EXPORT LPVOID WINAPI WaffleGetProcAddressW(
+    _In_    HMODULE hModule,
+    _In_    LPCWSTR lpszFuncName
+    )
+{
+    DWORD nSize = WideCharToMultiByte(CP_ACP, 0, lpszFuncName, -1, NULL, 0, NULL, NULL);;
+    LPSTR lpszFunction = (LPSTR) GlobalAlloc(GPTR, nSize*sizeof(CHAR));
+    WideCharToMultiByte(CP_ACP, 0, lpszFuncName, -1, lpszFunction, nSize, NULL, NULL);
+    LPVOID lpFunction = WaffleGetProcAddressA(hModule, lpszFunction);
+    GlobalFree(lpszFunction);
+    return lpFunction;
+}
+
+LIBRARY_EXPORT LPVOID WINAPI WaffleGetProcAddressA(
+    _In_    HMODULE hModule,
+    _In_    LPCSTR lpszFuncName
+    )
+{
+    //GetProcAddress won't work if hModule is invalid
+    if (!hModule)
+    {
+        return NULL;
+    }
+
+    if (((PIMAGE_DOS_HEADER) hModule)->e_magic == IMAGE_DOS_SIGNATURE)
+    {
+        PIMAGE_DATA_DIRECTORY lpDataDirectory;
+        WORD Magic = ((PIMAGE_NT_HEADERS) ((SIZE_T) hModule + ((PIMAGE_DOS_HEADER) hModule)->e_lfanew))->OptionalHeader.Magic;
+        if (Magic == IMAGE_NT_OPTIONAL_HDR32_MAGIC)
+        {
+            PIMAGE_NT_HEADERS lpNtHeader = (PIMAGE_NT_HEADERS) ((SIZE_T) hModule + ((PIMAGE_DOS_HEADER) hModule)->e_lfanew);
+            PIMAGE_OPTIONAL_HEADER lpOptionalHeader = &(lpNtHeader->OptionalHeader);
+            lpDataDirectory = (PIMAGE_DATA_DIRECTORY) (lpOptionalHeader->DataDirectory + IMAGE_DIRECTORY_ENTRY_EXPORT);
+        }
+        else if (Magic == IMAGE_NT_OPTIONAL_HDR64_MAGIC)
+        {
+            PIMAGE_NT_HEADERS64 lpNtHeader = (PIMAGE_NT_HEADERS64) ((SIZE_T) hModule + ((PIMAGE_DOS_HEADER) hModule)->e_lfanew);
+            PIMAGE_OPTIONAL_HEADER64 lpOptionalHeader = &(lpNtHeader->OptionalHeader);
+            lpDataDirectory = (PIMAGE_DATA_DIRECTORY) (lpOptionalHeader->DataDirectory + IMAGE_DIRECTORY_ENTRY_EXPORT);
+        }
+        else
+        {
+            return NULL;
+        }
+
+        PIMAGE_EXPORT_DIRECTORY lpExportTable = (PIMAGE_EXPORT_DIRECTORY) ((SIZE_T) hModule + lpDataDirectory->VirtualAddress);
+
+        DWORD nName = lpExportTable->NumberOfNames;
+        DWORD nFunction = lpExportTable->NumberOfFunctions;
+        DWORD *lpName = (DWORD *) ((SIZE_T) hModule + lpExportTable->AddressOfNames);
+        WORD *lpOrdinal = (WORD *) ((SIZE_T) hModule + lpExportTable->AddressOfNameOrdinals);
+        DWORD *lpFunction = (DWORD *) ((SIZE_T) hModule + lpExportTable->AddressOfFunctions);
+
+        if ((SIZE_T) lpszFuncName > 0xFFFF)
+        {
+            int Direction = 1;
+            DWORD Begin = 0;
+            DWORD End = nName;
+            DWORD i;
+            while (Direction)
+            {
+                if (Begin > End)
+                {
+                    return NULL;
+                }
+                i = (Begin + End) / 2;
+                Direction = WafflelstrcmpA(lpszFuncName, (LPSTR) ((SIZE_T) hModule + lpName[i]));
+                if (Direction > 0)
+                {
+                    Begin = i + 1;
+                }
+                else if (Direction < 0)
+                {
+                    End = i - 1;
+                }
+            }
+            return (LPVOID) ((SIZE_T) hModule + lpFunction[lpOrdinal[i]]);
+        }
+        else
+        {
+            if ((SIZE_T) lpszFuncName <= nFunction)
+            {
+                return (LPVOID) ((SIZE_T) hModule + lpFunction[(SIZE_T) lpszFuncName - lpExportTable->Base]);
+            }
+        }
+    }
+    return NULL;
+}
+
+LIBRARY_EXPORT VOID WINAPI WaffleIntBox(
+    int i
+    )
+{
+    TCHAR szBuf[32];
+    wsprintf(szBuf, TEXT("%i"), i);
+    MessageBox(0, szBuf, 0, 0);
+}

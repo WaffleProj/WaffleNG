@@ -85,3 +85,88 @@ LIBRARY_EXPORT VOID WINAPI WaffleSetOptionInt(
     WaffleSetOptionString(lpstProcessSetting, lpszKeyName, szValue, bGlobal);
     return;
 }
+
+LIBRARY_EXPORT int WINAPI WaffleGetOptionStringNumber(
+    _In_    LPCTSTR lpszString
+    )
+{
+    int nString = 0;
+    DWORD nSizeOfString = lstrlen(lpszString);
+    while (nSizeOfString)
+    {
+        nString++;
+        lpszString = lpszString + nSizeOfString + 1;
+        nSizeOfString = lstrlen(lpszString);
+    }
+    return nString;
+}
+
+LIBRARY_EXPORT LPTSTR WINAPI WaffleGetOptionSectionNames(
+    _In_    LPWAFFLE_PROCESS_SETTING lpstProcessSetting,
+    _In_    LPCTSTR lpszOption
+    )
+{
+    TCHAR szOption[MAX_PATH];
+    wsprintf(szOption, TEXT("%s\\%s\\Config\\%s"), WaffleGetComponentDirectory(), lpstProcessSetting->szPlugin, lpszOption);
+
+    LPTSTR lpszSection;
+    DWORD nSizeOfSection = 4;
+    lpszSection = (LPTSTR) GlobalAlloc(GPTR, nSizeOfSection*sizeof(TCHAR));
+    if (!lpszSection)
+    {
+        return NULL;
+    }
+    while (GetPrivateProfileSectionNames(lpszSection, nSizeOfSection, szOption) == nSizeOfSection - 2)
+    {
+        nSizeOfSection = nSizeOfSection * 2;
+        HGLOBAL lpszSectionRealloc = GlobalReAlloc(lpszSection, nSizeOfSection*sizeof(TCHAR), GHND);
+        if (!lpszSectionRealloc)
+        {
+            GlobalFree(lpszSection);
+            return NULL;
+        }
+        else
+        {
+            lpszSection = (LPTSTR) lpszSectionRealloc;
+        }
+    }
+    return lpszSection;
+}
+
+LIBRARY_EXPORT LPTSTR WINAPI WaffleGetOptionSectionKeys(
+    _In_    LPWAFFLE_PROCESS_SETTING lpstProcessSetting,
+    _In_    LPCTSTR lpszOption,
+    _In_    LPCTSTR lpszSection
+    )
+{
+    TCHAR szOption[MAX_PATH];
+    wsprintf(szOption, TEXT("%s\\%s\\Config\\%s"), WaffleGetComponentDirectory(), lpstProcessSetting->szPlugin, lpszOption);
+
+    LPTSTR lpszKey;
+    DWORD nSizeOfKey = 4;
+    lpszKey = (LPTSTR) GlobalAlloc(GPTR, nSizeOfKey*sizeof(TCHAR));
+    if (!lpszKey)
+    {
+        return NULL;
+    }
+    while (GetPrivateProfileSection(lpszSection, lpszKey, nSizeOfKey, szOption) == nSizeOfKey - 2)
+    {
+        nSizeOfKey = nSizeOfKey * 2;
+        if (nSizeOfKey > 32767)
+        {
+            GlobalFree(lpszKey);
+            return NULL;
+        }
+        HGLOBAL lpszKeyRealloc = GlobalReAlloc(lpszKey, nSizeOfKey*sizeof(TCHAR), GHND);
+        if (!lpszKeyRealloc)
+        {
+            GlobalFree(lpszKey);
+            return NULL;
+        }
+        else
+        {
+            lpszKey = (LPTSTR) lpszKeyRealloc;
+        }
+    }
+    return lpszKey;
+}
