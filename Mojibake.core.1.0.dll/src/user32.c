@@ -201,12 +201,12 @@ extern "C" {
 
         LPWSTR lpszMenuName = AnsiToUnicode(lpWndClass->lpszMenuName);
         LPSTR szMenuName = (LPSTR) HeapAlloc(hHeap, HEAP_ZERO_MEMORY, 2 * lstrlen(lpszMenuName));
-        WideCharToMultiByte(stOldEnvir.ACP, 0, lpszMenuName, -1, szMenuName, 2 * lstrlen(lpszMenuName), NULL, FALSE);
+        WideCharToMultiByte(stOldEnvir.ANSICodePage, 0, lpszMenuName, -1, szMenuName, 2 * lstrlen(lpszMenuName), NULL, FALSE);
         WndClass.lpszMenuName = szMenuName;
 
         LPWSTR lpszClassName = AnsiToUnicode(lpWndClass->lpszClassName);
         LPSTR szClassName = (LPSTR) HeapAlloc(hHeap, HEAP_ZERO_MEMORY, 2 * lstrlen(lpszClassName));
-        WideCharToMultiByte(stOldEnvir.ACP, 0, lpszClassName, -1, szClassName, 2 * lstrlen(lpszClassName), NULL, FALSE);
+        WideCharToMultiByte(stOldEnvir.ANSICodePage, 0, lpszClassName, -1, szClassName, 2 * lstrlen(lpszClassName), NULL, FALSE);
         WndClass.lpszClassName = szClassName;
 
         ATOM Result = BackupRegisterClassExA(&WndClass);

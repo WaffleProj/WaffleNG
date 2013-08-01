@@ -9,30 +9,13 @@ extern HANDLE       hHeap;
 
 typedef struct
 {
-    UINT ACP;
-    UINT OEMCP;
-    LCID ThreadLocale;
-} ENVIRONMENT_BLOCK, *LPENVIRONMENT_BLOCK;
+    UINT    ANSICodePage;
+    UINT    OEMCodePage;
+    LCID    ThreadLocale;
+    DWORD   DefaultCharSet;
+} ENVIRONMENT_SETTING, *LPENVIRONMENT_SETTING;
 
-extern ENVIRONMENT_BLOCK    stOldEnvir;
-extern ENVIRONMENT_BLOCK    stNewEnvir;
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-    LPWSTR WINAPI AnsiToUnicode(
-        _In_    LPCSTR lpszText
-        );
-    LPSTR WINAPI ProgramCPToWindowsCP(
-        _In_    LPCSTR lpszText
-        );
-    VOID WINAPI KeepLastErrorAndFree(
-        _In_    LPVOID lpMem
-        );
-
-#ifdef __cplusplus
-};
-#endif
+extern ENVIRONMENT_SETTING  stOldEnvir;
+extern ENVIRONMENT_SETTING  stNewEnvir;
 
 #endif /* __MOJIBAKE_MAIN_MOJIBAKE_H_ */

@@ -8,8 +8,8 @@
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
 HANDLE      hHeap;
-ENVIRONMENT_BLOCK   stOldEnvir;
-ENVIRONMENT_BLOCK   stNewEnvir;
+ENVIRONMENT_SETTING stOldEnvir;
+ENVIRONMENT_SETTING stNewEnvir;
 
 LIBRARY_EXPORT SIZE_T WINAPI ThreadInit(
     _In_    LPWAFFLE_THREAD_CONTEXT lpstThread
@@ -26,14 +26,17 @@ LIBRARY_EXPORT SIZE_T WINAPI ComponentInit(
     hHeap = HeapCreate(0, 0, 0);
 
     //Read config files
-    stOldEnvir.ACP = GetACP();
-    stNewEnvir.ACP = WaffleGetOptionInt(lpstProcessSetting, TEXT("ACP"), stOldEnvir.ACP);
+    stOldEnvir.ANSICodePage = GetACP();
+    stNewEnvir.ANSICodePage = WaffleGetOptionInt(lpstProcessSetting, TEXT("ANSICodePage"), stOldEnvir.ANSICodePage);
 
-    stOldEnvir.OEMCP = GetOEMCP();
-    stNewEnvir.OEMCP = WaffleGetOptionInt(lpstProcessSetting, TEXT("OEMCP"), stOldEnvir.OEMCP);
+    stOldEnvir.OEMCodePage = GetOEMCP();
+    stNewEnvir.OEMCodePage = WaffleGetOptionInt(lpstProcessSetting, TEXT("OEMCodePage"), stOldEnvir.OEMCodePage);
 
     stOldEnvir.ThreadLocale = GetThreadLocale();
     stNewEnvir.ThreadLocale = WaffleGetOptionInt(lpstProcessSetting, TEXT("ThreadLocale"), stOldEnvir.ThreadLocale);
+
+    stOldEnvir.DefaultCharSet = DEFAULT_CHARSET;
+    stNewEnvir.DefaultCharSet = WaffleGetOptionInt(lpstProcessSetting, TEXT("DefaultCharSet"), stOldEnvir.DefaultCharSet);
 
     return 0;
 }
