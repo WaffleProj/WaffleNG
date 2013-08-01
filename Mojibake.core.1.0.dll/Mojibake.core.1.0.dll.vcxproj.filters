@@ -35,12 +35,6 @@
     <ClCompile Include="src\kernel32.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\psapi.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\shell32.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\user32.c">
       <Filter>Source Files</Filter>
     </ClCompile>

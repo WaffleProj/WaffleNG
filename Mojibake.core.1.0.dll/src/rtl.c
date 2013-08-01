@@ -52,8 +52,11 @@ VOID WINAPI KeepLastErrorAndFree(
     _In_    LPVOID lpMem
     )
 {
-    DWORD LastError = GetLastError();
-    HeapFree(hHeap, 0, lpMem);
-    SetLastError(LastError);
+    if (lpMem)
+    {
+        DWORD LastError = GetLastError();
+        HeapFree(hHeap, 0, lpMem);
+        SetLastError(LastError);
+    }
     return;
 }

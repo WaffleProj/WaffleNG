@@ -279,9 +279,7 @@
     <ClCompile Include="mojibake.c" />
     <ClCompile Include="src\gdi32.c" />
     <ClCompile Include="src\kernel32.c" />
-    <ClCompile Include="src\psapi.c" />
     <ClCompile Include="src\rtl.c" />
-    <ClCompile Include="src\shell32.c" />
     <ClCompile Include="src\user32.c" />
   </ItemGroup>
   <ItemGroup>

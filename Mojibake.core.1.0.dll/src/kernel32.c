@@ -157,13 +157,15 @@ LIBRARY_EXPORT DWORD WINAPI DetourGetModuleFileNameA(
 {
     LPWSTR lpuszFilename = 0;
     if (lpFilename)
-        lpuszFilename = (LPWSTR) GlobalAlloc(GPTR, 4 * nSize);
+    {
+        lpuszFilename = (LPWSTR) HeapAlloc(hHeap, HEAP_ZERO_MEMORY, 4 * nSize);
+    }
 
     GetModuleFileName(hModule, lpuszFilename, nSize);
 
     DWORD LastError = GetLastError();
     WideCharToMultiByte(stNewEnvir.ACP, 0, lpuszFilename, -1, lpFilename, nSize, NULL, NULL);
-    GlobalFree(lpuszFilename);
+    HeapFree(hHeap, 0, lpuszFilename);
     int Result = lstrlenA(lpFilename);
     SetLastError(LastError);
     return Result;
