@@ -12,6 +12,23 @@ LIBRARY_EXPORT VOID WINAPI WaffleGetFileHash(
     _Out_   LPTSTR lpszResult
     )
 {
+    static LPCRYPTACQUIRECONTEXTW lpCryptAcquireContextW;
+    static LPCRYPTCREATEHASH lpCryptCreateHash;
+    static LPCRYPTDESTROYHASH lpCryptDestroyHash;
+    static LPCRYPTRELEASECONTEXT lpCryptReleaseContext;
+    static LPCRYPTHASHDATA lpCryptHashData;
+    static LPCRYPTGETHASHPARAM lpCryptGetHashParam;
+    if (!lpCryptAcquireContextW)
+    {
+        HMODULE hModule = LoadLibrary(TEXT("advapi32.dll"));
+        lpCryptAcquireContextW = (LPCRYPTACQUIRECONTEXTW) WaffleGetProcAddress(hModule, TEXT("CryptAcquireContextW"));
+        lpCryptCreateHash = (LPCRYPTCREATEHASH) WaffleGetProcAddress(hModule, TEXT("CryptCreateHash"));
+        lpCryptDestroyHash = (LPCRYPTDESTROYHASH) WaffleGetProcAddress(hModule, TEXT("CryptDestroyHash"));
+        lpCryptReleaseContext = (LPCRYPTRELEASECONTEXT) WaffleGetProcAddress(hModule, TEXT("CryptReleaseContext"));
+        lpCryptHashData = (LPCRYPTHASHDATA) WaffleGetProcAddress(hModule, TEXT("CryptHashData"));
+        lpCryptGetHashParam = (LPCRYPTGETHASHPARAM) WaffleGetProcAddress(hModule, TEXT("CryptGetHashParam"));
+    }
+
     lpszResult[0] = 0;
 
     PVOID OldValue = 0;
@@ -25,25 +42,25 @@ LIBRARY_EXPORT VOID WINAPI WaffleGetFileHash(
     }
 
     HCRYPTPROV hProv;
-    if (!CryptAcquireContext(&hProv, NULL, NULL, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT))
+    if (!lpCryptAcquireContextW(&hProv, NULL, NULL, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT))
     {
         CloseHandle(hFile);
         return;
     }
 
     HCRYPTHASH hHash;
-    if (!CryptCreateHash(hProv, CALG_SHA1, 0, 0, &hHash))
+    if (!lpCryptCreateHash(hProv, CALG_SHA1, 0, 0, &hHash))
     {
         CloseHandle(hFile);
-        CryptReleaseContext(hProv, 0);
+        lpCryptReleaseContext(hProv, 0);
         return;
     }
 
     LPVOID lpBuffer = GlobalAlloc(GPTR, 1024);   //BUFSIZE == 1024
     if (!lpBuffer)
     {
-        CryptDestroyHash(hHash);
-        CryptReleaseContext(hProv, 0);
+        lpCryptDestroyHash(hHash);
+        lpCryptReleaseContext(hProv, 0);
         CloseHandle(hFile);
         return;
     }
@@ -56,10 +73,10 @@ LIBRARY_EXPORT VOID WINAPI WaffleGetFileHash(
             break;
         }
 
-        if (!CryptHashData(hHash, (BYTE *) lpBuffer, nNumberOfBytesRead, 0))
+        if (!lpCryptHashData(hHash, (BYTE *) lpBuffer, nNumberOfBytesRead, 0))
         {
-            CryptReleaseContext(hProv, 0);
-            CryptDestroyHash(hHash);
+            lpCryptReleaseContext(hProv, 0);
+            lpCryptDestroyHash(hHash);
             CloseHandle(hFile);
             return;
         }
@@ -67,20 +84,20 @@ LIBRARY_EXPORT VOID WINAPI WaffleGetFileHash(
 
     BYTE rgbHash[WAFFLE_HASH_LENGTH];      //SHA1LEN == 20
     DWORD cbHash = WAFFLE_HASH_LENGTH;     //MD5LEN == 16
-    if (CryptGetHashParam(hHash, HP_HASHVAL, rgbHash, &cbHash, 0))
+    if (lpCryptGetHashParam(hHash, HP_HASHVAL, rgbHash, &cbHash, 0))
     {
-        CHAR rgbDigitsU [] = "0123456789ABCDEF";
+        TCHAR rgbDigits [] = TEXT("0123456789ABCDEF");
         DWORD i, n;
         for (i = 0, n = 0; i < cbHash; i++)
         {
-            lpszResult[n++] = (TCHAR) (rgbDigitsU[rgbHash[i] >> 4]);
-            lpszResult[n++] = (TCHAR) (rgbDigitsU[rgbHash[i] & 0xf]);
+            lpszResult[n++] = rgbDigits[rgbHash[i] >> 4];
+            lpszResult[n++] = rgbDigits[rgbHash[i] & 0xf];
         }
         lpszResult[n++] = 0;
     }
 
     GlobalFree(lpBuffer);
-    CryptDestroyHash(hHash);
-    CryptReleaseContext(hProv, 0);
+    lpCryptDestroyHash(hHash);
+    lpCryptReleaseContext(hProv, 0);
     CloseHandle(hFile);
 }

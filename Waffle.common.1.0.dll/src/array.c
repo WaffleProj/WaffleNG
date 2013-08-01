@@ -19,14 +19,12 @@ LIBRARY_EXPORT VOID WINAPI WaffleCopyLibrary(
     }
 
     //Get dll base address and size
-    MODULEINFO  stModuleInfo;
-    GetModuleInformation(GetCurrentProcess(), lpstNewLibrary->hSource, &stModuleInfo, sizeof(stModuleInfo));
-    lpstNewLibrary->hSource = (HMODULE) stModuleInfo.lpBaseOfDll;
-    lpstNewLibrary->hSourceEnd = (LPVOID) ((SIZE_T) lpstNewLibrary->hSource + stModuleInfo.SizeOfImage);
+    DWORD dwSizeOfImage = WaffleGetImageSize(lpstNewLibrary->hSource);
+    lpstNewLibrary->hSourceEnd = (LPVOID) ((SIZE_T) lpstNewLibrary->hSource + dwSizeOfImage);
 
     //Reserve memory address
-    lpstNewLibrary->hBackup = (HMODULE) VirtualAlloc(NULL, stModuleInfo.SizeOfImage, MEM_RESERVE, PAGE_NOACCESS);
-    lpstNewLibrary->hBackupEnd = (LPVOID) ((SIZE_T) lpstNewLibrary->hBackup + stModuleInfo.SizeOfImage);
+    lpstNewLibrary->hBackup = (HMODULE) VirtualAlloc(NULL, dwSizeOfImage, MEM_RESERVE, PAGE_NOACCESS);
+    lpstNewLibrary->hBackupEnd = (LPVOID) ((SIZE_T) lpstNewLibrary->hBackup + dwSizeOfImage);
 
     LPVOID addrPointer = lpstNewLibrary->hSource;
     LPVOID addrEnd = lpstNewLibrary->hSourceEnd;
@@ -228,6 +226,8 @@ LIBRARY_EXPORT LPVOID WINAPI WaffleGetBackupAddress(
     {
         if (!Wafflelstrcmpi(lpszLibrary, lpstLibrary[i].lpszLibrary))
         {
+            //return WaffleGetProcAddress(lpstLibrary[i].hBackup, lpszFunction); uses WideCharToMultiByte
+            ///*
             //MessageBox(0, lpszLibrary, lpstLibrary[i].lpszLibrary, 0);
             int j;
             for (j = lpstLibrary[i].lpstFunction[0].dwBehind; j >= 0; j--)
@@ -239,6 +239,7 @@ LIBRARY_EXPORT LPVOID WINAPI WaffleGetBackupAddress(
                 }
             }
             break;
+            //*/
         }
     }
     return NULL;

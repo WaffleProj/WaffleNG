@@ -361,3 +361,35 @@ LIBRARY_EXPORT VOID WINAPI WaffleIntBox(
     wsprintf(szBuf, TEXT("%i"), i);
     MessageBox(0, szBuf, 0, 0);
 }
+
+LIBRARY_EXPORT DWORD WINAPI WaffleGetImageSize(
+    HMODULE hModule
+    )
+{
+    if (!hModule)
+    {
+        return 0;
+    }
+
+    if (((PIMAGE_DOS_HEADER) hModule)->e_magic == IMAGE_DOS_SIGNATURE)
+    {
+        WORD Magic = ((PIMAGE_NT_HEADERS) ((SIZE_T) hModule + ((PIMAGE_DOS_HEADER) hModule)->e_lfanew))->OptionalHeader.Magic;
+        if (Magic == IMAGE_NT_OPTIONAL_HDR32_MAGIC)
+        {
+            PIMAGE_NT_HEADERS lpNtHeader = (PIMAGE_NT_HEADERS) ((SIZE_T) hModule + ((PIMAGE_DOS_HEADER) hModule)->e_lfanew);
+            PIMAGE_OPTIONAL_HEADER lpOptionalHeader = &(lpNtHeader->OptionalHeader);
+            return lpOptionalHeader->SizeOfImage;
+        }
+        else if (Magic == IMAGE_NT_OPTIONAL_HDR64_MAGIC)
+        {
+            PIMAGE_NT_HEADERS64 lpNtHeader = (PIMAGE_NT_HEADERS64) ((SIZE_T) hModule + ((PIMAGE_DOS_HEADER) hModule)->e_lfanew);
+            PIMAGE_OPTIONAL_HEADER64 lpOptionalHeader = &(lpNtHeader->OptionalHeader);
+            return lpOptionalHeader->SizeOfImage;
+        }
+        else
+        {
+            return 0;
+        }
+    }
+    return 0;
+}
