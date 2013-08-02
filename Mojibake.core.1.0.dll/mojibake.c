@@ -36,7 +36,7 @@ LIBRARY_EXPORT SIZE_T WINAPI ComponentInit(
     stNewEnvir.ThreadLocale = WaffleGetOptionInt(lpstProcessSetting, TEXT("ThreadLocale"), stOldEnvir.ThreadLocale);
 
     stOldEnvir.DefaultCharSet = DEFAULT_CHARSET;
-    stNewEnvir.DefaultCharSet = WaffleGetOptionInt(lpstProcessSetting, TEXT("DefaultCharSet"), stOldEnvir.DefaultCharSet);
+    stNewEnvir.DefaultCharSet = (BYTE) WaffleGetOptionInt(lpstProcessSetting, TEXT("DefaultCharSet"), stOldEnvir.DefaultCharSet);
 
     return 0;
 }

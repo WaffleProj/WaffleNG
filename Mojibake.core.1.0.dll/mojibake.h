@@ -12,7 +12,7 @@ typedef struct
     UINT    ANSICodePage;
     UINT    OEMCodePage;
     LCID    ThreadLocale;
-    DWORD   DefaultCharSet;
+    BYTE    DefaultCharSet;
 } ENVIRONMENT_SETTING, *LPENVIRONMENT_SETTING;
 
 extern ENVIRONMENT_SETTING  stOldEnvir;
