@@ -204,8 +204,12 @@ LIBRARY_EXPORT LONG CALLBACK WaffleExceptionHandler(
                 {
                     if (lpstFunction[j].lpSource == ExceptionInfo->ExceptionRecord->ExceptionAddress)
                     {
-                        ExceptionInfo->ContextRecord->WAFFLE_PORT_PROGRAM_POINTER = (SIZE_T) lpstFunction[j].lpDetour;
-                        return EXCEPTION_CONTINUE_EXECUTION;
+                        if (lpstFunction[j].lpDetour)
+                        {
+                            ExceptionInfo->ContextRecord->WAFFLE_PORT_PROGRAM_POINTER = (SIZE_T) lpstFunction[j].lpDetour;
+                            return EXCEPTION_CONTINUE_EXECUTION;
+                        }
+                        break;
                     }
                 }
                 ExceptionInfo->ContextRecord->WAFFLE_PORT_PROGRAM_POINTER = (SIZE_T) ExceptionInfo->ExceptionRecord->ExceptionAddress - (SIZE_T) lpstLibrary[i].hSource + (SIZE_T) lpstLibrary[i].hBackup;
