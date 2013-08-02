@@ -157,13 +157,6 @@ extern "C" {
         return BackupCreateFontIndirectExW(&enumlfex);
     }
 
-    LIBRARY_EXPORT DWORD WINAPI DetourGdiGetCodePage(
-        _In_    HDC hdc
-        )
-    {
-        return stNewEnvir.ANSICodePage;
-    }
-
     LIBRARY_EXPORT BOOL WINAPI DetourTextOutA(
         _In_    HDC hdc,
         _In_    int nXStart,
@@ -177,6 +170,13 @@ extern "C" {
 
         KeepLastErrorAndFree(lpuszString);
         return Result;
+    }
+
+    LIBRARY_EXPORT DWORD WINAPI DetourGdiGetCodePage(
+        _In_    HDC hdc
+        )
+    {
+        return stNewEnvir.ANSICodePage;
     }
 #ifdef __cplusplus
 };

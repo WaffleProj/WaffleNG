@@ -9,23 +9,28 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-    LIBRARY_EXPORT int DetourCompareStringA(
-        _In_    LCID Locale,
-        _In_    DWORD dwCmpFlags,
-        _In_    LPCSTR lpString1,
-        _In_    int cchCount1,
-        _In_    LPCSTR lpString2,
-        _In_    int cchCount2
+    LIBRARY_EXPORT DWORD WINAPI DetourGetCurrentDirectoryA(
+        _In_    DWORD nBufferLength,
+        _Out_   LPSTR lpBuffer
         )
     {
-        LPWSTR lpuString1 = AnsiToUnicode(lpString1);
-        LPWSTR lpuString2 = AnsiToUnicode(lpString2);
-        int Result = CompareString(Locale, dwCmpFlags, lpuString1, cchCount1, lpuString2, cchCount2);
-
+        LPWSTR lpuBuffer = (LPWSTR) HeapAlloc(hHeap, HEAP_ZERO_MEMORY, nBufferLength*sizeof(WCHAR));
+        DWORD Result = GetCurrentDirectory(nBufferLength, lpuBuffer);
         DWORD LastError = GetLastError();
-        HeapFree(hHeap, 0, lpuString1);
-        HeapFree(hHeap, 0, lpuString2);
+        WideCharToMultiByte(stNewEnvir.ANSICodePage, 0, lpuBuffer, -1, lpBuffer, nBufferLength, NULL, NULL);
+        HeapFree(hHeap, 0, lpuBuffer);
         SetLastError(LastError);
+        return Result;
+    }
+
+    LIBRARY_EXPORT BOOL WINAPI DetourSetCurrentDirectoryA(
+        _In_    LPCSTR lpPathName
+        )
+    {
+        LPWSTR lpuszPathName = AnsiToUnicode(lpPathName);
+        BOOL Result = SetCurrentDirectory(lpuszPathName);
+
+        KeepLastErrorAndFree(lpuszPathName);
         return Result;
     }
 
@@ -122,54 +127,24 @@ extern "C" {
         return Result;
     }
 
-    LIBRARY_EXPORT UINT WINAPI DetourGetACP(void)
-    {
-        return stNewEnvir.ANSICodePage;
-    }
-
-    LIBRARY_EXPORT LPSTR WINAPI DetourGetCommandLineA(void)   //由于这个函数直接返回指针无需释放,所以只能这么做
-    {
-        static LPSTR lpszCommandLineA;
-        if (!lpszCommandLineA)
-        {
-            LPWSTR lpszCommandLineW = GetCommandLineW();
-            int intSize = 4 * lstrlenW(lpszCommandLineW);
-            lpszCommandLineA = (LPSTR) HeapAlloc(hHeap, HEAP_ZERO_MEMORY, intSize);
-            WideCharToMultiByte(stNewEnvir.ANSICodePage, 0, lpszCommandLineW, -1, lpszCommandLineA, intSize, NULL, NULL);
-        }
-        return lpszCommandLineA;
-    }
-
-    LIBRARY_EXPORT BOOL WINAPI DetourGetCPInfo(
-        _In_    UINT CodePage,
-        _Out_   LPCPINFO lpCPInfo
-        )
-    {
-        static LPGETCPINFO BackupGetCPInfo;
-        if (!BackupGetCPInfo)
-        {
-            BackupGetCPInfo = (LPGETCPINFO) WaffleGetBackupAddress(TEXT("kernel32.dll"), TEXT("GetCPInfo"));
-        }
-
-        switch (CodePage)
-        {
-        case CP_ACP:
-            CodePage = stNewEnvir.ANSICodePage;
-            break;
-        case CP_OEMCP:
-            CodePage = stNewEnvir.OEMCodePage;
-            break;
-        }
-
-        return BackupGetCPInfo(CodePage, lpCPInfo);
-    }
-
     LIBRARY_EXPORT DWORD WINAPI DetourGetFileAttributesA(
         _In_    LPCSTR lpFileName
         )
     {
         LPWSTR lpuszFileName = AnsiToUnicode(lpFileName);
         DWORD Result = GetFileAttributes(lpuszFileName);
+
+        KeepLastErrorAndFree(lpuszFileName);
+        return Result;
+    }
+
+    LIBRARY_EXPORT BOOL WINAPI DetourSetFileAttributesA(
+        _In_    LPCSTR lpFileName,
+        _In_    DWORD dwFileAttributes
+        )
+    {
+        LPWSTR lpuszFileName = AnsiToUnicode(lpFileName);
+        BOOL Result = SetFileAttributes(lpuszFileName, dwFileAttributes);
 
         KeepLastErrorAndFree(lpuszFileName);
         return Result;
@@ -208,11 +183,6 @@ extern "C" {
         return Result;
     }
 
-    LIBRARY_EXPORT UINT WINAPI DetourGetOEMCP(void)
-    {
-        return stNewEnvir.OEMCodePage;
-    }
-
     LIBRARY_EXPORT HMODULE WINAPI DetourLoadLibraryA(
         _In_    LPCSTR lpFileName
         )
@@ -235,6 +205,53 @@ extern "C" {
 
         KeepLastErrorAndFree(lpuszFileName);
         return Result;
+    }
+
+    LIBRARY_EXPORT LPSTR WINAPI DetourGetCommandLineA(void)   //由于这个函数直接返回指针无需释放,所以只能这么做
+    {
+        static LPSTR lpszCommandLineA;
+        if (!lpszCommandLineA)
+        {
+            LPWSTR lpszCommandLineW = GetCommandLineW();
+            int intSize = 4 * lstrlenW(lpszCommandLineW);
+            lpszCommandLineA = (LPSTR) HeapAlloc(hHeap, HEAP_ZERO_MEMORY, intSize);
+            WideCharToMultiByte(stNewEnvir.ANSICodePage, 0, lpszCommandLineW, -1, lpszCommandLineA, intSize, NULL, NULL);
+        }
+        return lpszCommandLineA;
+    }
+
+    LIBRARY_EXPORT UINT WINAPI DetourGetACP(void)
+    {
+        return stNewEnvir.ANSICodePage;
+    }
+
+    LIBRARY_EXPORT UINT WINAPI DetourGetOEMCP(void)
+    {
+        return stNewEnvir.OEMCodePage;
+    }
+
+    LIBRARY_EXPORT BOOL WINAPI DetourGetCPInfo(
+        _In_    UINT CodePage,
+        _Out_   LPCPINFO lpCPInfo
+        )
+    {
+        static LPGETCPINFO BackupGetCPInfo;
+        if (!BackupGetCPInfo)
+        {
+            BackupGetCPInfo = (LPGETCPINFO) WaffleGetBackupAddress(TEXT("kernel32.dll"), TEXT("GetCPInfo"));
+        }
+
+        switch (CodePage)
+        {
+        case CP_ACP:
+            CodePage = stNewEnvir.ANSICodePage;
+            break;
+        case CP_OEMCP:
+            CodePage = stNewEnvir.OEMCodePage;
+            break;
+        }
+
+        return BackupGetCPInfo(CodePage, lpCPInfo);
     }
 
     LIBRARY_EXPORT int WINAPI DetourMultiByteToWideChar(
@@ -265,29 +282,6 @@ extern "C" {
         return BackupMultiByteToWideChar(CodePage, dwFlags, lpMultiByteStr, cbMultiByte, lpWideCharStr, cchWideChar);
     }
 
-    LIBRARY_EXPORT BOOL WINAPI DetourSetCurrentDirectoryA(
-        _In_    LPCSTR lpPathName
-        )
-    {
-        LPWSTR lpuszPathName = AnsiToUnicode(lpPathName);
-        BOOL Result = SetCurrentDirectory(lpuszPathName);
-
-        KeepLastErrorAndFree(lpuszPathName);
-        return Result;
-    }
-
-    LIBRARY_EXPORT BOOL WINAPI DetourSetFileAttributesA(
-        _In_    LPCSTR lpFileName,
-        _In_    DWORD dwFileAttributes
-        )
-    {
-        LPWSTR lpuszFileName = AnsiToUnicode(lpFileName);
-        BOOL Result = SetFileAttributes(lpuszFileName, dwFileAttributes);
-
-        KeepLastErrorAndFree(lpuszFileName);
-        return Result;
-    }
-
     LIBRARY_EXPORT int WINAPI DetourWideCharToMultiByte(
         _In_        UINT CodePage,
         _In_        DWORD dwFlags,
@@ -316,6 +310,26 @@ extern "C" {
         }
 
         return BackupWideCharToMultiByte(CodePage, dwFlags, lpWideCharStr, cchWideChar, lpMultiByteStr, cbMultiByte, lpDefaultChar, lpUsedDefaultChar);
+    }
+
+    LIBRARY_EXPORT int DetourCompareStringA(
+        _In_    LCID Locale,
+        _In_    DWORD dwCmpFlags,
+        _In_    LPCSTR lpString1,
+        _In_    int cchCount1,
+        _In_    LPCSTR lpString2,
+        _In_    int cchCount2
+        )
+    {
+        LPWSTR lpuString1 = AnsiToUnicode(lpString1);
+        LPWSTR lpuString2 = AnsiToUnicode(lpString2);
+        int Result = CompareString(Locale, dwCmpFlags, lpuString1, cchCount1, lpuString2, cchCount2);
+
+        DWORD LastError = GetLastError();
+        HeapFree(hHeap, 0, lpuString1);
+        HeapFree(hHeap, 0, lpuString2);
+        SetLastError(LastError);
+        return Result;
     }
 #ifdef __cplusplus
 };

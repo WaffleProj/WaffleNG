@@ -9,43 +9,46 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-    LIBRARY_EXPORT LRESULT WINAPI DetourCallWindowProcA(
-        _In_    WNDPROC lpPrevWndFunc,
-        _In_    HWND hWnd,
-        _In_    UINT Msg,
-        _In_    WPARAM wParam,
-        _In_    LPARAM lParam
+    LIBRARY_EXPORT ATOM WINAPI DetourRegisterClassA(
+        _In_    const WNDCLASSA *lpWndClass
         )
     {
-        static LPCALLWINDOWPROCA BackupCallWindowProcA;
-        if (!BackupCallWindowProcA)
-        {
-            BackupCallWindowProcA = (LPCALLWINDOWPROCA) WaffleGetBackupAddress(TEXT("user32.dll"), TEXT("CallWindowProcA"));
-        }
+        WNDCLASSW WndClass;
+        RtlMoveMemory(&WndClass, lpWndClass, sizeof(WndClass));
 
-        switch (Msg)
-        {
-        case WM_SETTEXT:
-            {
-                LRESULT Result = BackupCallWindowProcA(lpPrevWndFunc, hWnd, Msg, wParam, lParam);
+        LPWSTR lpszMenuName = AnsiToUnicode(lpWndClass->lpszMenuName);
+        LPWSTR lpszClassName = AnsiToUnicode(lpWndClass->lpszClassName);
+        WndClass.lpszMenuName = lpszMenuName;
+        WndClass.lpszClassName = lpszClassName;
 
-                DWORD LastError = GetLastError();
-                LRESULT sizeString = DefWindowProcA(hWnd, WM_GETTEXTLENGTH, 0, 0);
-                sizeString++;
-                LPSTR lpszString = (LPSTR) HeapAlloc(hHeap, HEAP_ZERO_MEMORY, sizeString);
-                DefWindowProcA(hWnd, WM_GETTEXT, sizeString, (LPARAM) lpszString);
-                LPWSTR lpuszString = AnsiToUnicode(lpszString);
-                DefWindowProc(hWnd, WM_SETTEXT, 0, (LPARAM) lpuszString);
-                HeapFree(hHeap, 0, lpuszString);
-                HeapFree(hHeap, 0, lpszString);
-                SetLastError(LastError);
-                return Result;
-            }
-        default:
-            {
-                return BackupCallWindowProcA(lpPrevWndFunc, hWnd, Msg, wParam, lParam);
-            }
-        }
+        ATOM Result = RegisterClass(&WndClass);
+
+        DWORD LastError = GetLastError();
+        HeapFree(hHeap, 0, (LPVOID) lpszMenuName);
+        HeapFree(hHeap, 0, (LPVOID) lpszClassName);
+        SetLastError(LastError);
+        return Result;
+    }
+
+    LIBRARY_EXPORT ATOM WINAPI DetourRegisterClassExA(
+        _In_    const WNDCLASSEXA *lpWndClass
+        )
+    {
+        WNDCLASSEXW WndClass;
+        RtlMoveMemory(&WndClass, lpWndClass, sizeof(WndClass));
+
+        LPWSTR lpszMenuName = AnsiToUnicode(lpWndClass->lpszMenuName);
+        LPWSTR lpszClassName = AnsiToUnicode(lpWndClass->lpszClassName);
+        WndClass.lpszMenuName = lpszMenuName;
+        WndClass.lpszClassName = lpszClassName;
+
+        ATOM Result = RegisterClassEx(&WndClass);
+
+        DWORD LastError = GetLastError();
+        HeapFree(hHeap, 0, (LPVOID) lpszMenuName);
+        HeapFree(hHeap, 0, (LPVOID) lpszClassName);
+        SetLastError(LastError);
+        return Result;
     }
 
     HWND WINAPI DetourCreateWindowA(
@@ -120,6 +123,45 @@ extern "C" {
         }
     }
 
+    LIBRARY_EXPORT LRESULT WINAPI DetourCallWindowProcA(
+        _In_    WNDPROC lpPrevWndFunc,
+        _In_    HWND hWnd,
+        _In_    UINT Msg,
+        _In_    WPARAM wParam,
+        _In_    LPARAM lParam
+        )
+    {
+        static LPCALLWINDOWPROCA BackupCallWindowProcA;
+        if (!BackupCallWindowProcA)
+        {
+            BackupCallWindowProcA = (LPCALLWINDOWPROCA) WaffleGetBackupAddress(TEXT("user32.dll"), TEXT("CallWindowProcA"));
+        }
+
+        switch (Msg)
+        {
+        case WM_SETTEXT:
+            {
+                LRESULT Result = BackupCallWindowProcA(lpPrevWndFunc, hWnd, Msg, wParam, lParam);
+
+                DWORD LastError = GetLastError();
+                LRESULT sizeString = DefWindowProcA(hWnd, WM_GETTEXTLENGTH, 0, 0);
+                sizeString++;
+                LPSTR lpszString = (LPSTR) HeapAlloc(hHeap, HEAP_ZERO_MEMORY, sizeString);
+                DefWindowProcA(hWnd, WM_GETTEXT, sizeString, (LPARAM) lpszString);
+                LPWSTR lpuszString = AnsiToUnicode(lpszString);
+                DefWindowProc(hWnd, WM_SETTEXT, 0, (LPARAM) lpuszString);
+                HeapFree(hHeap, 0, lpuszString);
+                HeapFree(hHeap, 0, lpszString);
+                SetLastError(LastError);
+                return Result;
+            }
+        default:
+            {
+                return BackupCallWindowProcA(lpPrevWndFunc, hWnd, Msg, wParam, lParam);
+            }
+        }
+    }
+
     LIBRARY_EXPORT LRESULT WINAPI DetourDialogBoxParamA(
         _In_opt_    HINSTANCE hInstance,
         _In_        LPCSTR lpTemplateName,
@@ -168,54 +210,6 @@ extern "C" {
         DWORD LastError = GetLastError();
         HeapFree(hHeap, 0, lpuszText);
         HeapFree(hHeap, 0, lpuszCaption);
-        SetLastError(LastError);
-        return Result;
-    }
-
-    LIBRARY_EXPORT ATOM WINAPI DetourRegisterClassA(
-        _In_    const WNDCLASSA *lpWndClass
-        )
-    {
-        static LPREGISTERCLASSA BackupRegisterClassA;
-        if (!BackupRegisterClassA)
-        {
-            MessageBox(0, L"RegisterClassA is incomplete.", 0, 0);
-            BackupRegisterClassA = (LPREGISTERCLASSA) WaffleGetBackupAddress(TEXT("user32.dll"), TEXT("RegisterClassA"));
-        }
-        return BackupRegisterClassA(lpWndClass);
-    }
-
-    LIBRARY_EXPORT ATOM WINAPI DetourRegisterClassExA(
-        _In_    const WNDCLASSEXA *lpWndClass
-        )
-    {
-        //FIXME: ugly ugly ugly
-        static LPREGISTERCLASSEXA BackupRegisterClassExA;
-        if (!BackupRegisterClassExA)
-        {
-            BackupRegisterClassExA = (LPREGISTERCLASSEXA) WaffleGetBackupAddress(TEXT("user32.dll"), TEXT("RegisterClassExA"));
-        }
-
-        WNDCLASSEXA WndClass;
-        RtlMoveMemory(&WndClass, lpWndClass, sizeof(WNDCLASSEX));
-
-        LPWSTR lpszMenuName = AnsiToUnicode(lpWndClass->lpszMenuName);
-        LPSTR szMenuName = (LPSTR) HeapAlloc(hHeap, HEAP_ZERO_MEMORY, 2 * lstrlen(lpszMenuName));
-        WideCharToMultiByte(stOldEnvir.ANSICodePage, 0, lpszMenuName, -1, szMenuName, 2 * lstrlen(lpszMenuName), NULL, FALSE);
-        WndClass.lpszMenuName = szMenuName;
-
-        LPWSTR lpszClassName = AnsiToUnicode(lpWndClass->lpszClassName);
-        LPSTR szClassName = (LPSTR) HeapAlloc(hHeap, HEAP_ZERO_MEMORY, 2 * lstrlen(lpszClassName));
-        WideCharToMultiByte(stOldEnvir.ANSICodePage, 0, lpszClassName, -1, szClassName, 2 * lstrlen(lpszClassName), NULL, FALSE);
-        WndClass.lpszClassName = szClassName;
-
-        ATOM Result = BackupRegisterClassExA(&WndClass);
-
-        DWORD LastError = GetLastError();
-        HeapFree(hHeap, 0, (LPVOID) lpszMenuName);
-        HeapFree(hHeap, 0, (LPVOID) lpszClassName);
-        HeapFree(hHeap, 0, (LPVOID) szMenuName);
-        HeapFree(hHeap, 0, (LPVOID) szClassName);
         SetLastError(LastError);
         return Result;
     }
