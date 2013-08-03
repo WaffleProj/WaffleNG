@@ -20,10 +20,10 @@ extern "C" {
         _In_        ULONG BytesInMultiByteString
         )
     {
-        MultiByteToWideChar(stNewEnvir.ANSICodePage, 0, MultiByteString, BytesInMultiByteString, UnicodeString, MaxBytesInUnicodeString);
+        int nBytesInMultiByteString = MultiByteToWideChar(stNewEnvir.ANSICodePage, 0, MultiByteString, BytesInMultiByteString, UnicodeString, MaxBytesInUnicodeString / sizeof(WCHAR));
         if (BytesInUnicodeString)
         {
-            *BytesInUnicodeString = lstrlenW(UnicodeString);
+            *BytesInUnicodeString = nBytesInMultiByteString * sizeof(WCHAR);
         }
         return STATUS_SUCCESS;
     }
@@ -36,10 +36,10 @@ extern "C" {
         _In_        ULONG BytesInUnicodeString
         )
     {
-        WideCharToMultiByte(stNewEnvir.ANSICodePage, 0, UnicodeString, BytesInUnicodeString, MultiByteString, MaxBytesInMultiByteString, NULL, FALSE);
+        int nBytesInMultiByteString = WideCharToMultiByte(stNewEnvir.ANSICodePage, 0, UnicodeString, BytesInUnicodeString / sizeof(WCHAR), MultiByteString, MaxBytesInMultiByteString, NULL, FALSE);
         if (BytesInMultiByteString)
         {
-            *BytesInMultiByteString = lstrlenA(MultiByteString);
+            *BytesInMultiByteString = nBytesInMultiByteString * sizeof(CHAR);
         }
         return STATUS_SUCCESS;
     }
