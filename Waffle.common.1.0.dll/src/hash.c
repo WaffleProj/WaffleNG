@@ -12,22 +12,13 @@ LIBRARY_EXPORT VOID WINAPI WaffleGetFileHash(
     _Out_   LPTSTR lpszResult
     )
 {
-    static LPCRYPTACQUIRECONTEXTW lpCryptAcquireContextW;
-    static LPCRYPTCREATEHASH lpCryptCreateHash;
-    static LPCRYPTDESTROYHASH lpCryptDestroyHash;
-    static LPCRYPTRELEASECONTEXT lpCryptReleaseContext;
-    static LPCRYPTHASHDATA lpCryptHashData;
-    static LPCRYPTGETHASHPARAM lpCryptGetHashParam;
-    if (!lpCryptAcquireContextW)
-    {
-        HMODULE hModule = LoadLibrary(TEXT("advapi32.dll"));
-        lpCryptAcquireContextW = (LPCRYPTACQUIRECONTEXTW) WaffleGetProcAddress(hModule, TEXT("CryptAcquireContextW"));
-        lpCryptCreateHash = (LPCRYPTCREATEHASH) WaffleGetProcAddress(hModule, TEXT("CryptCreateHash"));
-        lpCryptDestroyHash = (LPCRYPTDESTROYHASH) WaffleGetProcAddress(hModule, TEXT("CryptDestroyHash"));
-        lpCryptReleaseContext = (LPCRYPTRELEASECONTEXT) WaffleGetProcAddress(hModule, TEXT("CryptReleaseContext"));
-        lpCryptHashData = (LPCRYPTHASHDATA) WaffleGetProcAddress(hModule, TEXT("CryptHashData"));
-        lpCryptGetHashParam = (LPCRYPTGETHASHPARAM) WaffleGetProcAddress(hModule, TEXT("CryptGetHashParam"));
-    }
+    HMODULE hModule = LoadLibrary(TEXT("advapi32.dll"));
+    LPCRYPTACQUIRECONTEXTW lpCryptAcquireContextW = (LPCRYPTACQUIRECONTEXTW) WaffleGetProcAddress(hModule, TEXT("CryptAcquireContextW"));
+    LPCRYPTCREATEHASH lpCryptCreateHash = (LPCRYPTCREATEHASH) WaffleGetProcAddress(hModule, TEXT("CryptCreateHash"));
+    LPCRYPTDESTROYHASH lpCryptDestroyHash = (LPCRYPTDESTROYHASH) WaffleGetProcAddress(hModule, TEXT("CryptDestroyHash"));
+    LPCRYPTRELEASECONTEXT lpCryptReleaseContext = (LPCRYPTRELEASECONTEXT) WaffleGetProcAddress(hModule, TEXT("CryptReleaseContext"));
+    LPCRYPTHASHDATA lpCryptHashData = (LPCRYPTHASHDATA) WaffleGetProcAddress(hModule, TEXT("CryptHashData"));
+    LPCRYPTGETHASHPARAM lpCryptGetHashParam = (LPCRYPTGETHASHPARAM) WaffleGetProcAddress(hModule, TEXT("CryptGetHashParam"));
 
     lpszResult[0] = 0;
 
@@ -38,12 +29,14 @@ LIBRARY_EXPORT VOID WINAPI WaffleGetFileHash(
 
     if (hFile == INVALID_HANDLE_VALUE)
     {
+        FreeLibrary(hModule);
         return;
     }
 
     HCRYPTPROV hProv;
     if (!lpCryptAcquireContextW(&hProv, NULL, NULL, PROV_RSA_FULL, CRYPT_VERIFYCONTEXT))
     {
+        FreeLibrary(hModule);
         CloseHandle(hFile);
         return;
     }
@@ -51,8 +44,9 @@ LIBRARY_EXPORT VOID WINAPI WaffleGetFileHash(
     HCRYPTHASH hHash;
     if (!lpCryptCreateHash(hProv, CALG_SHA1, 0, 0, &hHash))
     {
-        CloseHandle(hFile);
         lpCryptReleaseContext(hProv, 0);
+        FreeLibrary(hModule);
+        CloseHandle(hFile);
         return;
     }
 
@@ -61,6 +55,7 @@ LIBRARY_EXPORT VOID WINAPI WaffleGetFileHash(
     {
         lpCryptDestroyHash(hHash);
         lpCryptReleaseContext(hProv, 0);
+        FreeLibrary(hModule);
         CloseHandle(hFile);
         return;
     }
@@ -77,6 +72,7 @@ LIBRARY_EXPORT VOID WINAPI WaffleGetFileHash(
         {
             lpCryptReleaseContext(hProv, 0);
             lpCryptDestroyHash(hHash);
+            FreeLibrary(hModule);
             CloseHandle(hFile);
             return;
         }
@@ -99,5 +95,6 @@ LIBRARY_EXPORT VOID WINAPI WaffleGetFileHash(
     GlobalFree(lpBuffer);
     lpCryptDestroyHash(hHash);
     lpCryptReleaseContext(hProv, 0);
+    FreeLibrary(hModule);
     CloseHandle(hFile);
 }
