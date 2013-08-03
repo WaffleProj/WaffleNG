@@ -20,7 +20,7 @@ extern "C" {
         _In_        ULONG BytesInMultiByteString
         )
     {
-        int nBytesInMultiByteString = MultiByteToWideChar(stNewEnvir.ANSICodePage, 0, MultiByteString, BytesInMultiByteString, UnicodeString, MaxBytesInUnicodeString / sizeof(WCHAR));
+        int nBytesInMultiByteString = MultiByteToWideChar(stNewEnvir.AnsiCodePage, 0, MultiByteString, BytesInMultiByteString, UnicodeString, MaxBytesInUnicodeString / sizeof(WCHAR));
         if (BytesInUnicodeString)
         {
             *BytesInUnicodeString = nBytesInMultiByteString * sizeof(WCHAR);
@@ -36,7 +36,7 @@ extern "C" {
         _In_        ULONG BytesInUnicodeString
         )
     {
-        int nBytesInMultiByteString = WideCharToMultiByte(stNewEnvir.ANSICodePage, 0, UnicodeString, BytesInUnicodeString / sizeof(WCHAR), MultiByteString, MaxBytesInMultiByteString, NULL, FALSE);
+        int nBytesInMultiByteString = WideCharToMultiByte(stNewEnvir.AnsiCodePage, 0, UnicodeString, BytesInUnicodeString / sizeof(WCHAR), MultiByteString, MaxBytesInMultiByteString, NULL, FALSE);
         if (BytesInMultiByteString)
         {
             *BytesInMultiByteString = nBytesInMultiByteString * sizeof(CHAR);

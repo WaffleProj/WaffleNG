@@ -26,11 +26,19 @@ LIBRARY_EXPORT SIZE_T WINAPI ComponentInit(
     hHeap = HeapCreate(0, 0, 0);
 
     //Read config files
-    stOldEnvir.ANSICodePage = GetACP();
-    stNewEnvir.ANSICodePage = WaffleGetOptionInt(lpstProcessSetting, TEXT("ANSICodePage"), stOldEnvir.ANSICodePage);
+    stOldEnvir.AnsiCodePage = GetACP();
+    stNewEnvir.AnsiCodePage = WaffleGetOptionInt(lpstProcessSetting, TEXT("AnsiCodePage"), stOldEnvir.AnsiCodePage);
 
-    stOldEnvir.OEMCodePage = GetOEMCP();
-    stNewEnvir.OEMCodePage = WaffleGetOptionInt(lpstProcessSetting, TEXT("OEMCodePage"), stOldEnvir.OEMCodePage);
+    stOldEnvir.OemCodePage = GetOEMCP();
+    stNewEnvir.OemCodePage = WaffleGetOptionInt(lpstProcessSetting, TEXT("OemCodePage"), stOldEnvir.OemCodePage);
+
+    LPWORD lpNlsAnsiCodePage = (LPWORD) WaffleGetProcAddress(GetModuleHandle(TEXT("ntdll.dll")), TEXT("NlsAnsiCodePage"));
+    if (lpNlsAnsiCodePage)
+    {
+        stOldEnvir.NlsAnsiCodePage = *lpNlsAnsiCodePage;
+        stNewEnvir.NlsAnsiCodePage = (WORD) WaffleGetOptionInt(lpstProcessSetting, TEXT("NlsAnsiCodePage"), stOldEnvir.NlsAnsiCodePage);
+        *lpNlsAnsiCodePage = stNewEnvir.NlsAnsiCodePage;
+    }
 
     stOldEnvir.ThreadLocale = GetThreadLocale();
     stNewEnvir.ThreadLocale = WaffleGetOptionInt(lpstProcessSetting, TEXT("ThreadLocale"), stOldEnvir.ThreadLocale);

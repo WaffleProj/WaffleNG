@@ -17,7 +17,7 @@ extern "C" {
         LPWSTR lpuBuffer = (LPWSTR) HeapAlloc(hHeap, HEAP_ZERO_MEMORY, nBufferLength*sizeof(WCHAR));
         DWORD Result = GetCurrentDirectory(nBufferLength, lpuBuffer);
         DWORD LastError = GetLastError();
-        WideCharToMultiByte(stNewEnvir.ANSICodePage, 0, lpuBuffer, -1, lpBuffer, nBufferLength, NULL, NULL);
+        WideCharToMultiByte(stNewEnvir.AnsiCodePage, 0, lpuBuffer, -1, lpBuffer, nBufferLength, NULL, NULL);
         HeapFree(hHeap, 0, lpuBuffer);
         SetLastError(LastError);
         return Result;
@@ -94,8 +94,8 @@ extern "C" {
         lpFindFileData->nFileSizeLow = FindFileData.nFileSizeLow;
         lpFindFileData->dwReserved0 = FindFileData.dwReserved0;
         lpFindFileData->dwReserved1 = FindFileData.dwReserved1;
-        WideCharToMultiByte(stNewEnvir.ANSICodePage, 0, FindFileData.cFileName, -1, lpFindFileData->cFileName, sizeof(lpFindFileData->cFileName), NULL, NULL);
-        WideCharToMultiByte(stNewEnvir.ANSICodePage, 0, FindFileData.cAlternateFileName, -1, lpFindFileData->cAlternateFileName, sizeof(lpFindFileData->cAlternateFileName), NULL, NULL);
+        WideCharToMultiByte(stNewEnvir.AnsiCodePage, 0, FindFileData.cFileName, -1, lpFindFileData->cFileName, sizeof(lpFindFileData->cFileName), NULL, NULL);
+        WideCharToMultiByte(stNewEnvir.AnsiCodePage, 0, FindFileData.cAlternateFileName, -1, lpFindFileData->cAlternateFileName, sizeof(lpFindFileData->cAlternateFileName), NULL, NULL);
 
         GlobalFree(lpuszFileName);
         SetLastError(LastError);
@@ -120,8 +120,8 @@ extern "C" {
         lpFindFileData->nFileSizeLow = FindFileData.nFileSizeLow;
         lpFindFileData->dwReserved0 = FindFileData.dwReserved0;
         lpFindFileData->dwReserved1 = FindFileData.dwReserved1;
-        WideCharToMultiByte(stNewEnvir.ANSICodePage, 0, FindFileData.cFileName, -1, lpFindFileData->cFileName, sizeof(lpFindFileData->cFileName), NULL, NULL);
-        WideCharToMultiByte(stNewEnvir.ANSICodePage, 0, FindFileData.cAlternateFileName, -1, lpFindFileData->cAlternateFileName, sizeof(lpFindFileData->cAlternateFileName), NULL, NULL);
+        WideCharToMultiByte(stNewEnvir.AnsiCodePage, 0, FindFileData.cFileName, -1, lpFindFileData->cFileName, sizeof(lpFindFileData->cFileName), NULL, NULL);
+        WideCharToMultiByte(stNewEnvir.AnsiCodePage, 0, FindFileData.cAlternateFileName, -1, lpFindFileData->cAlternateFileName, sizeof(lpFindFileData->cAlternateFileName), NULL, NULL);
 
         SetLastError(LastError);
         return Result;
@@ -165,7 +165,7 @@ extern "C" {
         GetModuleFileName(hModule, lpuszFilename, nSize);
 
         DWORD LastError = GetLastError();
-        WideCharToMultiByte(stNewEnvir.ANSICodePage, 0, lpuszFilename, -1, lpFilename, nSize, NULL, NULL);
+        WideCharToMultiByte(stNewEnvir.AnsiCodePage, 0, lpuszFilename, -1, lpFilename, nSize, NULL, NULL);
         HeapFree(hHeap, 0, lpuszFilename);
         int Result = lstrlenA(lpFilename);
         SetLastError(LastError);
@@ -215,19 +215,19 @@ extern "C" {
             LPWSTR lpszCommandLineW = GetCommandLineW();
             int intSize = 4 * lstrlenW(lpszCommandLineW);
             lpszCommandLineA = (LPSTR) HeapAlloc(hHeap, HEAP_ZERO_MEMORY, intSize);
-            WideCharToMultiByte(stNewEnvir.ANSICodePage, 0, lpszCommandLineW, -1, lpszCommandLineA, intSize, NULL, NULL);
+            WideCharToMultiByte(stNewEnvir.AnsiCodePage, 0, lpszCommandLineW, -1, lpszCommandLineA, intSize, NULL, NULL);
         }
         return lpszCommandLineA;
     }
 
     LIBRARY_EXPORT UINT WINAPI DetourGetACP(void)
     {
-        return stNewEnvir.ANSICodePage;
+        return stNewEnvir.AnsiCodePage;
     }
 
     LIBRARY_EXPORT UINT WINAPI DetourGetOEMCP(void)
     {
-        return stNewEnvir.OEMCodePage;
+        return stNewEnvir.OemCodePage;
     }
 
     LIBRARY_EXPORT BOOL WINAPI DetourGetCPInfo(
@@ -244,10 +244,10 @@ extern "C" {
         switch (CodePage)
         {
         case CP_ACP:
-            CodePage = stNewEnvir.ANSICodePage;
+            CodePage = stNewEnvir.AnsiCodePage;
             break;
         case CP_OEMCP:
-            CodePage = stNewEnvir.OEMCodePage;
+            CodePage = stNewEnvir.OemCodePage;
             break;
         }
 
@@ -272,10 +272,10 @@ extern "C" {
         switch (CodePage)
         {
         case CP_ACP:
-            CodePage = stNewEnvir.ANSICodePage;
+            CodePage = stNewEnvir.AnsiCodePage;
             break;
         case CP_OEMCP:
-            CodePage = stNewEnvir.OEMCodePage;
+            CodePage = stNewEnvir.OemCodePage;
             break;
         }
 
@@ -302,10 +302,10 @@ extern "C" {
         switch (CodePage)
         {
         case CP_ACP:
-            CodePage = stNewEnvir.ANSICodePage;
+            CodePage = stNewEnvir.AnsiCodePage;
             break;
         case CP_OEMCP:
-            CodePage = stNewEnvir.OEMCodePage;
+            CodePage = stNewEnvir.OemCodePage;
             break;
         }
 

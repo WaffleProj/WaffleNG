@@ -176,7 +176,7 @@ extern "C" {
         _In_    HDC hdc
         )
     {
-        return stNewEnvir.ANSICodePage;
+        return stNewEnvir.AnsiCodePage;
     }
 #ifdef __cplusplus
 };
