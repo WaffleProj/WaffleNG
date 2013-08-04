@@ -366,6 +366,37 @@ extern "C" {
         SetLastError(LastError);
         return Result;
     }
+
+    LIBRARY_EXPORT BOOL WINAPI DetourIsDBCSLeadByte(
+        _In_    BYTE TestChar
+        )
+    {
+        return IsDBCSLeadByteEx(stNewEnvir.AnsiCodePage, TestChar);
+    }
+
+    LIBRARY_EXPORT BOOL WINAPI DetourIsDBCSLeadByteEx(
+        _In_    UINT CodePage,
+        _In_    BYTE TestChar
+        )
+    {
+        static LPISDBCSLEADBYTEEX BackupIsDBCSLeadByteEx;
+        if (!BackupIsDBCSLeadByteEx)
+        {
+            BackupIsDBCSLeadByteEx = (LPISDBCSLEADBYTEEX) WaffleGetBackupAddress(TEXT("kernel32.dll"), TEXT("IsDBCSLeadByteEx"));
+        }
+
+        switch (CodePage)
+        {
+        case CP_ACP:
+            CodePage = stNewEnvir.AnsiCodePage;
+            break;
+        case CP_OEMCP:
+            CodePage = stNewEnvir.OemCodePage;
+            break;
+        }
+
+        return BackupIsDBCSLeadByteEx(CodePage, TestChar);
+    }
 #ifdef __cplusplus
 };
 #endif
