@@ -34,7 +34,7 @@ EXPORTS
     DetourMessageBoxExA
     DetourSendMessageA
     DetourSetWindowTextA
-    
+    DetourExitWindowsEx
 
     DetourCreateFontA
     DetourCreateFontW

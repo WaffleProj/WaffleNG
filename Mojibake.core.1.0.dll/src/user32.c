@@ -263,6 +263,28 @@ extern "C" {
         KeepLastErrorAndFree(lpuszString);
         return Result;
     }
+
+    LIBRARY_EXPORT BOOL WINAPI DetourExitWindowsEx(
+        _In_    UINT uFlags,
+        _In_    DWORD dwReason
+        )
+    {
+        static LPEXITWINDOWSEX BackupExitWindowsEx;
+        if (!BackupExitWindowsEx)
+        {
+            BackupExitWindowsEx = (LPEXITWINDOWSEX) WaffleGetBackupAddress(TEXT("user32.dll"), TEXT("ExitWindowsEx"));
+        }
+        
+        int Result = MessageBox(0, TEXT("This program called ExitWindowsEx, which may not be what you want it to do.\nAre you sure to execute this function?"), 0, MB_YESNO | MB_ICONWARNING);
+        if (Result == IDYES)
+        {
+            return BackupExitWindowsEx(uFlags, dwReason);
+        }
+        else
+        {
+            return FALSE;
+        }
+    }
 #ifdef __cplusplus
 };
 #endif
