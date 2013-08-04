@@ -188,17 +188,18 @@ LIBRARY_EXPORT BOOL WINAPI WaffleSetDetour(
     _In_    DWORD dwFunction
     )
 {
-    if (dwLibrary > lpstLibrary[0].dwBehind)
+    if (!lpstLibrary)
     {
         return FALSE;
     }
-    if (dwFunction > lpstLibrary[dwLibrary].lpstFunction[0].dwBehind)
+    else if (dwLibrary > lpstLibrary[0].dwBehind)
     {
         return FALSE;
     }
-    //MessageBox(0, lpstLibrary[dwLibrary].lpstFunction[dwFunction].lpszFunctionT, 0, 0);
-    //WaffleIntBox(dwLibrary);
-    //WaffleIntBox(dwFunction);
+    else if (dwFunction > lpstLibrary[dwLibrary].lpstFunction[0].dwBehind)
+    {
+        return FALSE;
+    }
     LPWAFFLE_FUNCTION_ARRAY lpstFunction = &lpstLibrary[dwLibrary].lpstFunction[dwFunction];
     DWORD flOldProtect;
     if (lpstFunction->lpDetour)
@@ -246,13 +247,21 @@ LIBRARY_EXPORT LONG CALLBACK WaffleExceptionHandler(
         }
         break;
     case 0x0EEDFADE:
-    case 0xC0000005:
         break;
+    case 0xC0000005:
+        if ((SIZE_T) ExceptionInfo->ExceptionRecord->ExceptionAddress >> 16 > 0x7700)
+        {
+            break;
+        }
     default:
         {
-            TCHAR szExceptionRecord[2048];
+            TCHAR szExceptionRecord[4096];
 
             wsprintf(szExceptionRecord, TEXT("ExceptionRecord->ExceptionCode = %08x\nExceptionRecord->ExceptionFlags = %08x\nExceptionRecord->ExceptionRecord = %016I64X\nExceptionRecord->ExceptionAddress = %016I64X\nExceptionRecord->NumberParameters = %08x"), ExceptionInfo->ExceptionRecord->ExceptionCode, ExceptionInfo->ExceptionRecord->ExceptionFlags, (UINT64) (ExceptionInfo->ExceptionRecord->ExceptionRecord), (UINT64) (ExceptionInfo->ExceptionRecord->ExceptionAddress), ExceptionInfo->ExceptionRecord->NumberParameters);
+
+            TCHAR szBuf[256];
+            wsprintf(szBuf, TEXT("\nExceptionInfo->ContextRecord->WAFFLE_PORT_STACK_POINTER = %016I64X"), (UINT64) (ExceptionInfo->ContextRecord->WAFFLE_PORT_STACK_POINTER));
+            lstrcat(szExceptionRecord, szBuf);
 
             DWORD i;
             for (i = 0; i < ExceptionInfo->ExceptionRecord->NumberParameters; i++)
@@ -261,7 +270,7 @@ LIBRARY_EXPORT LONG CALLBACK WaffleExceptionHandler(
                 wsprintf(szBuf, TEXT("\nExceptionRecord->ExceptionInformation[%u] = %016I64X"), i, (UINT64) (ExceptionInfo->ExceptionRecord->ExceptionInformation[i]));
                 lstrcat(szExceptionRecord, szBuf);
             }
-            //MessageBox(0, szExceptionRecord, TEXT("WaffleExceptionHandler"), 0);
+            //MessageBox(0, szExceptionRecord, 0, 0);
         }
     }
     return EXCEPTION_CONTINUE_SEARCH;
