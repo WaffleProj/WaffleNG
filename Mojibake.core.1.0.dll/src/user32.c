@@ -170,7 +170,11 @@ extern "C" {
         _In_        LPARAM dwInitParam
         )
     {
-        LPWSTR lpuTemplateName = AnsiToUnicode(lpTemplateName);
+        LPWSTR lpuTemplateName = (LPWSTR) lpTemplateName;
+        if ((SIZE_T) lpTemplateName > 0xFFFF)
+        {
+            lpuTemplateName = AnsiToUnicode(lpTemplateName);
+        }
         LRESULT Result = DialogBoxParam(hInstance, lpuTemplateName, hWndParent, lpDialogFunc, dwInitParam);
 
         KeepLastErrorAndFree(lpuTemplateName);
@@ -274,7 +278,7 @@ extern "C" {
         {
             BackupExitWindowsEx = (LPEXITWINDOWSEX) WaffleGetBackupAddress(TEXT("user32.dll"), TEXT("ExitWindowsEx"));
         }
-        
+
         int Result = MessageBox(0, TEXT("This program called ExitWindowsEx, which may not be what you want it to do.\nAre you sure to execute this function?"), 0, MB_YESNO | MB_ICONWARNING);
         if (Result == IDYES)
         {
