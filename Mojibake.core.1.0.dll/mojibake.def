@@ -3,31 +3,36 @@ EXPORTS
     ComponentInit
     ThreadInit
     
-	DetourGetCurrentDirectoryA
-	DetourSetCurrentDirectoryA
+    DetourGetCurrentDirectoryA
+    DetourSetCurrentDirectoryA
     DetourCreateDirectoryA
     DetourCreateFileA
     DetourDeleteFileA
     DetourFindFirstFileA
     DetourFindNextFileA
-	DetourGetFileAttributesA
-	DetourSetFileAttributesA
-	DetourGetModuleFileNameA
+    DetourGetFileAttributesA
+    DetourSetFileAttributesA
+    DetourGetModuleFileNameA
     DetourGetModuleHandleA
-	DetourLoadLibraryA
+    DetourLoadLibraryA
     DetourLoadLibraryExA
-	DetourGetCommandLineA
+    DetourGetCommandLineA
     DetourGetACP
     DetourGetOEMCP
     DetourGetCPInfo
+    DetourGetThreadLocale
+    DetourGetUserDefaultLCID
+    DetourGetSystemDefaultLCID
+    DetourGetUserDefaultLangID
+    DetourGetSystemDefaultLangID
     DetourMultiByteToWideChar
     DetourWideCharToMultiByte
-	DetourCompareStringA
+    DetourCompareStringA
     
-	DetourRegisterClassA
+    DetourRegisterClassA
     DetourRegisterClassExA
-	DetourCreateWindowExA
-	DetourDefWindowProcA
+    DetourCreateWindowExA
+    DetourDefWindowProcA
     DetourCallWindowProcA
     DetourDialogBoxParamA
     DetourMessageBoxA
@@ -38,12 +43,12 @@ EXPORTS
 
     DetourCreateFontA
     DetourCreateFontW
-	DetourCreateFontIndirectA
+    DetourCreateFontIndirectA
     DetourCreateFontIndirectW
-	DetourCreateFontIndirectExA
+    DetourCreateFontIndirectExA
     DetourCreateFontIndirectExW
     DetourTextOutA
-	DetourGdiGetCodePage
+    DetourGdiGetCodePage
 
-	DetourRtlMultiByteToUnicodeN
-	DetourRtlUnicodeToMultiByteN
+    DetourRtlMultiByteToUnicodeN
+    DetourRtlUnicodeToMultiByteN

@@ -254,6 +254,31 @@ extern "C" {
         return BackupGetCPInfo(CodePage, lpCPInfo);
     }
 
+    LIBRARY_EXPORT LCID WINAPI DetourGetThreadLocale(void)
+    {
+        return stNewEnvir.ThreadLocale;
+    }
+
+    LIBRARY_EXPORT LCID WINAPI DetourGetUserDefaultLCID(void)
+    {
+        return stNewEnvir.ThreadLocale;
+    }
+
+    LIBRARY_EXPORT LCID WINAPI DetourGetSystemDefaultLCID(void)
+    {
+        return stNewEnvir.ThreadLocale;
+    }
+
+    LIBRARY_EXPORT LANGID WINAPI DetourGetUserDefaultLangID(void)
+    {
+        return LANGIDFROMLCID(stNewEnvir.ThreadLocale);
+    }
+
+    LIBRARY_EXPORT LANGID WINAPI DetourGetSystemDefaultLangID(void)
+    {
+        return LANGIDFROMLCID(stNewEnvir.ThreadLocale);
+    }
+
     LIBRARY_EXPORT int WINAPI DetourMultiByteToWideChar(
         _In_        UINT CodePage,
         _In_        DWORD dwFlags,

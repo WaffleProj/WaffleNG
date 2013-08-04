@@ -15,7 +15,7 @@ LIBRARY_EXPORT SIZE_T WINAPI ThreadInit(
     _In_    LPWAFFLE_THREAD_CONTEXT lpstThread
     )
 {
-    SetThreadLocale(stNewEnvir.ThreadLocale);
+    //SetThreadLocale(stNewEnvir.ThreadLocale);
     return 0;
 }
 
