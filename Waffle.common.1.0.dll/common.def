@@ -19,7 +19,9 @@ EXPORTS
     WaffleGetFileHash
     
     WaffleInit
+
     WaffleLoadComponent
+    WaffleAddComponent
     
     WaffleCreateProcess
     WaffleInjectDll

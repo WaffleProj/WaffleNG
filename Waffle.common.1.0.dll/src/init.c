@@ -7,8 +7,6 @@
 #include "..\common.h"
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
-static HMODULE hComponent;
-
 VOID WINAPI ResetThread(
     _In_    LPWAFFLE_THREAD_CONTEXT lpstThread
     )
@@ -25,6 +23,7 @@ VOID __fastcall SetThreadEnvironment(
     _In_    LPWAFFLE_THREAD_CONTEXT lpstThread
     )
 {
+    /*
     static LPTHREADINIT ThreadInit;
     if (!ThreadInit)
     {
@@ -32,35 +31,10 @@ VOID __fastcall SetThreadEnvironment(
     }
 
     ThreadInit(lpstThread);
+    */
 
     CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE) ResetThread, lpstThread, 0, NULL);
     for (;;);
-}
-
-LIBRARY_EXPORT HMODULE WINAPI WaffleLoadComponent(
-    _In_    LPCTSTR lpszComponent
-    )
-{
-    HMODULE hComponent = GetModuleHandle(lpszComponent);
-    if (hComponent)
-    {
-        return hComponent;
-    }
-
-    TCHAR szComponent[MAX_PATH];
-    wsprintf(szComponent, TEXT("%s\\%s\\%s\\%s"), lpstProcessSetting->szComponentDirectory, lpstProcessSetting->szComponent, WAFFLE_PORT_MACHINE_STRING, lpszComponent);
-    hComponent = LoadLibrary(szComponent);
-    LPCOMPONENTINIT ComponentInit = (LPCOMPONENTINIT) WaffleGetProcAddress(hComponent, TEXT("ComponentInit"));
-    if (!ComponentInit)
-    {
-        FreeLibrary(hComponent);
-        return NULL;
-    }
-    else
-    {
-        ComponentInit(lpstProcessSetting);
-    }
-    return hComponent;
 }
 
 LIBRARY_EXPORT SIZE_T WINAPI WaffleInit(
@@ -71,13 +45,7 @@ LIBRARY_EXPORT SIZE_T WINAPI WaffleInit(
     GetModuleFileName(NULL, szExecutable, sizeof(szExecutable) / sizeof(szExecutable[0]));
     WaffleSetOptionString(TEXT("ProgramName"), szExecutable, FALSE);
 
-    hComponent = WaffleLoadComponent(TEXT("Mojibake.core.1.0.dll"));
-    if (!hComponent)
-    {
-        MessageBox(0, TEXT("FIXME:Invalid Component"), 0, 0);
-        WaffleResumeMainThread();
-        return 0;
-    }
+    WaffleAddComponent(TEXT("Waffle.common.1.0.dll"));
 
     int nLibrary = WaffleCreateLibraryArray();
     if (nLibrary > 0)

@@ -27,7 +27,7 @@ LIBRARY_EXPORT BOOL WINAPI WaffleAddFunction(
         lpstNewLibrary->lpstFunction = (LPWAFFLE_FUNCTION_ARRAY) GlobalAlloc(GPTR, sizeof(WAFFLE_FUNCTION_ARRAY));
         if (!lpstNewLibrary->lpstFunction)
         {
-            MessageBox(0, TEXT("FIXME:Unablt to allocate memory for function array"), 0, 0);
+            MessageBox(0, TEXT("FIXME:Unable to allocate memory for function array"), 0, 0);
             ExitProcess(0);
         }
     }
@@ -41,7 +41,7 @@ LIBRARY_EXPORT BOOL WINAPI WaffleAddFunction(
         lpstNewLibrary->lpstFunction = (LPWAFFLE_FUNCTION_ARRAY) GlobalReAlloc(lpstNewLibrary->lpstFunction, sizeof(WAFFLE_FUNCTION_ARRAY)*(lpstNewLibrary->lpstFunction[0].dwBehind + 1), GHND);
         if (!lpstNewLibrary->lpstFunction)
         {
-            MessageBox(0, TEXT("FIXME:Unablt to add elements in function array"), 0, 0);
+            MessageBox(0, TEXT("FIXME:Unable to add elements in function array"), 0, 0);
             ExitProcess(0);
         }
     }
@@ -99,7 +99,7 @@ LIBRARY_EXPORT DWORD WINAPI WaffleCreateFunctionArray(
         lpszNextKey[i] = TEXT('\0');
 
         DWORD nSizeOfFunction = lstrlen(lpszNextKey);
-        if (WaffleAddFunction(lpstNewLibrary, lpszNextKey, GetModuleHandle(lpszNextKey + nSizeOfFunction + 1), NULL))
+        if (WaffleAddFunction(lpstNewLibrary, lpszNextKey, WaffleLoadComponent(lpszNextKey + nSizeOfFunction + 1), NULL))
         {
             nFunction++;
         }
@@ -120,20 +120,18 @@ LIBRARY_EXPORT LPVOID WINAPI WaffleGetBackupAddress(
     {
         if (!Wafflelstrcmpi(lpszLibrary, lpstProcessSetting->lpstLibrary[i].lpszLibrary))
         {
-            //return WaffleGetProcAddress(lpstProcessSetting->lpstLibrary[i].hBackup, lpszFunction); uses WideCharToMultiByte
-            ///*
-            //MessageBox(0, lpszLibrary, lpstProcessSetting->lpstLibrary[i].lpszLibrary, 0);
+            return WaffleGetProcAddress(lpstProcessSetting->lpstLibrary[i].hBackup, lpszFunction); //uses WideCharToMultiByte
+            /*
             int j;
             for (j = lpstProcessSetting->lpstLibrary[i].lpstFunction[0].dwBehind; j >= 0; j--)
             {
-                //MessageBox(0, lpszFunction, lpstProcessSetting->lpstLibrary[i].lpstFunction[j].lpszFunction, 0);
                 if (!Wafflelstrcmp(lpszFunction, lpstProcessSetting->lpstLibrary[i].lpstFunction[j].lpszFunction))
                 {
                     return lpstProcessSetting->lpstLibrary[i].lpstFunction[j].lpBackup;
                 }
             }
             break;
-            //*/
+            */
         }
     }
     return NULL;

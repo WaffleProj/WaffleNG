@@ -18,14 +18,14 @@ LIBRARY_EXPORT VOID WINAPI WaffleCopyLibrary(
 
     //Get dll base address and size
     DWORD dwSizeOfImage = WaffleGetImageSize(lpstNewLibrary->hSource);
-    lpstNewLibrary->hSourceEnd = (LPVOID) ((SIZE_T) lpstNewLibrary->hSource + dwSizeOfImage);
+    lpstNewLibrary->hSourceEnd = (SIZE_T) lpstNewLibrary->hSource + dwSizeOfImage;
 
     //Reserve memory address
     lpstNewLibrary->hBackup = (HMODULE) VirtualAlloc(NULL, dwSizeOfImage, MEM_RESERVE, PAGE_NOACCESS);
-    lpstNewLibrary->hBackupEnd = (LPVOID) ((SIZE_T) lpstNewLibrary->hBackup + dwSizeOfImage);
+    lpstNewLibrary->hBackupEnd = (SIZE_T) lpstNewLibrary->hBackup + dwSizeOfImage;
 
     LPVOID addrPointer = lpstNewLibrary->hSource;
-    LPVOID addrEnd = lpstNewLibrary->hSourceEnd;
+    LPVOID addrEnd = (LPVOID) lpstNewLibrary->hSourceEnd;
     while (addrPointer < addrEnd)
     {
         MEMORY_BASIC_INFORMATION stMemInfo;
@@ -52,7 +52,7 @@ LIBRARY_EXPORT VOID WINAPI WaffleAddLibrary(
         lpstProcessSetting->lpstLibrary = (LPWAFFLE_LIBRARY_ARRAY) GlobalAlloc(GPTR, sizeof(WAFFLE_LIBRARY_ARRAY));
         if (!lpstProcessSetting->lpstLibrary)
         {
-            MessageBox(0, TEXT("FIXME:Unablt to allocate memory for library array"), 0, 0);
+            MessageBox(0, TEXT("FIXME:Unable to allocate memory for library array"), 0, 0);
             ExitProcess(0);
         }
         lpstNewLibrary->dwBehind = 0;
@@ -67,7 +67,7 @@ LIBRARY_EXPORT VOID WINAPI WaffleAddLibrary(
         lpstProcessSetting->lpstLibrary = (LPWAFFLE_LIBRARY_ARRAY) GlobalReAlloc(lpstProcessSetting->lpstLibrary, sizeof(WAFFLE_LIBRARY_ARRAY)*(lpstProcessSetting->lpstLibrary[0].dwBehind + 1), GHND);
         if (!lpstProcessSetting->lpstLibrary)
         {
-            MessageBox(0, TEXT("FIXME:Unablt to add elements in library array"), 0, 0);
+            MessageBox(0, TEXT("FIXME:Unable to add elements in library array"), 0, 0);
             ExitProcess(0);
         }
     }
@@ -80,7 +80,7 @@ LIBRARY_EXPORT int WINAPI WaffleCreateLibraryArray(VOID)
     LPTSTR lpszSection = WaffleGetOptionSectionNames(TEXT("Detour.ini"));
     if (!lpszSection)
     {
-        MessageBox(0, TEXT("FIXME:Unable to allocate more memory"), 0, 0);
+        MessageBox(0, TEXT("FIXME:Unable to allocate more memory to create library array"), 0, 0);
         return 0;
     }
 

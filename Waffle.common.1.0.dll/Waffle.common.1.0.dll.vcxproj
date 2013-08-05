@@ -275,6 +275,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="common.c" />
+    <ClCompile Include="src\componentarray.c" />
     <ClCompile Include="src\libraryarray.c" />
     <ClCompile Include="src\cmdarg.c" />
     <ClCompile Include="src\execption.c" />

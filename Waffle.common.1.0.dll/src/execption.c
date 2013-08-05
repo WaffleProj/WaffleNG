@@ -45,13 +45,28 @@ LIBRARY_EXPORT LONG CALLBACK WaffleExceptionHandler(
         if (*(WAFFLE_PORT_EXCEPTION_INSTRUCTION_DATA *) (ExceptionInfo->ExceptionRecord->ExceptionAddress) == (WAFFLE_PORT_EXCEPTION_INSTRUCTION_DATA) WAFFLE_PORT_EXCEPTION_INSTRUCTION)
         {
             int i;
-            for (i = 0; lpstProcessSetting->lpstLibrary[i].lpszLibrary; i++)
+            for (i = lpstProcessSetting->lpstLibrary[0].dwBehind; i >= 0; i--)
             {
-                LPWAFFLE_FUNCTION_ARRAY lpstFunction = lpstProcessSetting->lpstLibrary[i].lpstFunction;    //kernel32中的api可能是ntdll的存根
-                if (((SIZE_T) ExceptionInfo->ExceptionRecord->ExceptionAddress >= (SIZE_T) lpstProcessSetting->lpstLibrary[i].hSource) && ((SIZE_T) ExceptionInfo->ExceptionRecord->ExceptionAddress <= (SIZE_T) lpstProcessSetting->lpstLibrary[i].hSourceEnd))
+                LPWAFFLE_FUNCTION_ARRAY lpstFunction = lpstProcessSetting->lpstLibrary[i].lpstFunction;
+
+                //Is this exception happened in a backuped library?
+                if (((SIZE_T) ExceptionInfo->ExceptionRecord->ExceptionAddress >= (SIZE_T) lpstProcessSetting->lpstLibrary[i].hSource) && ((SIZE_T) ExceptionInfo->ExceptionRecord->ExceptionAddress <= lpstProcessSetting->lpstLibrary[i].hSourceEnd))
                 {
                     int j;
-                    for (j = 0; lpstFunction[j].lpszFunction; j++)
+
+                    //Is this exception called by one of our component?
+                    SIZE_T lpCaller = *(SIZE_T *) (ExceptionInfo->ContextRecord->WAFFLE_PORT_STACK_POINTER);
+                    for (j = lpstProcessSetting->lpstComponent[0].dwBehind; j >= 0; j--)
+                    {
+                        if ((lpCaller >= (SIZE_T) lpstProcessSetting->lpstComponent[j].hSource) && (lpCaller <= lpstProcessSetting->lpstComponent[j].hSourceEnd))
+                        {
+                            ExceptionInfo->ContextRecord->WAFFLE_PORT_PROGRAM_POINTER = (SIZE_T) ExceptionInfo->ExceptionRecord->ExceptionAddress - (SIZE_T) lpstProcessSetting->lpstLibrary[i].hSource + (SIZE_T) lpstProcessSetting->lpstLibrary[i].hBackup;
+                            return EXCEPTION_CONTINUE_EXECUTION;
+                        }
+                    }
+
+                    //Do we have a detour function?
+                    for (j = lpstFunction[0].dwBehind; j >= 0; j--)
                     {
                         if (lpstFunction[j].lpSource == ExceptionInfo->ExceptionRecord->ExceptionAddress)
                         {

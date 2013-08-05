@@ -59,6 +59,9 @@
     <ClCompile Include="src\libraryarray.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\componentarray.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="common.def">
