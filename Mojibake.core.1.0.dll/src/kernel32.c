@@ -397,6 +397,35 @@ extern "C" {
 
         return BackupIsDBCSLeadByteEx(CodePage, TestChar);
     }
+
+    LIBRARY_EXPORT void WINAPI DetourRaiseException(
+        _In_    DWORD dwExceptionCode,
+        _In_    DWORD dwExceptionFlags,
+        _In_    DWORD nNumberOfArguments,
+        _In_    const ULONG_PTR *lpArguments
+        )
+    {
+        static LPRAISEEXCEPTION BackupRaiseException;
+        if (!BackupRaiseException)
+        {
+            BackupRaiseException = (LPRAISEEXCEPTION) WaffleGetBackupAddress(TEXT("kernel32.dll"), TEXT("RaiseException"));
+        }
+
+        TCHAR szExceptionRecord[4096];
+
+        wsprintf(szExceptionRecord, TEXT("ExceptionCode = %08x\nExceptionFlags = %08x\nNumberOfArguments = %08x"), dwExceptionCode, dwExceptionFlags, nNumberOfArguments);
+
+        DWORD i;
+        for (i = 0; i < nNumberOfArguments; i++)
+        {
+            TCHAR szBuf[256];
+            wsprintf(szBuf, TEXT("\nArguments[%u] = %016I64X"), i, (UINT64) (lpArguments[i]));
+            lstrcat(szExceptionRecord, szBuf);
+        }
+        //MessageBox(0, szExceptionRecord, 0, 0);
+
+        BackupRaiseException(dwExceptionCode, dwExceptionFlags, nNumberOfArguments, lpArguments);
+    }
 #ifdef __cplusplus
 };
 #endif

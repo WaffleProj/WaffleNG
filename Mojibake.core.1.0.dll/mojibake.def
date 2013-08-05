@@ -28,6 +28,9 @@ EXPORTS
     DetourMultiByteToWideChar
     DetourWideCharToMultiByte
     DetourCompareStringA
+    DetourIsDBCSLeadByte
+    DetourIsDBCSLeadByteEx
+    DetourRaiseException
     
     DetourRegisterClassA
     DetourRegisterClassExA
