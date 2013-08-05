@@ -79,48 +79,15 @@ LIBRARY_EXPORT SIZE_T WINAPI WaffleInit(
         return 0;
     }
 
-    LPTSTR lpszSection = WaffleGetOptionSectionNames(TEXT("Detour.ini"));
-    if (!lpszSection)
+    int nLibrary = WaffleCreateLibraryArray();
+    if (nLibrary > 0)
     {
-        MessageBox(0, TEXT("FIXME:Unable to allocate more memory"), 0, 0);
-        WaffleResumeMainThread();
-        return 0;
-    }
-    
-    int nLibrary = 0;
-    {
-        LPTSTR lpszNextSection = lpszSection;
-        DWORD nSizeOfSection = lstrlen(lpszNextSection);
-        while (nSizeOfSection)
+        AddVectoredExceptionHandler(TRUE, WaffleExceptionHandler);
+        for (nLibrary--; nLibrary >= 0; nLibrary--)
         {
-            //Check if we already loaded this library
-            //for now we just load everything because we don't have a function to work with LoadLibrary
-            //HMODULE hLibrary = GetModuleHandle(lpszNext);
-            HMODULE hLibrary = LoadLibrary(lpszNextSection);
-            if (hLibrary)
-            {
-                nLibrary++;
-                WAFFLE_LIBRARY_ARRAY stLibrary;
-                RtlZeroMemory(&stLibrary, sizeof(stLibrary));
-                stLibrary.lpszLibrary = lpszNextSection;
-                WaffleCopyLibrary(&stLibrary);
-                if (WaffleCreateFunctionArray(&stLibrary))
-                {
-                    WaffleAddLibrary(&stLibrary);
-                }
-            }
-
-            lpszNextSection = lpszNextSection + nSizeOfSection + 1;
-            nSizeOfSection = lstrlen(lpszNextSection);
+            DWORD countFunction;
+            for (countFunction = 0; WaffleSetDetour(nLibrary, countFunction); countFunction++);
         }
-    }
-    
-    AddVectoredExceptionHandler(TRUE, WaffleExceptionHandler);
-    int countLibrary;
-    for (countLibrary = nLibrary; countLibrary >= 0; countLibrary--)
-    {
-        DWORD countFunction;
-        for (countFunction = 0; WaffleSetDetour(countLibrary, countFunction); countFunction++);
     }
 
     HANDLE hThread = OpenThread(THREAD_ALL_ACCESS, FALSE, lpstProcessSetting->dwThreadId);    //WinXP may return ERROR_ACCESS_DENIED

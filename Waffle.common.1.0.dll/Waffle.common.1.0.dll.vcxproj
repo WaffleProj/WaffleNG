@@ -275,10 +275,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="common.c" />
-    <ClCompile Include="src\array.c" />
+    <ClCompile Include="src\libraryarray.c" />
     <ClCompile Include="src\cmdarg.c" />
-    <ClCompile Include="src\environment.c" />
+    <ClCompile Include="src\execption.c" />
     <ClCompile Include="src\filesystem.c" />
+    <ClCompile Include="src\functionarray.c" />
     <ClCompile Include="src\hash.c" />
     <ClCompile Include="src\init.c" />
     <ClCompile Include="src\inject.c" />

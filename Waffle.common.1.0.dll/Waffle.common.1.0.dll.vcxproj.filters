@@ -50,10 +50,13 @@
     <ClCompile Include="src\platform.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\environment.c">
+    <ClCompile Include="src\functionarray.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\array.c">
+    <ClCompile Include="src\execption.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\libraryarray.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
