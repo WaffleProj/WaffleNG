@@ -247,15 +247,8 @@ LIBRARY_EXPORT LONG CALLBACK WaffleExceptionHandler(
         }
         break;
     case 0x0EEDFADE:
-        break;
-    case 0xC0000005:
-        if ((SIZE_T) ExceptionInfo->ExceptionRecord->ExceptionAddress >> 16 > 0x7700)
         {
-            break;
-        }
-    default:
-        {
-            TCHAR szExceptionRecord[4096];
+            TCHAR szExceptionRecord[2048];
 
             wsprintf(szExceptionRecord, TEXT("ExceptionRecord->ExceptionCode = %08x\nExceptionRecord->ExceptionFlags = %08x\nExceptionRecord->ExceptionRecord = %016I64X\nExceptionRecord->ExceptionAddress = %016I64X\nExceptionRecord->NumberParameters = %08x"), ExceptionInfo->ExceptionRecord->ExceptionCode, ExceptionInfo->ExceptionRecord->ExceptionFlags, (UINT64) (ExceptionInfo->ExceptionRecord->ExceptionRecord), (UINT64) (ExceptionInfo->ExceptionRecord->ExceptionAddress), ExceptionInfo->ExceptionRecord->NumberParameters);
 
@@ -270,7 +263,7 @@ LIBRARY_EXPORT LONG CALLBACK WaffleExceptionHandler(
                 wsprintf(szBuf, TEXT("\nExceptionRecord->ExceptionInformation[%u] = %016I64X"), i, (UINT64) (ExceptionInfo->ExceptionRecord->ExceptionInformation[i]));
                 lstrcat(szExceptionRecord, szBuf);
             }
-            //MessageBox(0, szExceptionRecord, 0, 0);
+            MessageBox(0, szExceptionRecord, 0, 0);
         }
     }
     return EXCEPTION_CONTINUE_SEARCH;

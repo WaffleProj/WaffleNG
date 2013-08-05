@@ -362,6 +362,15 @@ LIBRARY_EXPORT VOID WINAPI WaffleIntBox(
     MessageBox(0, szBuf, 0, 0);
 }
 
+LIBRARY_EXPORT VOID WINAPI WaffleHexBox(
+    DWORD i
+    )
+{
+    TCHAR szBuf[32];
+    wsprintf(szBuf, TEXT("0x%08X"), i);
+    MessageBox(0, szBuf, 0, 0);
+}
+
 LIBRARY_EXPORT DWORD WINAPI WaffleGetImageSize(
     HMODULE hModule
     )
@@ -392,4 +401,25 @@ LIBRARY_EXPORT DWORD WINAPI WaffleGetImageSize(
         }
     }
     return 0;
+}
+
+LIBRARY_EXPORT MSVC_NOINLINE LPVOID WINAPI WaffleGetCallersAddress(
+    _Out_   LPVOID *CallersAddress,
+    _Out_   LPVOID *CallersCaller
+    )
+{
+    LPVOID ReturnAddress = (&CallersAddress)[-1];
+    LPVOID FramePointer = (&CallersAddress)[-2];
+
+    if (CallersAddress)
+    {
+        *CallersAddress = ReturnAddress;
+    }
+
+    if (CallersCaller)
+    {
+        *CallersCaller = ((LPVOID *) (FramePointer))[1];
+    }
+
+    return ((LPVOID *) (FramePointer))[1];
 }

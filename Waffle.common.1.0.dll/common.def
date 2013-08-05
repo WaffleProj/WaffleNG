@@ -4,9 +4,15 @@ EXPORTS
     WaffleArgv
     WaffleArgp
     
+    WaffleGetComponentDirectory
+
     WaffleCopyLibrary
     WaffleSetDetour
     WaffleExceptionHandler
+    WaffleAddFunction
+    WaffleAddLibrary
+    WaffleCreateFunctionArray
+    WaffleGetBackupAddress
     
     WaffleGetModuleDirectory
     WaffleDisableWow64FsRedirection
@@ -15,6 +21,7 @@ EXPORTS
     WaffleGetFileHash
     
     WaffleInit
+    WaffleLoadComponent
     
     WaffleCreateProcess
     WaffleInjectDll
@@ -24,6 +31,9 @@ EXPORTS
     WaffleSetOptionString
     WaffleGetOptionInt
     WaffleSetOptionInt
+    WaffleGetOptionSectionKeys
+    WaffleGetOptionSectionNames
+    WaffleGetOptionStringNumber
     
     WaffleGetMachineType
     
@@ -35,6 +45,10 @@ EXPORTS
     WaffleStrToIntA
     WaffleGetProcAddressW
     WaffleGetProcAddressA
+    WaffleIntBox
+    WaffleHexBox
+    WaffleGetCallersAddress
+    WaffleGetImageSize
     
     WaffleOpenProcessSetting
     WaffleCreateProcessSetting
