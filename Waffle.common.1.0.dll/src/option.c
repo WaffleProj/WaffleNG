@@ -7,7 +7,6 @@
 #include "..\common.h"
 
 LIBRARY_EXPORT VOID WINAPI WaffleGetOptionString(
-    _In_        LPWAFFLE_PROCESS_SETTING lpstProcessSetting,
     _In_        LPCTSTR lpszKeyName,
     _Inout_     LPTSTR lpszValue,
     _In_        DWORD nSize,
@@ -19,7 +18,7 @@ LIBRARY_EXPORT VOID WINAPI WaffleGetOptionString(
         lpszDefaultValue = TEXT("");
     }
     TCHAR szConfigPath[MAX_PATH];
-    wsprintf(szConfigPath, TEXT("%s\\%s\\Config"), WaffleGetComponentDirectory(), lpstProcessSetting->szPlugin);
+    wsprintf(szConfigPath, TEXT("%s\\%s\\Config"), lpstProcessSetting->szComponentDirectory, lpstProcessSetting->szComponent);
 
     //1.Check Hash.ini
     TCHAR szHash[MAX_PATH];
@@ -38,14 +37,13 @@ LIBRARY_EXPORT VOID WINAPI WaffleGetOptionString(
 }
 
 LIBRARY_EXPORT VOID WINAPI WaffleSetOptionString(
-    _In_    LPWAFFLE_PROCESS_SETTING lpstProcessSetting,
     _In_    LPCTSTR lpszKeyName,
     _In_    LPCTSTR lpszValue,
     _In_    BOOL bGlobal
     )
 {
     TCHAR szConfigPath[MAX_PATH];
-    wsprintf(szConfigPath, TEXT("%s\\%s\\Config"), WaffleGetComponentDirectory(), lpstProcessSetting->szPlugin);
+    wsprintf(szConfigPath, TEXT("%s\\%s\\Config"), lpstProcessSetting->szComponentDirectory, lpstProcessSetting->szComponent);
 
     TCHAR szOption[MAX_PATH];
     if (bGlobal)
@@ -63,18 +61,16 @@ LIBRARY_EXPORT VOID WINAPI WaffleSetOptionString(
 }
 
 LIBRARY_EXPORT int WINAPI WaffleGetOptionInt(
-    _In_        LPWAFFLE_PROCESS_SETTING lpstProcessSetting,
     _In_        LPCTSTR lpszKeyName,
     _In_opt_    int nDefaultValue
     )
 {
     TCHAR szValue[256];
-    WaffleGetOptionString(lpstProcessSetting, lpszKeyName, szValue, sizeof(szValue) / sizeof(szValue[0]), NULL);
+    WaffleGetOptionString(lpszKeyName, szValue, sizeof(szValue) / sizeof(szValue[0]), NULL);
     return WaffleStrToInt(szValue, nDefaultValue);
 }
 
 LIBRARY_EXPORT VOID WINAPI WaffleSetOptionInt(
-    _In_    LPWAFFLE_PROCESS_SETTING lpstProcessSetting,
     _In_    LPCTSTR lpszKeyName,
     _In_    int nValue,
     _In_    BOOL bGlobal
@@ -82,7 +78,7 @@ LIBRARY_EXPORT VOID WINAPI WaffleSetOptionInt(
 {
     TCHAR szValue[256];
     wsprintf(szValue, TEXT("%i"), nValue);
-    WaffleSetOptionString(lpstProcessSetting, lpszKeyName, szValue, bGlobal);
+    WaffleSetOptionString(lpszKeyName, szValue, bGlobal);
     return;
 }
 
@@ -102,12 +98,11 @@ LIBRARY_EXPORT int WINAPI WaffleGetOptionStringNumber(
 }
 
 LIBRARY_EXPORT LPTSTR WINAPI WaffleGetOptionSectionNames(
-    _In_    LPWAFFLE_PROCESS_SETTING lpstProcessSetting,
     _In_    LPCTSTR lpszOption
     )
 {
     TCHAR szOption[MAX_PATH];
-    wsprintf(szOption, TEXT("%s\\%s\\Config\\%s"), WaffleGetComponentDirectory(), lpstProcessSetting->szPlugin, lpszOption);
+    wsprintf(szOption, TEXT("%s\\%s\\Config\\%s"), lpstProcessSetting->szComponentDirectory, lpstProcessSetting->szComponent, lpszOption);
 
     LPTSTR lpszSection;
     DWORD nSizeOfSection = 4;
@@ -134,13 +129,12 @@ LIBRARY_EXPORT LPTSTR WINAPI WaffleGetOptionSectionNames(
 }
 
 LIBRARY_EXPORT LPTSTR WINAPI WaffleGetOptionSectionKeys(
-    _In_    LPWAFFLE_PROCESS_SETTING lpstProcessSetting,
     _In_    LPCTSTR lpszOption,
     _In_    LPCTSTR lpszSection
     )
 {
     TCHAR szOption[MAX_PATH];
-    wsprintf(szOption, TEXT("%s\\%s\\Config\\%s"), WaffleGetComponentDirectory(), lpstProcessSetting->szPlugin, lpszOption);
+    wsprintf(szOption, TEXT("%s\\%s\\Config\\%s"), lpstProcessSetting->szComponentDirectory, lpstProcessSetting->szComponent, lpszOption);
 
     LPTSTR lpszKey;
     DWORD nSizeOfKey = 4;

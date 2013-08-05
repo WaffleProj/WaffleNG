@@ -48,8 +48,7 @@ LIBRARY_EXPORT HMODULE WINAPI WaffleLoadComponent(
     }
 
     TCHAR szComponent[MAX_PATH];
-    LPWAFFLE_PROCESS_SETTING lpstProcessSetting = WaffleOpenProcessSetting();
-    wsprintf(szComponent, TEXT("%s\\%s\\%s\\%s"), WaffleGetComponentDirectory(), lpstProcessSetting->szPlugin, WAFFLE_PORT_MACHINE_STRING, lpszComponent);
+    wsprintf(szComponent, TEXT("%s\\%s\\%s\\%s"), lpstProcessSetting->szComponentDirectory, lpstProcessSetting->szComponent, WAFFLE_PORT_MACHINE_STRING, lpszComponent);
     hComponent = LoadLibrary(szComponent);
     LPCOMPONENTINIT ComponentInit = (LPCOMPONENTINIT) WaffleGetProcAddress(hComponent, TEXT("ComponentInit"));
     if (!ComponentInit)
@@ -68,10 +67,9 @@ LIBRARY_EXPORT SIZE_T WINAPI WaffleInit(
     _In_    LPVOID lpReserved
     )
 {
-    LPWAFFLE_PROCESS_SETTING lpstProcessSetting = WaffleOpenProcessSetting();
     TCHAR szExecutable[MAX_PATH];
     GetModuleFileName(NULL, szExecutable, sizeof(szExecutable) / sizeof(szExecutable[0]));
-    WaffleSetOptionString(lpstProcessSetting, TEXT("ProgramName"), szExecutable, FALSE);
+    WaffleSetOptionString(TEXT("ProgramName"), szExecutable, FALSE);
 
     hComponent = WaffleLoadComponent(TEXT("Mojibake.core.1.0.dll"));
     if (!hComponent)
@@ -81,7 +79,7 @@ LIBRARY_EXPORT SIZE_T WINAPI WaffleInit(
         return 0;
     }
 
-    LPTSTR lpszSection = WaffleGetOptionSectionNames(lpstProcessSetting, TEXT("Detour.ini"));
+    LPTSTR lpszSection = WaffleGetOptionSectionNames(TEXT("Detour.ini"));
     if (!lpszSection)
     {
         MessageBox(0, TEXT("FIXME:Unable to allocate more memory"), 0, 0);

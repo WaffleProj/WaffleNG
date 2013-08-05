@@ -27,7 +27,6 @@ LIBRARY_EXPORT LPWAFFLE_PROCESS_SETTING WINAPI WaffleCreateProcessSetting(VOID)
 
 LIBRARY_EXPORT LPWAFFLE_PROCESS_SETTING WINAPI WaffleOpenProcessSetting(VOID)
 {
-    static LPWAFFLE_PROCESS_SETTING lpstProcessSetting;
     if (!lpstProcessSetting)
     {
         TCHAR szValueProcessSetting[64];
@@ -43,7 +42,6 @@ LIBRARY_EXPORT LPWAFFLE_PROCESS_SETTING WINAPI WaffleOpenProcessSetting(VOID)
 
 LIBRARY_EXPORT VOID WINAPI WaffleResumeMainThread(VOID)
 {
-    LPWAFFLE_PROCESS_SETTING lpstProcessSetting = WaffleOpenProcessSetting();
     HANDLE hThread = OpenThread(THREAD_ALL_ACCESS, FALSE, lpstProcessSetting->dwThreadId);    //WinXP may return ERROR_ACCESS_DENIED
     ResumeThread(hThread);
 }

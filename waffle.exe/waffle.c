@@ -15,16 +15,16 @@ VOID WINAPI Main(VOID)
 
     //Pickup target
     int nArg = WaffleArgc();
-    TCHAR szPlugin[MAX_PATH];
+    TCHAR szComponent[MAX_PATH];
     TCHAR szTarget[MAX_PATH];
     TCHAR szDirectory[MAX_PATH];
-    RtlZeroMemory(szPlugin, sizeof(szPlugin));
+    RtlZeroMemory(szComponent, sizeof(szComponent));
     RtlZeroMemory(szTarget, sizeof(szTarget));
     RtlZeroMemory(szDirectory, sizeof(szDirectory));
     if (nArg >= 3)
     {
         //1.文件名 2.插件名 3.目标
-        WaffleArgv(2, szPlugin, sizeof(szPlugin));
+        WaffleArgv(2, szComponent, sizeof(szComponent));
 
         WaffleArgv(3, szTarget, sizeof(szTarget));
     }
@@ -39,7 +39,7 @@ VOID WINAPI Main(VOID)
         stOpenFile.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
         GetOpenFileName(&stOpenFile);
 
-        lstrcpy(szPlugin, TEXT("Mojibake"));
+        lstrcpy(szComponent, TEXT("Mojibake"));
     }
 
     lstrcpy(szDirectory, szTarget);
@@ -51,7 +51,12 @@ VOID WINAPI Main(VOID)
     if (MachineType == WAFFLE_PORT_MACHINE)
     {
         LPWAFFLE_PROCESS_SETTING lpstProcessSetting = WaffleCreateProcessSetting();
-        lstrcpy(lpstProcessSetting->szPlugin, szPlugin);
+        lstrcpy(lpstProcessSetting->szComponent, szComponent);
+
+        lstrcpy(lpstProcessSetting->szComponentDirectory, szPath);
+        int i = lstrlen(lpstProcessSetting->szComponentDirectory);                                                                              //E:\WaffleNightly\Component\Waffle\I386\ 
+        for (i--; lpstProcessSetting->szComponentDirectory[i] != TEXT('\\'); i--); lpstProcessSetting->szComponentDirectory[i] = TEXT('\0');    //E:\WaffleNightly\Component\Waffle
+        for (i--; lpstProcessSetting->szComponentDirectory[i] != TEXT('\\'); i--); lpstProcessSetting->szComponentDirectory[i] = TEXT('\0');    //E:\WaffleNightly\Component
 
         LPTSTR lpszArgument = (LPTSTR) GlobalAlloc(GPTR, (lstrlen(szTarget) + lstrlen(WaffleArgp(4)) + 3 + 1) * sizeof(TCHAR));
         if (lpszArgument)
@@ -69,6 +74,9 @@ VOID WINAPI Main(VOID)
     else
     {
         TCHAR szLoader[MAX_PATH];
+        lstrcpy(szLoader, szPath);
+        int i = lstrlen(szLoader);                                              //E:\WaffleNightly\Component\Waffle\I386\ 
+        for (i--; szLoader[i] != TEXT('\\'); i--); szLoader[i] = TEXT('\0');    //E:\WaffleNightly\Component\Waffle
 
         STARTUPINFO stStartUp;
         PROCESS_INFORMATION stProcessInfo;
@@ -80,17 +88,17 @@ VOID WINAPI Main(VOID)
         {
         case WAFFLE_PORT_MACHINE_I386:
             {
-                wsprintf(szLoader, TEXT("%s%s"), szPath, TEXT("\\..\\I386\\Waffle.exe"));
+                lstrcat(szLoader, TEXT("\\I386\\Waffle.exe"));
                 break;
             }
         case WAFFLE_PORT_MACHINE_AMD64:
             {
-                wsprintf(szLoader, TEXT("%s%s"), szPath, TEXT("\\..\\AMD64\\Waffle.exe"));
+                lstrcat(szLoader, TEXT("\\AMD64\\Waffle.exe"));
                 break;
             }
         case WAFFLE_PORT_MACHINE_ARMNT:
             {
-                wsprintf(szLoader, TEXT("%s%s"), szPath, TEXT("\\..\\ARMNT\\Waffle.exe"));
+                lstrcat(szLoader, TEXT("\\ARMNT\\Waffle.exe"));
                 break;
             }
         case 0xFFFF:
@@ -122,10 +130,10 @@ VOID WINAPI Main(VOID)
         }
         else
         {
-            lpszArgument = (LPTSTR) GlobalAlloc(GPTR, (lstrlen(szLoader) + lstrlen(szPlugin) + lstrlen(szTarget) + 6 + 1) * sizeof(TCHAR));
+            lpszArgument = (LPTSTR) GlobalAlloc(GPTR, (lstrlen(szLoader) + lstrlen(szComponent) + lstrlen(szTarget) + 6 + 1) * sizeof(TCHAR));
             if (lpszArgument)
             {
-                wsprintf(lpszArgument, TEXT("\"%s\" %s \"%s\""), szLoader, szPlugin, szTarget);
+                wsprintf(lpszArgument, TEXT("\"%s\" %s \"%s\""), szLoader, szComponent, szTarget);
             }
             else
             {

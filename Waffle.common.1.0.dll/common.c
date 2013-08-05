@@ -7,6 +7,8 @@
 #include "common.h"
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
+LPWAFFLE_PROCESS_SETTING lpstProcessSetting;
+
 BOOL WINAPI DllMain(
     _In_    HINSTANCE hinstDLL,
     _In_    DWORD fdwReason,
@@ -16,13 +18,6 @@ BOOL WINAPI DllMain(
     if (fdwReason == DLL_PROCESS_ATTACH)
     {
         DisableThreadLibraryCalls(hinstDLL);
-
-        LPTSTR lpszComponentDirectory = WaffleGetComponentDirectory();
-        GetModuleFileName(hinstDLL, lpszComponentDirectory, MAX_PATH);
-        int i = lstrlen(lpszComponentDirectory);                                                            //E:\WaffleNightly\Component\Waffle\I386\Waffle.common.1.0.dll
-        for (i--; lpszComponentDirectory[i] != TEXT('\\'); i--); lpszComponentDirectory[i] = TEXT('\0');    //E:\WaffleNightly\Component\Waffle\I386
-        for (i--; lpszComponentDirectory[i] != TEXT('\\'); i--); lpszComponentDirectory[i] = TEXT('\0');    //E:\WaffleNightly\Component\Waffle
-        for (i--; lpszComponentDirectory[i] != TEXT('\\'); i--); lpszComponentDirectory[i] = TEXT('\0');    //E:\WaffleNightly\Component
 
         if (WaffleOpenProcessSetting())
         {

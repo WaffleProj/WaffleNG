@@ -6,8 +6,6 @@
 #endif
 #include "..\common.h"
 
-static LPWAFFLE_LIBRARY_ARRAY lpstLibrary;
-
 LIBRARY_EXPORT VOID WINAPI WaffleCopyLibrary(
     _In_    LPWAFFLE_LIBRARY_ARRAY lpstNewLibrary
     )
@@ -49,10 +47,10 @@ LIBRARY_EXPORT VOID WINAPI WaffleAddLibrary(
     _In_    LPWAFFLE_LIBRARY_ARRAY lpstNewLibrary
     )
 {
-    if (!lpstLibrary)
+    if (!lpstProcessSetting->lpstLibrary)
     {
-        lpstLibrary = (LPWAFFLE_LIBRARY_ARRAY) GlobalAlloc(GPTR, sizeof(WAFFLE_LIBRARY_ARRAY));
-        if (!lpstLibrary)
+        lpstProcessSetting->lpstLibrary = (LPWAFFLE_LIBRARY_ARRAY) GlobalAlloc(GPTR, sizeof(WAFFLE_LIBRARY_ARRAY));
+        if (!lpstProcessSetting->lpstLibrary)
         {
             MessageBox(0, TEXT("FIXME:Unablt to allocate memory for library array"), 0, 0);
             ExitProcess(0);
@@ -62,19 +60,19 @@ LIBRARY_EXPORT VOID WINAPI WaffleAddLibrary(
     else
     {
         int i;
-        for (i = lpstLibrary[0].dwBehind; i >= 0; i--)
+        for (i = lpstProcessSetting->lpstLibrary[0].dwBehind; i >= 0; i--)
         {
-            lpstLibrary[i].dwBehind++;
+            lpstProcessSetting->lpstLibrary[i].dwBehind++;
         }
-        lpstLibrary = (LPWAFFLE_LIBRARY_ARRAY) GlobalReAlloc(lpstLibrary, sizeof(WAFFLE_LIBRARY_ARRAY)*(lpstLibrary[0].dwBehind + 1), GHND);
-        if (!lpstLibrary)
+        lpstProcessSetting->lpstLibrary = (LPWAFFLE_LIBRARY_ARRAY) GlobalReAlloc(lpstProcessSetting->lpstLibrary, sizeof(WAFFLE_LIBRARY_ARRAY)*(lpstProcessSetting->lpstLibrary[0].dwBehind + 1), GHND);
+        if (!lpstProcessSetting->lpstLibrary)
         {
             MessageBox(0, TEXT("FIXME:Unablt to add elements in library array"), 0, 0);
             ExitProcess(0);
         }
     }
-    RtlMoveMemory(&lpstLibrary[lpstLibrary[0].dwBehind], lpstNewLibrary, sizeof(WAFFLE_LIBRARY_ARRAY));
-    lpstLibrary[lpstLibrary[0].dwBehind].dwBehind = 0;
+    RtlMoveMemory(&lpstProcessSetting->lpstLibrary[lpstProcessSetting->lpstLibrary[0].dwBehind], lpstNewLibrary, sizeof(WAFFLE_LIBRARY_ARRAY));
+    lpstProcessSetting->lpstLibrary[lpstProcessSetting->lpstLibrary[0].dwBehind].dwBehind = 0;
 }
 
 LIBRARY_EXPORT BOOL WINAPI WaffleAddFunction(
@@ -156,10 +154,8 @@ LIBRARY_EXPORT DWORD WINAPI WaffleCreateFunctionArray(
     _In_    LPWAFFLE_LIBRARY_ARRAY lpstNewLibrary
     )
 {
-    LPWAFFLE_PROCESS_SETTING lpstProcessSetting = WaffleOpenProcessSetting();
-
     //GetAllKey
-    LPTSTR lpszKey = WaffleGetOptionSectionKeys(lpstProcessSetting, TEXT("Detour.ini"), lpstNewLibrary->lpszLibrary);
+    LPTSTR lpszKey = WaffleGetOptionSectionKeys( TEXT("Detour.ini"), lpstNewLibrary->lpszLibrary);
     //get the list
     DWORD nFunction = 0;
 
@@ -188,19 +184,19 @@ LIBRARY_EXPORT BOOL WINAPI WaffleSetDetour(
     _In_    DWORD dwFunction
     )
 {
-    if (!lpstLibrary)
+    if (!lpstProcessSetting->lpstLibrary)
     {
         return FALSE;
     }
-    else if (dwLibrary > lpstLibrary[0].dwBehind)
+    else if (dwLibrary > lpstProcessSetting->lpstLibrary[0].dwBehind)
     {
         return FALSE;
     }
-    else if (dwFunction > lpstLibrary[dwLibrary].lpstFunction[0].dwBehind)
+    else if (dwFunction > lpstProcessSetting->lpstLibrary[dwLibrary].lpstFunction[0].dwBehind)
     {
         return FALSE;
     }
-    LPWAFFLE_FUNCTION_ARRAY lpstFunction = &lpstLibrary[dwLibrary].lpstFunction[dwFunction];
+    LPWAFFLE_FUNCTION_ARRAY lpstFunction = &lpstProcessSetting->lpstLibrary[dwLibrary].lpstFunction[dwFunction];
     DWORD flOldProtect;
     if (lpstFunction->lpDetour)
     {
@@ -222,10 +218,10 @@ LIBRARY_EXPORT LONG CALLBACK WaffleExceptionHandler(
         if (*(WAFFLE_PORT_EXCEPTION_INSTRUCTION_DATA *) (ExceptionInfo->ExceptionRecord->ExceptionAddress) == (WAFFLE_PORT_EXCEPTION_INSTRUCTION_DATA) WAFFLE_PORT_EXCEPTION_INSTRUCTION)
         {
             int i;
-            for (i = 0; lpstLibrary[i].lpszLibrary; i++)
+            for (i = 0; lpstProcessSetting->lpstLibrary[i].lpszLibrary; i++)
             {
-                LPWAFFLE_FUNCTION_ARRAY lpstFunction = lpstLibrary[i].lpstFunction;    //kernel32中的api可能是ntdll的存根
-                if (((SIZE_T) ExceptionInfo->ExceptionRecord->ExceptionAddress >= (SIZE_T) lpstLibrary[i].hSource) && ((SIZE_T) ExceptionInfo->ExceptionRecord->ExceptionAddress <= (SIZE_T) lpstLibrary[i].hSourceEnd))
+                LPWAFFLE_FUNCTION_ARRAY lpstFunction = lpstProcessSetting->lpstLibrary[i].lpstFunction;    //kernel32中的api可能是ntdll的存根
+                if (((SIZE_T) ExceptionInfo->ExceptionRecord->ExceptionAddress >= (SIZE_T) lpstProcessSetting->lpstLibrary[i].hSource) && ((SIZE_T) ExceptionInfo->ExceptionRecord->ExceptionAddress <= (SIZE_T) lpstProcessSetting->lpstLibrary[i].hSourceEnd))
                 {
                     int j;
                     for (j = 0; lpstFunction[j].lpszFunction; j++)
@@ -240,7 +236,7 @@ LIBRARY_EXPORT LONG CALLBACK WaffleExceptionHandler(
                             break;
                         }
                     }
-                    ExceptionInfo->ContextRecord->WAFFLE_PORT_PROGRAM_POINTER = (SIZE_T) ExceptionInfo->ExceptionRecord->ExceptionAddress - (SIZE_T) lpstLibrary[i].hSource + (SIZE_T) lpstLibrary[i].hBackup;
+                    ExceptionInfo->ContextRecord->WAFFLE_PORT_PROGRAM_POINTER = (SIZE_T) ExceptionInfo->ExceptionRecord->ExceptionAddress - (SIZE_T) lpstProcessSetting->lpstLibrary[i].hSource + (SIZE_T) lpstProcessSetting->lpstLibrary[i].hBackup;
                     return EXCEPTION_CONTINUE_EXECUTION;
                 }
             }
@@ -275,20 +271,20 @@ LIBRARY_EXPORT LPVOID WINAPI WaffleGetBackupAddress(
     )
 {
     int i;
-    for (i = lpstLibrary[0].dwBehind; i >= 0; i--)
+    for (i = lpstProcessSetting->lpstLibrary[0].dwBehind; i >= 0; i--)
     {
-        if (!Wafflelstrcmpi(lpszLibrary, lpstLibrary[i].lpszLibrary))
+        if (!Wafflelstrcmpi(lpszLibrary, lpstProcessSetting->lpstLibrary[i].lpszLibrary))
         {
-            //return WaffleGetProcAddress(lpstLibrary[i].hBackup, lpszFunction); uses WideCharToMultiByte
+            //return WaffleGetProcAddress(lpstProcessSetting->lpstLibrary[i].hBackup, lpszFunction); uses WideCharToMultiByte
             ///*
-            //MessageBox(0, lpszLibrary, lpstLibrary[i].lpszLibrary, 0);
+            //MessageBox(0, lpszLibrary, lpstProcessSetting->lpstLibrary[i].lpszLibrary, 0);
             int j;
-            for (j = lpstLibrary[i].lpstFunction[0].dwBehind; j >= 0; j--)
+            for (j = lpstProcessSetting->lpstLibrary[i].lpstFunction[0].dwBehind; j >= 0; j--)
             {
-                //MessageBox(0, lpszFunction, lpstLibrary[i].lpstFunction[j].lpszFunction, 0);
-                if (!Wafflelstrcmp(lpszFunction, lpstLibrary[i].lpstFunction[j].lpszFunction))
+                //MessageBox(0, lpszFunction, lpstProcessSetting->lpstLibrary[i].lpstFunction[j].lpszFunction, 0);
+                if (!Wafflelstrcmp(lpszFunction, lpstProcessSetting->lpstLibrary[i].lpstFunction[j].lpszFunction))
                 {
-                    return lpstLibrary[i].lpstFunction[j].lpBackup;
+                    return lpstProcessSetting->lpstLibrary[i].lpstFunction[j].lpBackup;
                 }
             }
             break;
