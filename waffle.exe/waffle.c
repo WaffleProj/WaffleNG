@@ -42,10 +42,12 @@ VOID WINAPI Main(VOID)
         lstrcpy(szComponent, TEXT("Mojibake"));
     }
 
-    lstrcpy(szDirectory, szTarget);
-    int i = lstrlen(szTarget);
-    for (; szDirectory[i] != TEXT('\\'); i--);
-    szDirectory[i] = TEXT('\0');
+    {
+        lstrcpy(szDirectory, szTarget);
+        int i = lstrlen(szTarget);
+        for (; szDirectory[i] != TEXT('\\'); i--);
+        szDirectory[i] = TEXT('\0');
+    }
 
     WORD MachineType = WaffleGetMachineType(szTarget);
     if (MachineType == WAFFLE_PORT_MACHINE)

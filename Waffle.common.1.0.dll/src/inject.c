@@ -77,7 +77,7 @@ LIBRARY_EXPORT VOID WINAPI WaffleExecute(
 
     lpstProcessSetting->dwThreadId = stProcessInfo.dwThreadId;
     lpstProcessSetting->dwProcessId = stProcessInfo.dwProcessId;
-    WaffleGetFileHash(lpApplicationName, lpstProcessSetting->szHash);
+    WaffleGetFileHash(lpApplicationName, lpstProcessSetting->szProcessHash);
     CloseHandle(stProcessInfo.hThread);
 
     TCHAR szWaffleCommonDll[MAX_PATH];

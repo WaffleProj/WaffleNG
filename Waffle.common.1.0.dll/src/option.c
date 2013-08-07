@@ -21,9 +21,9 @@ LIBRARY_EXPORT VOID WINAPI WaffleGetOptionString(
     wsprintf(szConfigPath, TEXT("%s\\%s\\Config"), lpstProcessSetting->szComponentDirectory, lpstProcessSetting->szComponent);
 
     //1.Check Hash.ini
-    TCHAR szHash[MAX_PATH];
-    wsprintf(szHash, TEXT("%s\\Hash.ini"), szConfigPath);
-    GetPrivateProfileString(lpstProcessSetting->szHash, lpszKeyName, lpszDefaultValue, lpszValue, nSize, szHash);
+    TCHAR szProcessHash[MAX_PATH];
+    wsprintf(szProcessHash, TEXT("%s\\Hash.ini"), szConfigPath);
+    GetPrivateProfileString(lpstProcessSetting->szProcessHash, lpszKeyName, lpszDefaultValue, lpszValue, nSize, szProcessHash);
     if (Wafflelstrcmp(lpszValue, lpszDefaultValue))
     {
         return;
@@ -54,7 +54,7 @@ LIBRARY_EXPORT VOID WINAPI WaffleSetOptionString(
     else
     {
         wsprintf(szOption, TEXT("%s\\Hash.ini"), szConfigPath);
-        WritePrivateProfileString(lpstProcessSetting->szHash, lpszKeyName, lpszValue, szOption);
+        WritePrivateProfileString(lpstProcessSetting->szProcessHash, lpszKeyName, lpszValue, szOption);
     }
 
     return;

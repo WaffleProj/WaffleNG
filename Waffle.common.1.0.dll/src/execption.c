@@ -101,7 +101,7 @@ LIBRARY_EXPORT LONG CALLBACK WaffleExceptionHandler(
                 wsprintf(szBuf, TEXT("\nExceptionRecord->ExceptionInformation[%u] = %016I64X"), i, (UINT64) (ExceptionInfo->ExceptionRecord->ExceptionInformation[i]));
                 lstrcat(szExceptionRecord, szBuf);
             }
-            MessageBox(0, szExceptionRecord, 0, 0);
+            //MessageBox(0, szExceptionRecord, 0, 0);
         }
     }
     return EXCEPTION_CONTINUE_SEARCH;

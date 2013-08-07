@@ -47,6 +47,8 @@ LIBRARY_EXPORT SIZE_T WINAPI WaffleInit(
 
     WaffleAddComponent(TEXT("Waffle.common.1.0.dll"));
 
+    lpstProcessSetting->hGlobalMutex = CreateMutex(NULL, FALSE, NULL);
+
     int nLibrary = WaffleCreateLibraryArray();
     if (nLibrary > 0)
     {

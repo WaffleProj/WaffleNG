@@ -284,6 +284,7 @@
     <ClCompile Include="src\hash.c" />
     <ClCompile Include="src\init.c" />
     <ClCompile Include="src\inject.c" />
+    <ClCompile Include="src\logfile.c" />
     <ClCompile Include="src\option.c" />
     <ClCompile Include="src\platform.c" />
     <ClCompile Include="src\rtl.c" />

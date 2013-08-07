@@ -10,6 +10,7 @@ EXPORTS
     WaffleAddFunction
     WaffleAddLibrary
     WaffleCreateFunctionArray
+    WaffleCreateLibraryArray
     WaffleGetBackupAddress
     
     WaffleGetModuleDirectory
@@ -26,6 +27,8 @@ EXPORTS
     WaffleCreateProcess
     WaffleInjectDll
     WaffleExecute
+
+    WaffleWriteLogFile
     
     WaffleGetOptionString
     WaffleSetOptionString
