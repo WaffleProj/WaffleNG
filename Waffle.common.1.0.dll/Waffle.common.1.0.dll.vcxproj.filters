@@ -53,9 +53,6 @@
     <ClCompile Include="src\functionarray.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\execption.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\libraryarray.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -63,6 +60,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\logfile.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\detour\veh.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\detour\inline.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\detour\detour.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -17,7 +17,7 @@ LIBRARY_EXPORT BOOL WINAPI WaffleAddFunction(
     {
         return FALSE;
     }
-    LPVOID lpSource = WaffleGetProcAddress(lpstNewLibrary->hSource, lpszFunction);
+    LPBYTE lpSource = WaffleGetProcAddress(lpstNewLibrary->hSource, lpszFunction);
     if (!lpSource)  //This function doesn't exist
     {
         return FALSE;
@@ -125,14 +125,61 @@ LIBRARY_EXPORT LPVOID WINAPI WaffleGetBackupAddress(
             int j;
             for (j = lpstProcessSetting->lpstLibrary[i].lpstFunction[0].dwBehind; j >= 0; j--)
             {
-                if (!Wafflelstrcmp(lpszFunction, lpstProcessSetting->lpstLibrary[i].lpstFunction[j].lpszFunction))
-                {
-                    return lpstProcessSetting->lpstLibrary[i].lpstFunction[j].lpBackup;
-                }
+            if (!Wafflelstrcmp(lpszFunction, lpstProcessSetting->lpstLibrary[i].lpstFunction[j].lpszFunction))
+            {
+            return lpstProcessSetting->lpstLibrary[i].lpstFunction[j].lpBackup;
+            }
             }
             break;
             */
         }
     }
     return NULL;
+}
+LIBRARY_EXPORT SIZE_T WINAPI WaffleFindDetourAddress(
+    _In_    PVOID ExceptionAddress,
+    _In_    PVOID CallerAddress
+    )
+{
+    if (!ExceptionAddress)
+    {
+        return 0;
+    }
+
+    int i;
+    for (i = lpstProcessSetting->lpstLibrary[0].dwBehind; i >= 0; i--)
+    {
+        LPWAFFLE_FUNCTION_ARRAY lpstFunction = lpstProcessSetting->lpstLibrary[i].lpstFunction;
+
+        //Is this exception happened in a backuped library?
+        if (((SIZE_T) ExceptionAddress >= (SIZE_T) lpstProcessSetting->lpstLibrary[i].hSource) && ((SIZE_T) ExceptionAddress <= lpstProcessSetting->lpstLibrary[i].hSourceEnd))
+        {
+            int j;
+
+            //Is this exception called by one of our component?
+            for (j = lpstProcessSetting->lpstComponent[0].dwBehind; j >= 0; j--)
+            {
+                if (((SIZE_T) CallerAddress >= (SIZE_T) lpstProcessSetting->lpstComponent[j].hSource) && ((SIZE_T) CallerAddress <= lpstProcessSetting->lpstComponent[j].hSourceEnd))
+                {
+                    return (SIZE_T) ExceptionAddress - (SIZE_T) lpstProcessSetting->lpstLibrary[i].hSource + (SIZE_T) lpstProcessSetting->lpstLibrary[i].hBackup;
+                }
+            }
+
+            //Do we have a detour function?
+            for (j = lpstFunction[0].dwBehind; j >= 0; j--)
+            {
+                if (lpstFunction[j].lpSource == ExceptionAddress)
+                {
+                    if (lpstFunction[j].lpDetour)
+                    {
+                        return (SIZE_T) lpstFunction[j].lpDetour;
+                    }
+                    break;
+                }
+            }
+            return (SIZE_T) ExceptionAddress - (SIZE_T) lpstProcessSetting->lpstLibrary[i].hSource + (SIZE_T) lpstProcessSetting->lpstLibrary[i].hBackup;
+        }
+    }
+
+    return 0;
 }

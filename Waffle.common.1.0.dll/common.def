@@ -6,12 +6,17 @@ EXPORTS
 
     WaffleCopyLibrary
     WaffleSetDetour
-    WaffleExceptionHandler
     WaffleAddFunction
     WaffleAddLibrary
     WaffleCreateFunctionArray
     WaffleCreateLibraryArray
     WaffleGetBackupAddress
+    WaffleFindDetourAddress
+
+    WaffleInlineDetour
+    WaffleInlineHandler
+    WaffleExceptionDetour
+    WaffleExceptionHandler
     
     WaffleGetModuleDirectory
     WaffleDisableWow64FsRedirection

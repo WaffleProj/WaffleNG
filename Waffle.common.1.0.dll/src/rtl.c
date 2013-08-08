@@ -264,7 +264,7 @@ LIBRARY_EXPORT VOID WaffleLeaveReaderLock(
     LeaveCriticalSection(&lpstRWLock->csWrite);
 }
 
-LIBRARY_EXPORT LPVOID WINAPI WaffleGetProcAddressW(
+LIBRARY_EXPORT LPBYTE WINAPI WaffleGetProcAddressW(
     _In_    HMODULE hModule,
     _In_    LPCWSTR lpszFuncName
     )
@@ -272,12 +272,12 @@ LIBRARY_EXPORT LPVOID WINAPI WaffleGetProcAddressW(
     DWORD nSize = WideCharToMultiByte(CP_ACP, 0, lpszFuncName, -1, NULL, 0, NULL, NULL);;
     LPSTR lpszFunction = (LPSTR) GlobalAlloc(GPTR, nSize*sizeof(CHAR));
     WideCharToMultiByte(CP_ACP, 0, lpszFuncName, -1, lpszFunction, nSize, NULL, NULL);
-    LPVOID lpFunction = WaffleGetProcAddressA(hModule, lpszFunction);
+    LPBYTE lpFunction = WaffleGetProcAddressA(hModule, lpszFunction);
     GlobalFree(lpszFunction);
     return lpFunction;
 }
 
-LIBRARY_EXPORT LPVOID WINAPI WaffleGetProcAddressA(
+LIBRARY_EXPORT LPBYTE WINAPI WaffleGetProcAddressA(
     _In_    HMODULE hModule,
     _In_    LPCSTR lpszFuncName
     )
@@ -340,13 +340,13 @@ LIBRARY_EXPORT LPVOID WINAPI WaffleGetProcAddressA(
                     End = i - 1;
                 }
             }
-            return (LPVOID) ((SIZE_T) hModule + lpFunction[lpOrdinal[i]]);
+            return (LPBYTE) ((SIZE_T) hModule + lpFunction[lpOrdinal[i]]);
         }
         else
         {
             if ((SIZE_T) lpszFuncName <= nFunction)
             {
-                return (LPVOID) ((SIZE_T) hModule + lpFunction[(SIZE_T) lpszFuncName - lpExportTable->Base]);
+                return (LPBYTE) ((SIZE_T) hModule + lpFunction[(SIZE_T) lpszFuncName - lpExportTable->Base]);
             }
         }
     }
