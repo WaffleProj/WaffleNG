@@ -5,6 +5,7 @@
 #define _UNICODE
 #endif
 #include "..\mojibake.h"
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 
 #ifdef __cplusplus
 extern "C" {
@@ -67,6 +68,7 @@ extern "C" {
     {
         //There doesn't exist a function called CreateWindowA
         //See http://msdn.microsoft.com/en-us/library/windows/desktop/ms632679.aspx
+        return NULL;
     }
 
     LIBRARY_EXPORT HWND WINAPI DetourCreateWindowExA(
@@ -237,7 +239,7 @@ extern "C" {
             }
         case WM_GETTEXT:
             {
-                MessageBoxW(0, L"WM_GETTEXT", L"DetourSendMessageA", 0);
+                MessageBox(0, TEXT("WM_GETTEXT"), TEXT("DetourSendMessageA"), 0);
             }
         default:
             {

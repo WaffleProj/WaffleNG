@@ -5,6 +5,7 @@
 #define _UNICODE
 #endif
 #include "..\mojibake.h"
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 
 #ifdef __cplusplus
 extern "C" {

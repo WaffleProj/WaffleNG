@@ -14,12 +14,16 @@ extern "C" {
         _Out_   LPSTR lpBuffer
         )
     {
-        LPWSTR lpuBuffer = (LPWSTR) HeapAlloc(hHeap, HEAP_ZERO_MEMORY, nBufferLength*sizeof(WCHAR));
-        DWORD Result = GetCurrentDirectory(nBufferLength, lpuBuffer);
-        DWORD LastError = GetLastError();
-        WideCharToMultiByte(stNewEnvir.AnsiCodePage, 0, lpuBuffer, -1, lpBuffer, nBufferLength, NULL, NULL);
-        HeapFree(hHeap, 0, lpuBuffer);
-        SetLastError(LastError);
+        DWORD Result = 0;
+        if (lpBuffer)
+        {
+            LPWSTR lpuBuffer = (LPWSTR) HeapAlloc(hHeap, HEAP_ZERO_MEMORY, nBufferLength*sizeof(WCHAR));
+            Result = GetCurrentDirectory(nBufferLength, lpuBuffer);
+            DWORD LastError = GetLastError();
+            WideCharToMultiByte(stNewEnvir.AnsiCodePage, 0, lpuBuffer, -1, lpBuffer, nBufferLength - 1, NULL, NULL);
+            HeapFree(hHeap, 0, lpuBuffer);
+            SetLastError(LastError);
+        }
         return Result;
     }
 
@@ -156,11 +160,7 @@ extern "C" {
         _In_        DWORD nSize
         )
     {
-        LPWSTR lpuszFilename = 0;
-        if (lpFilename)
-        {
-            lpuszFilename = (LPWSTR) HeapAlloc(hHeap, HEAP_ZERO_MEMORY, sizeof(WCHAR) * nSize);
-        }
+        LPWSTR lpuszFilename = (LPWSTR) HeapAlloc(hHeap, HEAP_ZERO_MEMORY, sizeof(WCHAR) * nSize);
 
         GetModuleFileName(hModule, lpuszFilename, nSize);
 
@@ -176,10 +176,17 @@ extern "C" {
         _In_opt_    LPCSTR lpModuleName
         )
     {
-        LPWSTR lpuszModuleName = AnsiToUnicode(lpModuleName);
+        LPWSTR lpuszModuleName = NULL;
+        if (lpModuleName)
+        {
+            lpuszModuleName = AnsiToUnicode(lpModuleName);
+        }
         HMODULE Result = GetModuleHandle(lpuszModuleName);
 
-        KeepLastErrorAndFree(lpuszModuleName);
+        if (lpModuleName)
+        {
+            KeepLastErrorAndFree(lpuszModuleName);
+        }
         return Result;
     }
 
@@ -350,7 +357,7 @@ extern "C" {
         static LPCOMPARESTRINGA BackupCompareStringA;
         if (!BackupCompareStringA)
         {
-            BackupCompareStringA = (LPCOMPARESTRINGA) WaffleGetBackupAddress(TEXT("kernel32.dll"), TEXT("CompareStringA"));
+        BackupCompareStringA = (LPCOMPARESTRINGA) WaffleGetBackupAddress(TEXT("kernel32.dll"), TEXT("CompareStringA"));
         }
         */
 
@@ -398,6 +405,36 @@ extern "C" {
         return BackupIsDBCSLeadByteEx(CodePage, TestChar);
     }
 
+    /*
+    ExceptionCode = 0eedfade
+    ExceptionFlags = 00000001
+    NumberOfArguments = 00000007
+    Arguments[0] = 00000000000186EC
+    Arguments[1] = 000000000812E668
+    Arguments[2] = 0000000000017854
+    Arguments[3] = 000000000037F3E8
+    Arguments[4] = 0000000000000000
+    Arguments[5] = 000000000037F3DC
+    Arguments[6] = 000000000037F3C0
+
+    CPU Disasm
+    Address   Hex dump          Command                                  Comments
+    0001375C  /$ /5A            pop     edx
+    0001375D  |. |54            push    esp                             ; mov lpArguments[6],esp    ;
+    0001375E  |. |55            push    ebp                             ; mov lpArguments[5],ebp    ;
+    0001375F  |. |57            push    edi                             ; mov lpArguments[4],edi    ;
+    00013760  |. |56            push    esi                             ; mov lpArguments[3],esi    ;
+    00013761  |. |53            push    ebx                             ; mov lpArguments[2],ebx    ;
+    00013762  |. |50            push    eax                             ; mov lpArguments[1],eax    ;
+    00013763  |. |52            push    edx                             ; mov lpArguments[0],edx    ; return address
+    00013764  |. |54            push    esp                             ; push lpArguments
+    00013765  |. |6A 07         push    7                               ; push nNumberOfArguments
+    00013767  |. |6A 01         push    1                               ; push dwExceptionFlags
+    00013769  |. |68 DEFAED0E   push    0EEDFADE                        ; push dwExceptionCode
+    0001376E  |. |52            push    edx                             ; call RaiseException
+    0001376F  \.-|E9 44DBFFFF   jmp     <jmp.&kernel32.RaiseException>
+
+    */
     LIBRARY_EXPORT void WINAPI DetourRaiseException(
         _In_    DWORD dwExceptionCode,
         _In_    DWORD dwExceptionFlags,
@@ -423,6 +460,7 @@ extern "C" {
             lstrcat(szExceptionRecord, szBuf);
         }
         //MessageBox(0, szExceptionRecord, 0, 0);
+        WaffleWriteLogFile(szExceptionRecord);
 
         BackupRaiseException(dwExceptionCode, dwExceptionFlags, nNumberOfArguments, lpArguments);
     }

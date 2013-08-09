@@ -37,7 +37,7 @@ cd	%1
 goto	ExitProcess
 :Compile
 echo	gcc	%1
-gcc	-O3 -c -Wall -Wextra %1
+gcc	-O3 -c -Wall -Wextra -fno-stack-check -fno-stack-protector -mno-stack-arg-probe %1
 goto	ExitProcess
 :CleanUp
 del	*.o 2>nul

@@ -6,6 +6,7 @@
 #endif
 #include "..\mojibake.h"
 #include <psapi.h>
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 
 #ifdef __cplusplus
 extern "C" {
@@ -24,7 +25,7 @@ extern "C" {
         GetModuleFileNameEx(hProcess, hModule, lpuszFilename, nSize);
 
         DWORD LastError = GetLastError();
-        WideCharToMultiByte(stNewEnvir.ACP, 0, lpuszFilename, -1, lpFilename, nSize, NULL, NULL);
+        WideCharToMultiByte(stNewEnvir.AnsiCodePage, 0, lpuszFilename, -1, lpFilename, nSize, NULL, NULL);
         HeapFree(hHeap, 0, lpuszFilename);
         SetLastError(LastError);
         return lstrlenA(lpFilename);
