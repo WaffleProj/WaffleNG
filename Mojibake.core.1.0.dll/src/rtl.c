@@ -16,7 +16,7 @@ LPWSTR WINAPI AnsiToUnicode(
         if (intText)
         {
             intText++;
-            LPWSTR lpuszText = (LPWSTR) HeapAlloc(hHeap, HEAP_ZERO_MEMORY, 2 * intText);
+            LPWSTR lpuszText = (LPWSTR) WaffleAlloc(2 * intText);
             MultiByteToWideChar(stNewEnvir.AnsiCodePage, 0, lpszText, -1, lpuszText, intText);
             return lpuszText;
         }
@@ -38,8 +38,8 @@ LPSTR WINAPI ProgramCPToWindowsCP(
     if (lpszText)
     {
         int intText = lstrlenA(lpszText) + 1;
-        LPWSTR lpuszText = (LPWSTR) HeapAlloc(hHeap, HEAP_ZERO_MEMORY, 2 * intText);
-        LPSTR lpszNewText = (LPSTR) HeapAlloc(hHeap, HEAP_ZERO_MEMORY, 2 * intText);
+        LPWSTR lpuszText = (LPWSTR) WaffleAlloc(2 * intText);
+        LPSTR lpszNewText = (LPSTR) WaffleAlloc(2 * intText);
         MultiByteToWideChar(stNewEnvir.AnsiCodePage, 0, lpszText, -1, lpuszText, intText);
         WideCharToMultiByte(stOldEnvir.AnsiCodePage, 0, lpuszText, -1, lpszNewText, intText, NULL, FALSE);
         return lpszNewText;
@@ -55,7 +55,7 @@ VOID WINAPI KeepLastErrorAndFree(
     if (lpMem)
     {
         DWORD LastError = GetLastError();
-        HeapFree(hHeap, 0, lpMem);
+        WaffleFree(lpMem);
         SetLastError(LastError);
     }
     return;

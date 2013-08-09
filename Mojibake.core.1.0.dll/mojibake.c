@@ -7,7 +7,6 @@
 #include "mojibake.h"
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
-HANDLE      hHeap;
 ENVIRONMENT_SETTING stOldEnvir;
 ENVIRONMENT_SETTING stNewEnvir;
 
@@ -23,8 +22,6 @@ LIBRARY_EXPORT SIZE_T WINAPI ComponentInit(
     _In_    LPWAFFLE_PROCESS_SETTING lpstProcessSetting
     )
 {
-    hHeap = HeapCreate(0, 0, 0);
-
     //Read config files
     stOldEnvir.AnsiCodePage = GetACP();
     stNewEnvir.AnsiCodePage = WaffleGetOptionInt(TEXT("AnsiCodePage"), stOldEnvir.AnsiCodePage);

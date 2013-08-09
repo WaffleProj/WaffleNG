@@ -5,8 +5,6 @@
 #include <waffle.h>
 #include "src\rtl.h"
 
-extern HANDLE       hHeap;
-
 typedef struct
 {
     UINT    AnsiCodePage;

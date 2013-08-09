@@ -25,8 +25,8 @@ extern "C" {
         ATOM Result = RegisterClass(&WndClass);
 
         DWORD LastError = GetLastError();
-        HeapFree(hHeap, 0, (LPVOID) lpszMenuName);
-        HeapFree(hHeap, 0, (LPVOID) lpszClassName);
+        WaffleFree(lpszMenuName);
+        WaffleFree(lpszClassName);
         SetLastError(LastError);
         return Result;
     }
@@ -46,8 +46,8 @@ extern "C" {
         ATOM Result = RegisterClassEx(&WndClass);
 
         DWORD LastError = GetLastError();
-        HeapFree(hHeap, 0, (LPVOID) lpszMenuName);
-        HeapFree(hHeap, 0, (LPVOID) lpszClassName);
+        WaffleFree(lpszMenuName);
+        WaffleFree(lpszClassName);
         SetLastError(LastError);
         return Result;
     }
@@ -91,8 +91,8 @@ extern "C" {
         HWND Result = CreateWindowEx(dwExStyle, lpuszClassName, lpuszWindowName, dwStyle, x, y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam);
 
         DWORD LastError = GetLastError();
-        HeapFree(hHeap, 0, lpuszClassName);
-        HeapFree(hHeap, 0, lpuszWindowName);
+        WaffleFree(lpuszClassName);
+        WaffleFree(lpuszWindowName);
         SetLastError(LastError);
         return Result;
     }
@@ -116,7 +116,7 @@ extern "C" {
             {
                 LPWSTR lpuszString = AnsiToUnicode((LPCSTR) lParam);
                 MessageBox(0, lpuszString, L"DetourDefWindowProcA", 0);
-                HeapFree(hHeap, 0, lpuszString);
+                WaffleFree(lpuszString);
             }
         default:
             {
@@ -148,12 +148,12 @@ extern "C" {
                 DWORD LastError = GetLastError();
                 LRESULT sizeString = DefWindowProcA(hWnd, WM_GETTEXTLENGTH, 0, 0);
                 sizeString++;
-                LPSTR lpszString = (LPSTR) HeapAlloc(hHeap, HEAP_ZERO_MEMORY, sizeString);
+                LPSTR lpszString = (LPSTR) WaffleAlloc(sizeString);
                 DefWindowProcA(hWnd, WM_GETTEXT, sizeString, (LPARAM) lpszString);
                 LPWSTR lpuszString = AnsiToUnicode(lpszString);
                 DefWindowProc(hWnd, WM_SETTEXT, 0, (LPARAM) lpuszString);
-                HeapFree(hHeap, 0, lpuszString);
-                HeapFree(hHeap, 0, lpszString);
+                WaffleFree(lpuszString);
+                WaffleFree(lpszString);
                 SetLastError(LastError);
                 return Result;
             }
@@ -195,8 +195,8 @@ extern "C" {
         int Result = MessageBox(hWnd, lpuszText, lpuszCaption, uType);
 
         DWORD LastError = GetLastError();
-        HeapFree(hHeap, 0, lpuszText);
-        HeapFree(hHeap, 0, lpuszCaption);
+        WaffleFree(lpuszText);
+        WaffleFree(lpuszCaption);
         SetLastError(LastError);
         return Result;
     }
@@ -214,8 +214,8 @@ extern "C" {
         int Result = MessageBoxEx(hWnd, lpuszText, lpuszCaption, uType, wLanguageId);
 
         DWORD LastError = GetLastError();
-        HeapFree(hHeap, 0, lpuszText);
-        HeapFree(hHeap, 0, lpuszCaption);
+        WaffleFree(lpuszText);
+        WaffleFree(lpuszCaption);
         SetLastError(LastError);
         return Result;
     }

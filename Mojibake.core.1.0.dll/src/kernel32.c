@@ -17,11 +17,11 @@ extern "C" {
         DWORD Result = 0;
         if (lpBuffer)
         {
-            LPWSTR lpuBuffer = (LPWSTR) HeapAlloc(hHeap, HEAP_ZERO_MEMORY, nBufferLength*sizeof(WCHAR));
+            LPWSTR lpuBuffer = (LPWSTR) WaffleAlloc(nBufferLength*sizeof(WCHAR));
             Result = GetCurrentDirectory(nBufferLength, lpuBuffer);
             DWORD LastError = GetLastError();
             WideCharToMultiByte(stNewEnvir.AnsiCodePage, 0, lpuBuffer, -1, lpBuffer, nBufferLength - 1, NULL, NULL);
-            HeapFree(hHeap, 0, lpuBuffer);
+            WaffleFree(lpuBuffer);
             SetLastError(LastError);
         }
         return Result;
@@ -101,7 +101,7 @@ extern "C" {
         WideCharToMultiByte(stNewEnvir.AnsiCodePage, 0, FindFileData.cFileName, -1, lpFindFileData->cFileName, sizeof(lpFindFileData->cFileName), NULL, NULL);
         WideCharToMultiByte(stNewEnvir.AnsiCodePage, 0, FindFileData.cAlternateFileName, -1, lpFindFileData->cAlternateFileName, sizeof(lpFindFileData->cAlternateFileName), NULL, NULL);
 
-        GlobalFree(lpuszFileName);
+        WaffleFree(lpuszFileName);
         SetLastError(LastError);
         return Result;
     }
@@ -160,13 +160,13 @@ extern "C" {
         _In_        DWORD nSize
         )
     {
-        LPWSTR lpuszFilename = (LPWSTR) HeapAlloc(hHeap, HEAP_ZERO_MEMORY, sizeof(WCHAR) * nSize);
+        LPWSTR lpuszFilename = (LPWSTR) WaffleAlloc(sizeof(WCHAR) * nSize);
 
         GetModuleFileName(hModule, lpuszFilename, nSize);
 
         DWORD LastError = GetLastError();
         WideCharToMultiByte(stNewEnvir.AnsiCodePage, 0, lpuszFilename, -1, lpFilename, nSize, NULL, NULL);
-        HeapFree(hHeap, 0, lpuszFilename);
+        WaffleFree(lpuszFilename);
         int Result = lstrlenA(lpFilename);
         SetLastError(LastError);
         return Result;
@@ -221,7 +221,7 @@ extern "C" {
         {
             LPWSTR lpszCommandLineW = GetCommandLineW();
             int intSize = 4 * lstrlenW(lpszCommandLineW);
-            lpszCommandLineA = (LPSTR) HeapAlloc(hHeap, HEAP_ZERO_MEMORY, intSize);
+            lpszCommandLineA = (LPSTR) WaffleAlloc(intSize);
             WideCharToMultiByte(stNewEnvir.AnsiCodePage, 0, lpszCommandLineW, -1, lpszCommandLineA, intSize, NULL, NULL);
         }
         return lpszCommandLineA;
@@ -368,8 +368,8 @@ extern "C" {
         int Result = CompareString(Locale, dwCmpFlags, lpuString1, cchCount1, lpuString2, cchCount2);
 
         DWORD LastError = GetLastError();
-        HeapFree(hHeap, 0, lpuString1);
-        HeapFree(hHeap, 0, lpuString2);
+        WaffleFree(lpuString1);
+        WaffleFree(lpuString2);
         SetLastError(LastError);
         return Result;
     }

@@ -83,7 +83,7 @@ extern "C" {
 
         LPWSTR lfuFaceName = AnsiToUnicode(lplf->lfFaceName);
         lstrcpy(lf.lfFaceName, lfuFaceName);
-        HeapFree(hHeap, 0, lfuFaceName);
+        WaffleFree(lfuFaceName);
 
         return CreateFontIndirect(&lf);
     }
@@ -129,10 +129,10 @@ extern "C" {
         lstrcpy(enumlfex.elfEnumLogfontEx.elfFullName, elfuFullName);
         lstrcpy(enumlfex.elfEnumLogfontEx.elfStyle, elfuStyle);
         lstrcpy(enumlfex.elfEnumLogfontEx.elfScript, elfuScript);
-        HeapFree(hHeap, 0, lfuFaceName);
-        HeapFree(hHeap, 0, elfuFullName);
-        HeapFree(hHeap, 0, elfuStyle);
-        HeapFree(hHeap, 0, elfuScript);
+        WaffleFree(lfuFaceName);
+        WaffleFree(elfuFullName);
+        WaffleFree(elfuStyle);
+        WaffleFree(elfuScript);
 
         return CreateFontIndirectEx(&enumlfex);
     }
