@@ -189,7 +189,7 @@ LIBRARY_EXPORT int WINAPI WaffleStrToIntA(
     }
 }
 
-LIBRARY_EXPORT VOID WaffleCreateRWLock(
+LIBRARY_EXPORT VOID WINAPI WaffleCreateRWLock(
     LPWAFFLE_RWLOCK lpstRWLock
     )
 {
@@ -202,7 +202,7 @@ LIBRARY_EXPORT VOID WaffleCreateRWLock(
     }
 }
 
-LIBRARY_EXPORT VOID WaffleReleaseRWLock(
+LIBRARY_EXPORT VOID WINAPI WaffleReleaseRWLock(
     LPWAFFLE_RWLOCK lpstRWLock
     )
 {
@@ -216,7 +216,7 @@ LIBRARY_EXPORT VOID WaffleReleaseRWLock(
     }
 }
 
-LIBRARY_EXPORT VOID WaffleEnterWriterLock(
+LIBRARY_EXPORT VOID WINAPI WaffleEnterWriterLock(
     LPWAFFLE_RWLOCK lpstRWLock
     )
 {
@@ -229,14 +229,14 @@ LIBRARY_EXPORT VOID WaffleEnterWriterLock(
     LeaveCriticalSection(&lpstRWLock->csRead);
 }
 
-LIBRARY_EXPORT VOID WaffleLeaveWriterLock(
+LIBRARY_EXPORT VOID WINAPI WaffleLeaveWriterLock(
     LPWAFFLE_RWLOCK lpstRWLock
     )
 {
     LeaveCriticalSection(&lpstRWLock->csWrite);
 }
 
-LIBRARY_EXPORT VOID WaffleEnterReaderLock(
+LIBRARY_EXPORT VOID WINAPI WaffleEnterReaderLock(
     LPWAFFLE_RWLOCK lpstRWLock
     )
 {
@@ -251,7 +251,7 @@ LIBRARY_EXPORT VOID WaffleEnterReaderLock(
     LeaveCriticalSection(&lpstRWLock->csRead);
 }
 
-LIBRARY_EXPORT VOID WaffleLeaveReaderLock(
+LIBRARY_EXPORT VOID WINAPI WaffleLeaveReaderLock(
     LPWAFFLE_RWLOCK lpstRWLock
     )
 {
@@ -316,7 +316,7 @@ LIBRARY_EXPORT LPBYTE WINAPI WaffleGetProcAddressA(
         DWORD *lpName = (DWORD *) ((SIZE_T) hModule + lpExportTable->AddressOfNames);
         WORD *lpOrdinal = (WORD *) ((SIZE_T) hModule + lpExportTable->AddressOfNameOrdinals);
         DWORD *lpFunction = (DWORD *) ((SIZE_T) hModule + lpExportTable->AddressOfFunctions);
-
+    
         if ((SIZE_T) lpszFuncName > 0xFFFF)
         {
             int Direction = 1;

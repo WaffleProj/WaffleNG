@@ -5,6 +5,8 @@
 #define _UNICODE
 #endif
 #include "..\..\common.h"
+#pragma GCC diagnostic ignored "-Wunknown-pragmas"
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 
 #if (WAFFLE_PORT_MACHINE == WAFFLE_PORT_MACHINE_I386)
 LIBRARY_EXPORT BOOL WINAPI WaffleInlineDetour(
@@ -34,23 +36,32 @@ LIBRARY_EXPORT BOOL WINAPI WaffleInlineDetour(
 
     return TRUE;
 }
+#else
+LIBRARY_EXPORT BOOL WINAPI WaffleInlineDetour(
+    _In_    LPBYTE  lpFunction
+    )
+{
+    return FALSE;
+}
+#endif
 
 #pragma GCC push_options
-#pragma GCC optimize ("0")
+#pragma GCC optimize ("O0")
 #pragma optimize("", off)
-//Using cdecl so there is no code for cleaning the stack
-LIBRARY_EXPORT VOID WaffleInlineHandler(
+//Using cdecl so there is no code to clean the stack in the epilogue
+LIBRARY_EXPORT VOID __cdecl WaffleInlineHandler(
     _In_    SIZE_T *lpReserved
     )
 {
     // ebp-c Argc0
-    // ebp-8 ReturnAddress <== (&lpReserved)[0]
+    // ebp-8 CallerReturnAddress <== (&lpReserved)[0]
     // ebp-4 HotpatchReturnAddress <== (&lpReserved)[-1]
     // ebp   EBP <== (&lpReserved)[-2]
-    // ebp+4 Local variable <== (&lpReserved)[-3] IT WON'T LAST LONG, BE CAREFUL!
+    // ebp+4 EBX <== (&lpReserved)[-3] GCC pushes ebx, so we have to leave the space for it
+    // ebp+8 local variable <== (&lpReserved)[-4] This variable will be overwritten once we called a function. Treat it like treating EAX.
 
-    (&lpReserved)[-3] = (SIZE_T *) WaffleFindDetourAddress((SIZE_T *) (&lpReserved)[-1], (SIZE_T *) (&lpReserved)[0]);
-    if ((&lpReserved)[-3])
+    (&lpReserved)[-4] = (SIZE_T *) WaffleFindDetourAddress((SIZE_T *) (&lpReserved)[-1], (SIZE_T *) (&lpReserved)[0]);
+    if ((&lpReserved)[-4])
     {
         /*
         __asm
@@ -61,7 +72,7 @@ LIBRARY_EXPORT VOID WaffleInlineHandler(
         jmp     dword ptr [esp - 12]; //Local variable
         }
         */
-        (&lpReserved)[-1] = (&lpReserved)[-3];
+        (&lpReserved)[-1] = (&lpReserved)[-4];
         return;
     }
     else
@@ -72,18 +83,3 @@ LIBRARY_EXPORT VOID WaffleInlineHandler(
 }
 #pragma optimize("", on)
 #pragma GCC pop_options
-#else
-LIBRARY_EXPORT BOOL WINAPI WaffleInlineDetour(
-    _In_    LPBYTE  lpFunction
-    )
-{
-    return FALSE;
-}
-
-LIBRARY_EXPORT VOID WaffleInlineHandler(
-    _In_    SIZE_T *lpReserved
-    )
-{
-    return;
-}
-#endif

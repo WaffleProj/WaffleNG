@@ -56,9 +56,9 @@ VOID WINAPI Main(VOID)
         lstrcpy(lpstProcessSetting->szComponent, szComponent);
 
         lstrcpy(lpstProcessSetting->szComponentDirectory, szPath);
-        int i = lstrlen(lpstProcessSetting->szComponentDirectory);                                                                              //E:\WaffleNightly\Component\Waffle\I386\ 
-        for (i--; lpstProcessSetting->szComponentDirectory[i] != TEXT('\\'); i--); lpstProcessSetting->szComponentDirectory[i] = TEXT('\0');    //E:\WaffleNightly\Component\Waffle
-        for (i--; lpstProcessSetting->szComponentDirectory[i] != TEXT('\\'); i--); lpstProcessSetting->szComponentDirectory[i] = TEXT('\0');    //E:\WaffleNightly\Component
+        int i = lstrlen(lpstProcessSetting->szComponentDirectory);
+        for (i--; lpstProcessSetting->szComponentDirectory[i] != TEXT('\\'); i--); lpstProcessSetting->szComponentDirectory[i] = TEXT('\0');
+        for (i--; lpstProcessSetting->szComponentDirectory[i] != TEXT('\\'); i--); lpstProcessSetting->szComponentDirectory[i] = TEXT('\0');
 
         LPTSTR lpszArgument = (LPTSTR) GlobalAlloc(GPTR, (lstrlen(szTarget) + lstrlen(WaffleArgp(4)) + 3 + 1) * sizeof(TCHAR));
         if (lpszArgument)
@@ -77,8 +77,8 @@ VOID WINAPI Main(VOID)
     {
         TCHAR szLoader[MAX_PATH];
         lstrcpy(szLoader, szPath);
-        int i = lstrlen(szLoader);                                              //E:\WaffleNightly\Component\Waffle\I386\ 
-        for (i--; szLoader[i] != TEXT('\\'); i--); szLoader[i] = TEXT('\0');    //E:\WaffleNightly\Component\Waffle
+        int i = lstrlen(szLoader);
+        for (i--; szLoader[i] != TEXT('\\'); i--); szLoader[i] = TEXT('\0');
 
         STARTUPINFO stStartUp;
         PROCESS_INFORMATION stProcessInfo;

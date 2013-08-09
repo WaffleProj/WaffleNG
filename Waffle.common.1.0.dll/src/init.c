@@ -62,6 +62,8 @@ LIBRARY_EXPORT SIZE_T WINAPI WaffleInit(
 
     HANDLE hThread = OpenThread(THREAD_ALL_ACCESS, FALSE, lpstProcessSetting->dwThreadId);    //WinXP may return ERROR_ACCESS_DENIED
 
+    //return 0; //for attaching debugger
+
     CONTEXT stContext;
     stContext.ContextFlags = CONTEXT_FULL;
     GetThreadContext(hThread, &stContext);
