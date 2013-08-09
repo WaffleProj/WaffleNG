@@ -38,11 +38,11 @@ LIBRARY_EXPORT VOID WINAPI WaffleAddComponent(
     )
 {
     WAFFLE_COMPONENT_ARRAY stNewComponent;
-    stNewComponent.dwBehind = 0;
-    stNewComponent.lpszComponent = lpszComponent;
-    stNewComponent.hSource = GetModuleHandle(stNewComponent.lpszComponent);
+    RtlZeroMemory(&stNewComponent, sizeof(WAFFLE_COMPONENT_ARRAY));
+    stNewComponent.hSource = GetModuleHandle(lpszComponent);
     if (stNewComponent.hSource)
     {
+        stNewComponent.lpszComponent = lpszComponent;
         stNewComponent.hSourceEnd = (SIZE_T) stNewComponent.hSource + WaffleGetImageSize(stNewComponent.hSource);
     }
     else
@@ -75,4 +75,19 @@ LIBRARY_EXPORT VOID WINAPI WaffleAddComponent(
     }
 
     RtlMoveMemory(&lpstProcessSetting->lpstComponent[lpstProcessSetting->lpstComponent[0].dwBehind], &stNewComponent, sizeof(WAFFLE_COMPONENT_ARRAY));
+}
+
+LIBRARY_EXPORT int WINAPI WaffleFindComponent(
+    _In_    LPVOID lpMemory
+    )
+{
+    int i;
+    for (i = lpstProcessSetting->lpstComponent[0].dwBehind; i >= 0; i--)
+    {
+        if (((SIZE_T) lpMemory >= (SIZE_T) lpstProcessSetting->lpstComponent[i].hSource) && ((SIZE_T) lpMemory <= lpstProcessSetting->lpstComponent[i].hSourceEnd))
+        {
+            return i;
+        }
+    }
+    return -1;
 }

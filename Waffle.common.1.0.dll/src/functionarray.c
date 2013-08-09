@@ -24,7 +24,7 @@ LIBRARY_EXPORT BOOL WINAPI WaffleAddFunction(
     }
     if (!lpstNewLibrary->lpstFunction)
     {
-        lpstNewLibrary->lpstFunction = (LPWAFFLE_FUNCTION_ARRAY) GlobalAlloc(GPTR, sizeof(WAFFLE_FUNCTION_ARRAY));
+        lpstNewLibrary->lpstFunction = (LPWAFFLE_FUNCTION_ARRAY) WaffleAlloc(sizeof(WAFFLE_FUNCTION_ARRAY));
         if (!lpstNewLibrary->lpstFunction)
         {
             MessageBox(0, TEXT("FIXME:Unable to allocate memory for function array"), 0, 0);
@@ -38,7 +38,7 @@ LIBRARY_EXPORT BOOL WINAPI WaffleAddFunction(
         {
             lpstNewLibrary->lpstFunction[i].dwBehind++;
         }
-        lpstNewLibrary->lpstFunction = (LPWAFFLE_FUNCTION_ARRAY) GlobalReAlloc(lpstNewLibrary->lpstFunction, sizeof(WAFFLE_FUNCTION_ARRAY)*(lpstNewLibrary->lpstFunction[0].dwBehind + 1), GHND);
+        lpstNewLibrary->lpstFunction = (LPWAFFLE_FUNCTION_ARRAY) WaffleReAlloc(lpstNewLibrary->lpstFunction, sizeof(WAFFLE_FUNCTION_ARRAY)*(lpstNewLibrary->lpstFunction[0].dwBehind + 1));
         if (!lpstNewLibrary->lpstFunction)
         {
             MessageBox(0, TEXT("FIXME:Unable to add elements in function array"), 0, 0);
@@ -57,7 +57,7 @@ LIBRARY_EXPORT BOOL WINAPI WaffleAddFunction(
     else if (!lpszDetour)
     {
         DWORD nSize = lstrlen(lpszFunction) + sizeof(TEXT("Detour"));
-        LPTSTR lpszDefaultDetour = (LPTSTR) GlobalAlloc(GPTR, nSize*sizeof(TCHAR));
+        LPTSTR lpszDefaultDetour = (LPTSTR) WaffleAlloc(nSize*sizeof(TCHAR));
         wsprintf(lpszDefaultDetour, TEXT("Detour%s"), lpszFunction);
         lpstNewLibrary->lpstFunction[lpstNewLibrary->lpstFunction[0].dwBehind].lpDetour = WaffleGetProcAddress(hDetour, lpszDefaultDetour);
         if (!lpstNewLibrary->lpstFunction[lpstNewLibrary->lpstFunction[0].dwBehind].lpDetour)
@@ -66,7 +66,7 @@ LIBRARY_EXPORT BOOL WINAPI WaffleAddFunction(
             wsprintf(szMissing, TEXT("FIXME:Cannot find %s for %s"), lpszDefaultDetour, lpszFunction);
             MessageBox(0, szMissing, 0, 0);
         }
-        GlobalFree(lpszDefaultDetour);
+        WaffleFree(lpszDefaultDetour);
     }
     else
     {
@@ -154,18 +154,14 @@ LIBRARY_EXPORT SIZE_T WINAPI WaffleFindDetourAddress(
         //Is this exception happened in a backuped library?
         if (((SIZE_T) ExceptionAddress >= (SIZE_T) lpstProcessSetting->lpstLibrary[i].hSource) && ((SIZE_T) ExceptionAddress <= lpstProcessSetting->lpstLibrary[i].hSourceEnd))
         {
-            int j;
-
             //Is this exception called by one of our component?
-            for (j = lpstProcessSetting->lpstComponent[0].dwBehind; j >= 0; j--)
+            if (WaffleFindComponent(CallerAddress) >= 0)
             {
-                if (((SIZE_T) CallerAddress >= (SIZE_T) lpstProcessSetting->lpstComponent[j].hSource) && ((SIZE_T) CallerAddress <= lpstProcessSetting->lpstComponent[j].hSourceEnd))
-                {
-                    return (SIZE_T) ExceptionAddress - (SIZE_T) lpstProcessSetting->lpstLibrary[i].hSource + (SIZE_T) lpstProcessSetting->lpstLibrary[i].hBackup;
-                }
+                return (SIZE_T) ExceptionAddress - (SIZE_T) lpstProcessSetting->lpstLibrary[i].hSource + (SIZE_T) lpstProcessSetting->lpstLibrary[i].hBackup;
             }
 
             //Do we have a detour function?
+            int j;
             for (j = lpstFunction[0].dwBehind; j >= 0; j--)
             {
                 if (lpstFunction[j].lpSource == ExceptionAddress)

@@ -57,6 +57,9 @@ EXPORTS
     WaffleHexBox
     WaffleGetCallersAddress
     WaffleGetImageSize
+    WaffleAlloc
+    WaffleReAlloc
+    WaffleFree
     
     WaffleOpenProcessSetting
     WaffleCreateProcessSetting

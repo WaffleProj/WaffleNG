@@ -50,7 +50,7 @@ LIBRARY_EXPORT VOID WINAPI WaffleGetFileHash(
         return;
     }
 
-    LPVOID lpBuffer = GlobalAlloc(GPTR, 1024);   //BUFSIZE == 1024
+    LPVOID lpBuffer = WaffleAlloc(1024);   //BUFSIZE == 1024
     if (!lpBuffer)
     {
         lpCryptDestroyHash(hHash);
@@ -92,7 +92,7 @@ LIBRARY_EXPORT VOID WINAPI WaffleGetFileHash(
         lpszResult[n++] = 0;
     }
 
-    GlobalFree(lpBuffer);
+    WaffleFree(lpBuffer);
     lpCryptDestroyHash(hHash);
     lpCryptReleaseContext(hProv, 0);
     FreeLibrary(hModule);

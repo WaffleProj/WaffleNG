@@ -23,7 +23,6 @@ LIBRARY_EXPORT VOID WINAPI WaffleDisableWow64FsRedirection(
     )
 {
     HMODULE hKernel32 = GetModuleHandle(TEXT("kernel32.dll"));
-
     LPWOW64DISABLEWOW64FSREDIRECTION lpWow64DisableWow64FsRedirection = (LPWOW64DISABLEWOW64FSREDIRECTION) WaffleGetProcAddress(hKernel32, TEXT("Wow64DisableWow64FsRedirection"));
     if (lpWow64DisableWow64FsRedirection)
     {

@@ -45,6 +45,31 @@ LIBRARY_EXPORT BOOL WINAPI WaffleInlineDetour(
 }
 #endif
 
+LIBRARY_EXPORT NOINLINE LPVOID WINAPI WaffleGetCallersAddress(
+    _Out_   LPVOID *CallersCaller
+    )
+{
+#if     defined(__GNUC__)
+    LPVOID ReturnAddress = __builtin_return_address(0);
+#endif
+
+#if     defined(_MSC_VER)
+#if     WAFFLE_PORT_MACHINE == WAFFLE_PORT_MACHINE_I386
+    LPVOID FramePointer = (&CallersCaller)[-2];
+    LPVOID ReturnAddress = ((LPVOID *) (FramePointer))[1];
+#elif   WAFFLE_PORT_MACHINE == WAFFLE_PORT_MACHINE_AMD64
+    LPVOID ReturnAddress = (&CallersCaller)[-1];
+#endif
+#endif
+
+    if (CallersCaller)
+    {
+        *CallersCaller = ReturnAddress;
+    }
+
+    return ReturnAddress;
+}
+
 #pragma GCC push_options
 #pragma GCC optimize ("O0")
 #pragma optimize("", off)
@@ -63,15 +88,6 @@ LIBRARY_EXPORT VOID __cdecl WaffleInlineHandler(
     (&lpReserved)[-4] = (SIZE_T *) WaffleFindDetourAddress((SIZE_T *) (&lpReserved)[-1], (SIZE_T *) (&lpReserved)[0]);
     if ((&lpReserved)[-4])
     {
-        /*
-        __asm
-        {
-        mov     esp, ebp;
-        pop     ebp;
-        add     esp, 4; //hot patch call return address
-        jmp     dword ptr [esp - 12]; //Local variable
-        }
-        */
         (&lpReserved)[-1] = (&lpReserved)[-4];
         return;
     }

@@ -106,7 +106,7 @@ LIBRARY_EXPORT LPTSTR WINAPI WaffleGetOptionSectionNames(
 
     LPTSTR lpszSection;
     DWORD nSizeOfSection = 4;
-    lpszSection = (LPTSTR) GlobalAlloc(GPTR, nSizeOfSection*sizeof(TCHAR));
+    lpszSection = (LPTSTR) WaffleAlloc(nSizeOfSection*sizeof(TCHAR));
     if (!lpszSection)
     {
         return NULL;
@@ -114,10 +114,10 @@ LIBRARY_EXPORT LPTSTR WINAPI WaffleGetOptionSectionNames(
     while (GetPrivateProfileSectionNames(lpszSection, nSizeOfSection, szOption) == nSizeOfSection - 2)
     {
         nSizeOfSection = nSizeOfSection * 2;
-        HGLOBAL lpszSectionRealloc = GlobalReAlloc(lpszSection, nSizeOfSection*sizeof(TCHAR), GHND);
+        HGLOBAL lpszSectionRealloc = WaffleReAlloc(lpszSection, nSizeOfSection*sizeof(TCHAR));
         if (!lpszSectionRealloc)
         {
-            GlobalFree(lpszSection);
+            WaffleFree(lpszSection);
             return NULL;
         }
         else
@@ -138,7 +138,7 @@ LIBRARY_EXPORT LPTSTR WINAPI WaffleGetOptionSectionKeys(
 
     LPTSTR lpszKey;
     DWORD nSizeOfKey = 4;
-    lpszKey = (LPTSTR) GlobalAlloc(GPTR, nSizeOfKey*sizeof(TCHAR));
+    lpszKey = (LPTSTR) WaffleAlloc(nSizeOfKey*sizeof(TCHAR));
     if (!lpszKey)
     {
         return NULL;
@@ -148,13 +148,13 @@ LIBRARY_EXPORT LPTSTR WINAPI WaffleGetOptionSectionKeys(
         nSizeOfKey = nSizeOfKey * 2;
         if (nSizeOfKey > 32767)
         {
-            GlobalFree(lpszKey);
+            WaffleFree(lpszKey);
             return NULL;
         }
-        HGLOBAL lpszKeyRealloc = GlobalReAlloc(lpszKey, nSizeOfKey*sizeof(TCHAR), GHND);
+        HGLOBAL lpszKeyRealloc = WaffleReAlloc(lpszKey, nSizeOfKey*sizeof(TCHAR));
         if (!lpszKeyRealloc)
         {
-            GlobalFree(lpszKey);
+            WaffleFree(lpszKey);
             return NULL;
         }
         else

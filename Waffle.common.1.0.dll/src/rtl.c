@@ -270,10 +270,10 @@ LIBRARY_EXPORT LPBYTE WINAPI WaffleGetProcAddressW(
     )
 {
     DWORD nSize = WideCharToMultiByte(CP_ACP, 0, lpszFuncName, -1, NULL, 0, NULL, NULL);;
-    LPSTR lpszFunction = (LPSTR) GlobalAlloc(GPTR, nSize*sizeof(CHAR));
+    LPSTR lpszFunction = (LPSTR) WaffleAlloc(nSize*sizeof(CHAR));
     WideCharToMultiByte(CP_ACP, 0, lpszFuncName, -1, lpszFunction, nSize, NULL, NULL);
     LPBYTE lpFunction = WaffleGetProcAddressA(hModule, lpszFunction);
-    GlobalFree(lpszFunction);
+    WaffleFree(lpszFunction);
     return lpFunction;
 }
 
@@ -316,7 +316,7 @@ LIBRARY_EXPORT LPBYTE WINAPI WaffleGetProcAddressA(
         DWORD *lpName = (DWORD *) ((SIZE_T) hModule + lpExportTable->AddressOfNames);
         WORD *lpOrdinal = (WORD *) ((SIZE_T) hModule + lpExportTable->AddressOfNameOrdinals);
         DWORD *lpFunction = (DWORD *) ((SIZE_T) hModule + lpExportTable->AddressOfFunctions);
-    
+
         if ((SIZE_T) lpszFuncName > 0xFFFF)
         {
             int Direction = 1;
@@ -403,23 +403,88 @@ LIBRARY_EXPORT DWORD WINAPI WaffleGetImageSize(
     return 0;
 }
 
-LIBRARY_EXPORT MSVC_NOINLINE LPVOID WINAPI WaffleGetCallersAddress(
-    _Out_   LPVOID *CallersAddress,
-    _Out_   LPVOID *CallersCaller
+LIBRARY_EXPORT LPVOID WINAPI WaffleAlloc(
+    _In_    SIZE_T dwBytes
     )
 {
-    LPVOID ReturnAddress = (&CallersAddress)[-1];
-    LPVOID FramePointer = (&CallersAddress)[-2];
-
-    if (CallersAddress)
+    if (!lpstProcessSetting)
     {
-        *CallersAddress = ReturnAddress;
+        return (LPVOID) GlobalAlloc(GPTR, dwBytes);
     }
 
-    if (CallersCaller)
+    int i = WaffleFindComponent(WaffleGetCallersAddress(NULL));
+
+    if (i >= 0)
     {
-        *CallersCaller = ((LPVOID *) (FramePointer))[1];
+        if (!lpstProcessSetting->lpstComponent[i].hHeap)
+        {
+            WaitForSingleObject(lpstProcessSetting->hGlobalMutex, INFINITE);
+            if (!lpstProcessSetting->lpstComponent[i].hHeap)  //make sure we need to do so
+            {
+                lpstProcessSetting->lpstComponent[i].hHeap = HeapCreate(0, 0, 0);
+                if (!lpstProcessSetting->lpstComponent[i].hHeap)
+                {
+                    MessageBox(0, TEXT("FIXME:Unable to create component heap"), 0, 0);
+                    ExitProcess(0);
+                }
+            }
+            ReleaseMutex(lpstProcessSetting->hGlobalMutex);
+        }
+
+        return (LPVOID) HeapAlloc(lpstProcessSetting->lpstComponent[i].hHeap, HEAP_ZERO_MEMORY, dwBytes);
+    }
+    else
+    {
+        return (LPVOID) GlobalAlloc(GPTR, dwBytes);
+    }
+}
+
+LIBRARY_EXPORT LPVOID WINAPI WaffleReAlloc(
+    _In_    LPVOID lpMemory,
+    _In_    SIZE_T dwBytes
+    )
+{
+    if (!lpstProcessSetting)
+    {
+        return (LPVOID) GlobalReAlloc(lpMemory, dwBytes, GHND);
     }
 
-    return ((LPVOID *) (FramePointer))[1];
+    int i = WaffleFindComponent(WaffleGetCallersAddress(NULL));
+
+    if (i >= 0)
+    {
+        return (LPVOID) HeapReAlloc(lpstProcessSetting->lpstComponent[i].hHeap, HEAP_ZERO_MEMORY, lpMemory, dwBytes);
+    }
+    else
+    {
+        return (LPVOID) GlobalReAlloc(lpMemory, dwBytes, GHND);
+    }
+}
+
+LIBRARY_EXPORT LPVOID WINAPI WaffleFree(
+    _In_    LPVOID lpMemory
+    )
+{
+    if (!lpstProcessSetting)
+    {
+        return (LPVOID) GlobalFree(lpMemory);
+    }
+
+    int i = WaffleFindComponent(WaffleGetCallersAddress(NULL));
+
+    if (i >= 0)
+    {
+        if (HeapFree(lpstProcessSetting->lpstComponent[i].hHeap, 0, lpMemory))
+        {
+            return NULL;
+        }
+        else
+        {
+            return lpMemory;
+        }
+    }
+    else
+    {
+        return (LPVOID) GlobalFree(lpMemory);
+    }
 }

@@ -15,8 +15,8 @@ VOID WINAPI ResetThread(
     SetThreadContext(lpstThread->hThread, lpstThread->lpstContext);
     ResumeThread(lpstThread->hThread);
     CloseHandle(lpstThread->hThread);
-    GlobalFree(lpstThread->lpstContext);
-    GlobalFree(lpstThread);
+    WaffleFree(lpstThread->lpstContext);
+    WaffleFree(lpstThread);
 }
 
 VOID __fastcall SetThreadEnvironment(
@@ -44,10 +44,9 @@ LIBRARY_EXPORT SIZE_T WINAPI WaffleInit(
     TCHAR szExecutable[MAX_PATH];
     GetModuleFileName(NULL, szExecutable, sizeof(szExecutable) / sizeof(szExecutable[0]));
     WaffleSetOptionString(TEXT("ProgramName"), szExecutable, FALSE);
-
-    WaffleAddComponent(TEXT("Waffle.common.1.0.dll"));
-
     lpstProcessSetting->hGlobalMutex = CreateMutex(NULL, FALSE, NULL);
+
+    WaffleAddComponent(TEXT("Waffle.common.1.0.dll"));  //so we can use WaffleAlloc
 
     int nLibrary = WaffleCreateLibraryArray();
     if (nLibrary > 0)
@@ -68,8 +67,8 @@ LIBRARY_EXPORT SIZE_T WINAPI WaffleInit(
     stContext.ContextFlags = CONTEXT_FULL;
     GetThreadContext(hThread, &stContext);
 
-    PCONTEXT lpstContext = (PCONTEXT) GlobalAlloc(GPTR, sizeof(CONTEXT));
-    LPWAFFLE_THREAD_CONTEXT lpstThread = (LPWAFFLE_THREAD_CONTEXT) GlobalAlloc(GPTR, sizeof(WAFFLE_THREAD_CONTEXT));
+    PCONTEXT lpstContext = (PCONTEXT) WaffleAlloc(sizeof(CONTEXT));
+    LPWAFFLE_THREAD_CONTEXT lpstThread = (LPWAFFLE_THREAD_CONTEXT) WaffleAlloc(sizeof(WAFFLE_THREAD_CONTEXT));
     lpstThread->hThread = hThread;
     lpstThread->lpstContext = lpstContext;
     lpstThread->lpstProcessSetting = lpstProcessSetting;

@@ -49,7 +49,7 @@ LIBRARY_EXPORT VOID WINAPI WaffleAddLibrary(
 {
     if (!lpstProcessSetting->lpstLibrary)
     {
-        lpstProcessSetting->lpstLibrary = (LPWAFFLE_LIBRARY_ARRAY) GlobalAlloc(GPTR, sizeof(WAFFLE_LIBRARY_ARRAY));
+        lpstProcessSetting->lpstLibrary = (LPWAFFLE_LIBRARY_ARRAY) WaffleAlloc(sizeof(WAFFLE_LIBRARY_ARRAY));
         if (!lpstProcessSetting->lpstLibrary)
         {
             MessageBox(0, TEXT("FIXME:Unable to allocate memory for library array"), 0, 0);
@@ -64,7 +64,7 @@ LIBRARY_EXPORT VOID WINAPI WaffleAddLibrary(
         {
             lpstProcessSetting->lpstLibrary[i].dwBehind++;
         }
-        lpstProcessSetting->lpstLibrary = (LPWAFFLE_LIBRARY_ARRAY) GlobalReAlloc(lpstProcessSetting->lpstLibrary, sizeof(WAFFLE_LIBRARY_ARRAY)*(lpstProcessSetting->lpstLibrary[0].dwBehind + 1), GHND);
+        lpstProcessSetting->lpstLibrary = (LPWAFFLE_LIBRARY_ARRAY) WaffleReAlloc(lpstProcessSetting->lpstLibrary, sizeof(WAFFLE_LIBRARY_ARRAY)*(lpstProcessSetting->lpstLibrary[0].dwBehind + 1));
         if (!lpstProcessSetting->lpstLibrary)
         {
             MessageBox(0, TEXT("FIXME:Unable to add elements in library array"), 0, 0);
