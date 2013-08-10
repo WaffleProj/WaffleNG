@@ -44,6 +44,7 @@ EXPORTS
     DetourSetWindowTextA
     DetourExitWindowsEx
 
+    DetourEnumFontsA
     DetourCreateFontA
     DetourCreateFontW
     DetourCreateFontIndirectA

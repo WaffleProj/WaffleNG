@@ -17,4 +17,8 @@ typedef struct
 extern ENVIRONMENT_SETTING  stOldEnvir;
 extern ENVIRONMENT_SETTING  stNewEnvir;
 
+extern LOGFONTA lfGothic;
+extern TEXTMETRICA tmGothic;
+extern DWORD dwGothic;
+
 #endif /* __MOJIBAKE_MAIN_MOJIBAKE_H_ */
