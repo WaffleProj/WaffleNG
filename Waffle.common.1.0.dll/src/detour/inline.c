@@ -36,39 +36,6 @@ LIBRARY_EXPORT BOOL WINAPI WaffleInlineDetour(
 
     return TRUE;
 }
-#else
-LIBRARY_EXPORT BOOL WINAPI WaffleInlineDetour(
-    _In_    LPBYTE  lpFunction
-    )
-{
-    return FALSE;
-}
-#endif
-
-LIBRARY_EXPORT NOINLINE LPVOID WINAPI WaffleGetCallersAddress(
-    _Out_   LPVOID *CallersCaller
-    )
-{
-#if     defined(__GNUC__)
-    LPVOID ReturnAddress = __builtin_return_address(0);
-#endif
-
-#if     defined(_MSC_VER)
-#if     WAFFLE_PORT_MACHINE == WAFFLE_PORT_MACHINE_I386
-    LPVOID FramePointer = (&CallersCaller)[-2];
-    LPVOID ReturnAddress = ((LPVOID *) (FramePointer))[1];
-#elif   WAFFLE_PORT_MACHINE == WAFFLE_PORT_MACHINE_AMD64
-    LPVOID ReturnAddress = (&CallersCaller)[-1];
-#endif
-#endif
-
-    if (CallersCaller)
-    {
-        *CallersCaller = ReturnAddress;
-    }
-
-    return ReturnAddress;
-}
 
 #pragma GCC push_options
 #pragma GCC optimize ("O0")
@@ -99,3 +66,44 @@ LIBRARY_EXPORT VOID __cdecl WaffleInlineHandler(
 }
 #pragma optimize("", on)
 #pragma GCC pop_options
+#else
+LIBRARY_EXPORT BOOL WINAPI WaffleInlineDetour(
+    _In_    LPBYTE  lpFunction
+    )
+{
+    return FALSE;
+}
+
+LIBRARY_EXPORT VOID WaffleInlineHandler(
+    _In_    SIZE_T *lpReserved
+    )
+{
+    DebugBreak();
+    return NULL;
+}
+#endif
+
+LIBRARY_EXPORT NOINLINE LPVOID WINAPI WaffleGetCallersAddress(
+    _Out_   LPVOID *CallersCaller
+    )
+{
+#if     defined(__GNUC__)
+    LPVOID ReturnAddress = __builtin_return_address(0);
+#endif
+
+#if     defined(_MSC_VER)
+#if     WAFFLE_PORT_MACHINE == WAFFLE_PORT_MACHINE_I386
+    LPVOID FramePointer = (&CallersCaller)[-2];
+    LPVOID ReturnAddress = ((LPVOID *) (FramePointer))[1];
+#elif   WAFFLE_PORT_MACHINE == WAFFLE_PORT_MACHINE_AMD64
+    LPVOID ReturnAddress = (&CallersCaller)[-1];
+#endif
+#endif
+
+    if (CallersCaller)
+    {
+        *CallersCaller = ReturnAddress;
+    }
+
+    return ReturnAddress;
+}
