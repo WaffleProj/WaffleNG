@@ -214,12 +214,12 @@ extern "C" {
         return Result;
     }
 
-    LIBRARY_EXPORT LPSTR WINAPI DetourGetCommandLineA(void)   //由于这个函数直接返回指针无需释放,所以只能这么做
+    LIBRARY_EXPORT LPSTR WINAPI DetourGetCommandLineA(void)
     {
         static LPSTR lpszCommandLineA;
         if (!lpszCommandLineA)
         {
-            LPWSTR lpszCommandLineW = GetCommandLineW();
+            LPWSTR lpszCommandLineW = GetCommandLine();
             int intSize = 4 * lstrlenW(lpszCommandLineW);
             lpszCommandLineA = (LPSTR) WaffleAlloc(intSize);
             WideCharToMultiByte(stNewEnvir.AnsiCodePage, 0, lpszCommandLineW, -1, lpszCommandLineA, intSize, NULL, NULL);

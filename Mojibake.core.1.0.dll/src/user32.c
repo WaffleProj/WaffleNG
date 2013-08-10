@@ -281,7 +281,7 @@ extern "C" {
             BackupExitWindowsEx = (LPEXITWINDOWSEX) WaffleGetBackupAddress(TEXT("user32.dll"), TEXT("ExitWindowsEx"));
         }
 
-        int Result = MessageBox(0, TEXT("This program called ExitWindowsEx, which may not be what you want it to do.\nAre you sure to execute this function?"), 0, MB_YESNO | MB_ICONWARNING);
+        int Result = MessageBox(0, TEXT("FIXME:This program called ExitWindowsEx, which may not be what you want it to do.\nAre you sure to execute this function?"), 0, MB_YESNO | MB_ICONWARNING);
         if (Result == IDYES)
         {
             return BackupExitWindowsEx(uFlags, dwReason);

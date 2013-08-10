@@ -32,7 +32,7 @@ extern "C" {
         {
             fdwCharSet = stNewEnvir.DefaultCharSet;
         }
-        HFONT Result = CreateFont(nHeight, nWidth, nEscapement, nOrientation, fnWeight, fdwItalic, fdwUnderline, fdwStrikeOut, fdwCharSet, fdwOutputPrecision, fdwClipPrecision, fdwQuality, fdwPitchAndFamily, lpuszFace);
+        HFONT Result = DetourCreateFontW(nHeight, nWidth, nEscapement, nOrientation, fnWeight, fdwItalic, fdwUnderline, fdwStrikeOut, fdwCharSet, fdwOutputPrecision, fdwClipPrecision, fdwQuality, fdwPitchAndFamily, lpuszFace);
 
         KeepLastErrorAndFree(lpuszFace);
         return Result;
@@ -85,7 +85,7 @@ extern "C" {
         lstrcpy(lf.lfFaceName, lfuFaceName);
         WaffleFree(lfuFaceName);
 
-        return CreateFontIndirect(&lf);
+        return DetourCreateFontIndirectW(&lf);
     }
 
     LIBRARY_EXPORT HFONT WINAPI DetourCreateFontIndirectW(
@@ -134,7 +134,7 @@ extern "C" {
         WaffleFree(elfuStyle);
         WaffleFree(elfuScript);
 
-        return CreateFontIndirectEx(&enumlfex);
+        return DetourCreateFontIndirectExW(&enumlfex);
     }
 
     LIBRARY_EXPORT HFONT WINAPI DetourCreateFontIndirectExW(
