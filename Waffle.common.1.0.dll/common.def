@@ -10,7 +10,6 @@ EXPORTS
     WaffleAddLibraryW
     WaffleCreateFunctionArrayW
     WaffleCreateLibraryArrayW
-    WaffleGetBackupAddressA
     WaffleGetBackupAddressW
     WaffleFindDetourAddress
 

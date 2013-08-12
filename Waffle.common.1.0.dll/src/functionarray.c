@@ -104,44 +104,17 @@ LIBRARY_EXPORT DWORD WINAPI WaffleCreateFunctionArray(
     return nFunction;
 }
 
-LIBRARY_EXPORT LPVOID WINAPI WaffleGetBackupAddressW(
-    _In_    LPCWSTR lpszLibrary,
-    _In_    LPCWSTR lpszFunction
+LIBRARY_EXPORT LPVOID WINAPI WaffleGetBackupAddress(
+    _In_    LPCTSTR lpszLibrary,
+    _In_    LPCTSTR lpszFunction
     )
 {
     int i;
     for (i = lpstProcessSetting->lpstLibrary[0].dwBehind; i >= 0; i--)
     {
-        if (!WafflelstrcmpiW(lpszLibrary, lpstProcessSetting->lpstLibrary[i].lpszLibrary))
+        if (!Wafflelstrcmpi(lpszLibrary, lpstProcessSetting->lpstLibrary[i].lpszLibrary))
         {
-            return WaffleGetProcAddressW(lpstProcessSetting->lpstLibrary[i].hBackup, lpszFunction); //uses WideCharToMultiByte
-            /*
-            int j;
-            for (j = lpstProcessSetting->lpstLibrary[i].lpstFunction[0].dwBehind; j >= 0; j--)
-            {
-            if (!Wafflelstrcmp(lpszFunction, lpstProcessSetting->lpstLibrary[i].lpstFunction[j].lpszFunction))
-            {
-            return lpstProcessSetting->lpstLibrary[i].lpstFunction[j].lpBackup;
-            }
-            }
-            break;
-            */
-        }
-    }
-    return NULL;
-}
-
-LIBRARY_EXPORT LPVOID WINAPI WaffleGetBackupAddressA(
-    _In_    LPCWSTR lpszLibrary,
-    _In_    LPCSTR lpszFunction
-    )
-{
-    int i;
-    for (i = lpstProcessSetting->lpstLibrary[0].dwBehind; i >= 0; i--)
-    {
-        if (!WafflelstrcmpiW(lpszLibrary, lpstProcessSetting->lpstLibrary[i].lpszLibrary))
-        {
-            return WaffleGetProcAddressA(lpstProcessSetting->lpstLibrary[i].hBackup, lpszFunction); //uses WideCharToMultiByte
+            return WaffleGetProcAddress(lpstProcessSetting->lpstLibrary[i].hBackup, lpszFunction); //uses WideCharToMultiByte
             /*
             int j;
             for (j = lpstProcessSetting->lpstLibrary[i].lpstFunction[0].dwBehind; j >= 0; j--)
