@@ -38,9 +38,6 @@
     <ClCompile Include="src\user32.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\ntdll.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="mojibake.def">

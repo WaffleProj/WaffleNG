@@ -1,10 +1,4 @@
-#ifndef  UNICODE
-#define  UNICODE
-#endif
-#ifndef _UNICODE
-#define _UNICODE
-#endif
-#include "..\mojibake.h"
+﻿#include "..\mojibake.h"
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
 #ifdef __cplusplus
@@ -86,12 +80,17 @@ extern "C" {
         _In_opt_    LPVOID lpParam
         )
     {
-        LPWSTR lpuszClassName = AnsiToUnicode(lpClassName);
-        LPWSTR lpuszWindowName = AnsiToUnicode(lpWindowName);
-        HWND Result = CreateWindowEx(dwExStyle, lpuszClassName, lpuszWindowName, dwStyle, x, y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam);
+        static LPCREATEWINDOWEXA BackupCreateWindowExA;
+        if (!BackupCreateWindowExA)
+        {
+            BackupCreateWindowExA = (LPCREATEWINDOWEXA) WaffleGetBackupAddress(TEXT("user32.dll"), TEXT("CreateWindowExA"));
+        }
+
+        HWND Result = BackupCreateWindowExA(dwExStyle, lpClassName, lpWindowName, dwStyle, x, y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam);
 
         DWORD LastError = GetLastError();
-        WaffleFree(lpuszClassName);
+        LPWSTR lpuszWindowName = AnsiToUnicode(lpWindowName);
+        SetWindowText(Result, lpuszWindowName);
         WaffleFree(lpuszWindowName);
         SetLastError(LastError);
         return Result;

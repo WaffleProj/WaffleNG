@@ -1,10 +1,4 @@
-#ifndef  UNICODE
-#define  UNICODE
-#endif
-#ifndef _UNICODE
-#define _UNICODE
-#endif
-#include "mojibake.h"
+ï»¿#include "mojibake.h"
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
 ENVIRONMENT_SETTING stOldEnvir;
@@ -31,7 +25,7 @@ int CALLBACK MojibakeEnumFontsProcA(
     RtlMoveMemory(&lfGothic, lplf, sizeof(lfGothic));
     RtlMoveMemory(&tmGothic, lptm, sizeof(tmGothic));
     dwGothic = dwType;
-    lstrcpyA(lfGothic.lfFaceName, "\x82\x6C\x82\x72\x20\x83\x53\x83\x56\x83\x62\x83\x4E");  //£Í£Ó ¥´¥·¥Ã¥¯
+    lstrcpyA(lfGothic.lfFaceName, "\x82\x6C\x82\x72\x20\x83\x53\x83\x56\x83\x62\x83\x4E");  //ï¼­ï¼³ ã‚´ã‚·ãƒƒã‚¯
     return 0;
 }
 

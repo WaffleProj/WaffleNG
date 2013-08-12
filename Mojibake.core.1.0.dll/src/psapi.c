@@ -1,10 +1,4 @@
-#ifndef  UNICODE
-#define  UNICODE
-#endif
-#ifndef _UNICODE
-#define _UNICODE
-#endif
-#include "..\mojibake.h"
+﻿#include "..\mojibake.h"
 #include <psapi.h>
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 

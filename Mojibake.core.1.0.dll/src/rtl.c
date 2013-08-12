@@ -1,10 +1,4 @@
-#ifndef  UNICODE
-#define  UNICODE
-#endif
-#ifndef _UNICODE
-#define _UNICODE
-#endif
-#include "..\mojibake.h"
+﻿#include "..\mojibake.h"
 
 LPWSTR WINAPI AnsiToUnicode(
     _In_    LPCSTR lpszText
