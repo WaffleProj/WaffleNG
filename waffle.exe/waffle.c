@@ -33,6 +33,12 @@ VOID WINAPI Main(VOID)
         stOpenFile.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
         GetOpenFileName(&stOpenFile);
 
+        if (!lstrlen(szTarget))
+        {
+            MessageBox(0, TEXT("FIXME:No program will run"), 0, 0);
+            ExitProcess(0);
+        }
+
         lstrcpy(szComponent, TEXT("Mojibake"));
     }
 
