@@ -36,6 +36,7 @@ LIBRARY_EXPORT LPWAFFLE_PROCESS_SETTING WINAPI WaffleOpenProcessSetting(VOID)
 
 LIBRARY_EXPORT VOID WINAPI WaffleResumeMainThread(VOID)
 {
-    HANDLE hThread = OpenThread(THREAD_ALL_ACCESS, FALSE, lpstProcessSetting->dwThreadId);    //WinXP may return ERROR_ACCESS_DENIED
+    HANDLE hThread = OpenThread(THREAD_SUSPEND_RESUME, FALSE, lpstProcessSetting->dwThreadId);
     ResumeThread(hThread);
+    CloseHandle(hThread);
 }

@@ -15,7 +15,16 @@ BOOL WINAPI DllMain(
 
         if (WaffleOpenProcessSetting())
         {
-            CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE) WaffleInit, 0, 0, NULL);
+            HANDLE hThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE) WaffleInit, 0, 0, NULL);
+            if (hThread)
+            {
+                CloseHandle(hThread);
+            }
+            else
+            {
+                MessageBox(0, TEXT("FIXME:WaffleInit failed"), 0, 0);
+                ExitProcess(0);
+            }
         }
     }
     return TRUE;
