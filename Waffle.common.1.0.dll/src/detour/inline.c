@@ -1,10 +1,4 @@
-#ifndef  UNICODE
-#define  UNICODE
-#endif
-#ifndef _UNICODE
-#define _UNICODE
-#endif
-#include "..\..\common.h"
+﻿#include "..\..\common.h"
 #pragma GCC diagnostic ignored "-Wunknown-pragmas"
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
@@ -79,7 +73,7 @@ LIBRARY_EXPORT VOID WaffleInlineHandler(
     )
 {
     DebugBreak();
-    return NULL;
+    return;
 }
 #endif
 
@@ -97,6 +91,9 @@ LIBRARY_EXPORT NOINLINE LPVOID WINAPI WaffleGetCallersAddress(
     LPVOID ReturnAddress = ((LPVOID *) (FramePointer))[1];
 #elif   WAFFLE_PORT_MACHINE == WAFFLE_PORT_MACHINE_AMD64
     LPVOID ReturnAddress = (&CallersCaller)[-1];
+#elif   WAFFLE_PORT_MACHINE == WAFFLE_PORT_MACHINE_ARMNT
+#pragma message ("WaffleGetCallersAddress need to be implemented")
+    LPVOID ReturnAddress = NULL;
 #endif
 #endif
 

@@ -1,10 +1,4 @@
-#ifndef  UNICODE
-#define  UNICODE
-#endif
-#ifndef _UNICODE
-#define _UNICODE
-#endif
-#include "..\common.h"
+﻿#include "..\common.h"
 #include <Wincrypt.h>
 
 LIBRARY_EXPORT VOID WINAPI WaffleGetFileHash(

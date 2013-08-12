@@ -1,10 +1,4 @@
-﻿#ifndef  UNICODE
-#define  UNICODE
-#endif
-#ifndef _UNICODE
-#define _UNICODE
-#endif
-#include <waffle.h>
+﻿#include <waffle.h>
 #pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 
 VOID WINAPI Main(VOID)

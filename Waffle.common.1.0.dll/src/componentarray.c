@@ -1,10 +1,4 @@
-#ifndef  UNICODE
-#define  UNICODE
-#endif
-#ifndef _UNICODE
-#define _UNICODE
-#endif
-#include "..\common.h"
+﻿#include "..\common.h"
 
 LIBRARY_EXPORT HMODULE WINAPI WaffleLoadComponent(
     _In_    LPCTSTR lpszComponent
@@ -28,7 +22,7 @@ LIBRARY_EXPORT HMODULE WINAPI WaffleLoadComponent(
     else
     {
         WaffleAddComponent(lpszComponent);
-        ComponentInit(lpstProcessSetting);
+        ComponentInit(lpstProcessSetting);  //should respect the return value
     }
     return hComponent;
 }

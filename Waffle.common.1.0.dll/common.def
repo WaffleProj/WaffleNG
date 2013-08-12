@@ -1,16 +1,16 @@
 NAME    Waffle.common.1.0.dll
 EXPORTS
     WaffleArgc
-    WaffleArgv
-    WaffleArgp
+    WaffleArgvW
+    WaffleArgpW
 
-    WaffleCopyLibrary
+    WaffleCopyLibraryW
     WaffleSetDetour
-    WaffleAddFunction
-    WaffleAddLibrary
-    WaffleCreateFunctionArray
-    WaffleCreateLibraryArray
-    WaffleGetBackupAddress
+    WaffleAddFunctionW
+    WaffleAddLibraryW
+    WaffleCreateFunctionArrayW
+    WaffleCreateLibraryArrayW
+    WaffleGetBackupAddressW
     WaffleFindDetourAddress
 
     WaffleInlineDetour
@@ -18,32 +18,33 @@ EXPORTS
     WaffleExceptionDetour
     WaffleExceptionHandler
     
-    WaffleGetModuleDirectory
+    WaffleGetModuleDirectoryW
     WaffleDisableWow64FsRedirection
     WaffleRevertWow64FsRedirection
     
-    WaffleGetFileHash
+    WaffleGetFileHashW
     
     WaffleInit
 
-    WaffleLoadComponent
-    WaffleAddComponent
+    WaffleLoadComponentW
+    WaffleAddComponentW
+    WaffleFindComponent
     
-    WaffleCreateProcess
-    WaffleInjectDll
-    WaffleExecute
+    WaffleCreateProcessW
+    WaffleInjectDllW
+    WaffleExecuteW
 
-    WaffleWriteLogFile
+    WaffleWriteLogFileW
     
-    WaffleGetOptionString
-    WaffleSetOptionString
-    WaffleGetOptionInt
-    WaffleSetOptionInt
-    WaffleGetOptionSectionKeys
-    WaffleGetOptionSectionNames
-    WaffleGetOptionStringNumber
+    WaffleGetOptionStringW
+    WaffleSetOptionStringW
+    WaffleGetOptionIntW
+    WaffleSetOptionIntW
+    WaffleGetOptionSectionKeysW
+    WaffleGetOptionSectionNamesW
+    WaffleGetOptionStringNumberW
     
-    WaffleGetMachineType
+    WaffleGetMachineTypeW
     
     WafflelstrcmpiW
     WafflelstrcmpiA
@@ -60,7 +61,14 @@ EXPORTS
     WaffleAlloc
     WaffleReAlloc
     WaffleFree
+
+    WaffleCreateRWLock
+    WaffleEnterReaderLock
+    WaffleEnterWriterLock
+    WaffleLeaveReaderLock
+    WaffleLeaveWriterLock
+    WaffleReleaseRWLock
     
-    WaffleOpenProcessSetting
-    WaffleCreateProcessSetting
+    WaffleOpenProcessSettingW
+    WaffleCreateProcessSettingW
     WaffleResumeMainThread
