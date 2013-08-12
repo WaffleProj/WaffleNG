@@ -35,7 +35,6 @@ LIBRARY_EXPORT SIZE_T WINAPI WaffleInit(
     _In_    LPVOID lpReserved
     )
 {
-    /*
     TCHAR szExecutable[MAX_PATH];
     GetModuleFileName(NULL, szExecutable, sizeof(szExecutable) / sizeof(szExecutable[0]));
     WaffleSetOptionString(TEXT("ProgramName"), szExecutable, FALSE);
@@ -53,11 +52,11 @@ LIBRARY_EXPORT SIZE_T WINAPI WaffleInit(
             for (countFunction = 0; WaffleSetDetour(nLibrary, countFunction); countFunction++);
         }
     }
-    */
-    //return 0; //for attaching debugger
 
+    //return 0; //for attaching debugger
+    
     HANDLE hThread = OpenThread(THREAD_GET_CONTEXT | THREAD_SET_CONTEXT | THREAD_SUSPEND_RESUME, FALSE, lpstProcessSetting->dwThreadId);
-    /*
+
     CONTEXT stContext;
     stContext.ContextFlags = CONTEXT_FULL;
     GetThreadContext(hThread, &stContext);
@@ -73,8 +72,8 @@ LIBRARY_EXPORT SIZE_T WINAPI WaffleInit(
     stContext.WAFFLE_PORT_PROGRAM_POINTER = (SIZE_T) SetThreadEnvironment;
     stContext.WAFFLE_PORT_FASTCALL_ARGUMENT = (SIZE_T) lpstThread;
     SetThreadContext(hThread, &stContext);
-    */
-    ResumeThread(hThread);
 
+    ResumeThread(hThread);
+    
     return 0;
 }

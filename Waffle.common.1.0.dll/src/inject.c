@@ -72,11 +72,17 @@ LIBRARY_EXPORT VOID WINAPI WaffleExecute(
     lpstProcessSetting->dwThreadId = stProcessInfo.dwThreadId;
     lpstProcessSetting->dwProcessId = stProcessInfo.dwProcessId;
     WaffleGetFileHash(lpApplicationName, lpstProcessSetting->szProcessHash);
-    CloseHandle(stProcessInfo.hThread);
 
     TCHAR szWaffleCommonDll[MAX_PATH];
     wsprintf(szWaffleCommonDll, TEXT("%s\\Waffle\\%s\\Waffle.common.1.0.dll"), lpstProcessSetting->szComponentDirectory, WAFFLE_PORT_MACHINE_STRING);
     WaffleInjectDll(stProcessInfo.hProcess, szWaffleCommonDll);
+    //*/
+    /*
+    LPTHREAD_START_ROUTINE lpSleep = (LPTHREAD_START_ROUTINE) WaffleGetProcAddress(GetModuleHandle(TEXT("kernel32.dll")), TEXT("Sleep"));
+    WaitForSingleObject(CreateRemoteThread(stProcessInfo.hProcess, NULL, 0, lpSleep, NULL, 0, NULL), INFINITE);
+    ResumeThread(stProcessInfo.hThread);
+    //*/
 
+    CloseHandle(stProcessInfo.hThread);
     CloseHandle(stProcessInfo.hProcess);
 }
