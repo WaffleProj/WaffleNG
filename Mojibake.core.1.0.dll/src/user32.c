@@ -6,66 +6,47 @@ extern "C" {
 #endif
     /*
     LIBRARY_EXPORT ATOM WINAPI DetourRegisterClassA(
-        _In_    const WNDCLASSA *lpWndClass
-        )
+    _In_    const WNDCLASSA *lpWndClass
+    )
     {
-        WNDCLASSW WndClass;
-        RtlMoveMemory(&WndClass, lpWndClass, sizeof(WndClass));
+    WNDCLASSW WndClass;
+    RtlMoveMemory(&WndClass, lpWndClass, sizeof(WndClass));
 
-        LPWSTR lpszMenuName = AnsiToUnicode(lpWndClass->lpszMenuName);
-        LPWSTR lpszClassName = AnsiToUnicode(lpWndClass->lpszClassName);
-        WndClass.lpszMenuName = lpszMenuName;
-        WndClass.lpszClassName = lpszClassName;
+    LPWSTR lpszMenuName = AnsiToUnicode(lpWndClass->lpszMenuName);
+    LPWSTR lpszClassName = AnsiToUnicode(lpWndClass->lpszClassName);
+    WndClass.lpszMenuName = lpszMenuName;
+    WndClass.lpszClassName = lpszClassName;
 
-        ATOM Result = RegisterClass(&WndClass);
+    ATOM Result = RegisterClass(&WndClass);
 
-        DWORD LastError = GetLastError();
-        WaffleFree(lpszMenuName);
-        WaffleFree(lpszClassName);
-        SetLastError(LastError);
-        return Result;
+    DWORD LastError = GetLastError();
+    WaffleFree(lpszMenuName);
+    WaffleFree(lpszClassName);
+    SetLastError(LastError);
+    return Result;
     }
 
     LIBRARY_EXPORT ATOM WINAPI DetourRegisterClassExA(
-        _In_    const WNDCLASSEXA *lpWndClass
-        )
+    _In_    const WNDCLASSEXA *lpWndClass
+    )
     {
-        WNDCLASSEXW WndClass;
-        RtlMoveMemory(&WndClass, lpWndClass, sizeof(WndClass));
+    WNDCLASSEXW WndClass;
+    RtlMoveMemory(&WndClass, lpWndClass, sizeof(WndClass));
 
-        LPWSTR lpszMenuName = AnsiToUnicode(lpWndClass->lpszMenuName);
-        LPWSTR lpszClassName = AnsiToUnicode(lpWndClass->lpszClassName);
-        WndClass.lpszMenuName = lpszMenuName;
-        WndClass.lpszClassName = lpszClassName;
+    LPWSTR lpszMenuName = AnsiToUnicode(lpWndClass->lpszMenuName);
+    LPWSTR lpszClassName = AnsiToUnicode(lpWndClass->lpszClassName);
+    WndClass.lpszMenuName = lpszMenuName;
+    WndClass.lpszClassName = lpszClassName;
 
-        ATOM Result = RegisterClassEx(&WndClass);
+    ATOM Result = RegisterClassEx(&WndClass);
 
-        DWORD LastError = GetLastError();
-        WaffleFree(lpszMenuName);
-        WaffleFree(lpszClassName);
-        SetLastError(LastError);
-        return Result;
+    DWORD LastError = GetLastError();
+    WaffleFree(lpszMenuName);
+    WaffleFree(lpszClassName);
+    SetLastError(LastError);
+    return Result;
     }
     */
-
-    HWND WINAPI DetourCreateWindowA(
-        _In_opt_    LPCSTR lpClassName,
-        _In_opt_    LPCSTR lpWindowName,
-        _In_        DWORD dwStyle,
-        _In_        int x,
-        _In_        int y,
-        _In_        int nWidth,
-        _In_        int nHeight,
-        _In_opt_    HWND hWndParent,
-        _In_opt_    HMENU hMenu,
-        _In_opt_    HINSTANCE hInstance,
-        _In_opt_    LPVOID lpParam
-        )
-    {
-        //There doesn't exist a function called CreateWindowA
-        //See http://msdn.microsoft.com/en-us/library/windows/desktop/ms632679.aspx
-        return NULL;
-    }
 
     LIBRARY_EXPORT HWND WINAPI DetourCreateWindowExA(
         _In_        DWORD dwExStyle,
@@ -96,6 +77,25 @@ extern "C" {
         WaffleFree(lpuszWindowName);
         SetLastError(LastError);
         return Result;
+    }
+
+    LIBRARY_EXPORT HWND WINAPI DetourCreateWindowA(
+        _In_opt_    LPCSTR lpClassName,
+        _In_opt_    LPCSTR lpWindowName,
+        _In_        DWORD dwStyle,
+        _In_        int x,
+        _In_        int y,
+        _In_        int nWidth,
+        _In_        int nHeight,
+        _In_opt_    HWND hWndParent,
+        _In_opt_    HMENU hMenu,
+        _In_opt_    HINSTANCE hInstance,
+        _In_opt_    LPVOID lpParam
+        )
+    {
+        //There doesn't exist a function called CreateWindowA
+        //See http://msdn.microsoft.com/en-us/library/windows/desktop/ms632679.aspx
+        return DetourCreateWindowExA(0, lpClassName, lpWindowName, dwStyle, x, y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam);
     }
 
     LIBRARY_EXPORT LRESULT WINAPI DetourDefWindowProcA(
@@ -187,24 +187,6 @@ extern "C" {
         return Result;
     }
 
-    LIBRARY_EXPORT int WINAPI DetourMessageBoxA(
-        _In_opt_    HWND hWnd,
-        _In_opt_    LPCSTR lpText,
-        _In_opt_    LPCSTR lpCaption,
-        _In_        UINT uType
-        )
-    {
-        LPWSTR lpuszText = AnsiToUnicode(lpText);
-        LPWSTR lpuszCaption = AnsiToUnicode(lpCaption);
-        int Result = MessageBox(hWnd, lpuszText, lpuszCaption, uType);
-
-        DWORD LastError = GetLastError();
-        WaffleFree(lpuszText);
-        WaffleFree(lpuszCaption);
-        SetLastError(LastError);
-        return Result;
-    }
-
     LIBRARY_EXPORT int WINAPI DetourMessageBoxExA(
         _In_opt_    HWND hWnd,
         _In_opt_    LPCSTR lpText,
@@ -222,6 +204,16 @@ extern "C" {
         WaffleFree(lpuszCaption);
         SetLastError(LastError);
         return Result;
+    }
+
+    LIBRARY_EXPORT int WINAPI DetourMessageBoxA(
+        _In_opt_    HWND hWnd,
+        _In_opt_    LPCSTR lpText,
+        _In_opt_    LPCSTR lpCaption,
+        _In_        UINT uType
+        )
+    {
+        return DetourMessageBoxExA(hWnd, lpText, lpCaption, uType, LANG_NEUTRAL);
     }
 
     LIBRARY_EXPORT LRESULT WINAPI DetourSendMessageA(

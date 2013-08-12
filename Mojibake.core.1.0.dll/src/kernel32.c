@@ -368,13 +368,6 @@ extern "C" {
         return Result;
     }
 
-    LIBRARY_EXPORT BOOL WINAPI DetourIsDBCSLeadByte(
-        _In_    BYTE TestChar
-        )
-    {
-        return IsDBCSLeadByteEx(stNewEnvir.AnsiCodePage, TestChar);
-    }
-
     LIBRARY_EXPORT BOOL WINAPI DetourIsDBCSLeadByteEx(
         _In_    UINT CodePage,
         _In_    BYTE TestChar
@@ -397,6 +390,13 @@ extern "C" {
         }
 
         return BackupIsDBCSLeadByteEx(CodePage, TestChar);
+    }
+
+    LIBRARY_EXPORT BOOL WINAPI DetourIsDBCSLeadByte(
+        _In_    BYTE TestChar
+        )
+    {
+        return DetourIsDBCSLeadByteEx(stNewEnvir.AnsiCodePage, TestChar);
     }
 
     /*
