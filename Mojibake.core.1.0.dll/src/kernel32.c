@@ -23,8 +23,8 @@ extern "C" {
         }
 
         TCHAR szMessage[1024];
-        wsprintf(szMessage, TEXT("This program wants to launch another program:\nAppName = %s\nCmdLine = %s\nIs this what you want to do?"), lpApplicationName, lpCommandLine);
-        if (MessageBox(0, szMessage, 0, MB_YESNO) == IDYES)
+        wsprintf(szMessage, TEXT("This program wants to launch another program:\nAppName = %s\nCmdLine = %s\n\nIs this what you want to do?"), lpApplicationName, lpCommandLine);
+        if (MessageBox(0, szMessage, 0, MB_YESNO | MB_ICONWARNING) == IDYES)
         {
             return BackupCreateProcessW(lpApplicationName, lpCommandLine, lpProcessAttributes, lpThreadAttributes, bInheritHandles, dwCreationFlags, lpEnvironment, lpCurrentDirectory, lpStartupInfo, lpProcessInformation);
         }

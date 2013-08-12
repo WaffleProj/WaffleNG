@@ -187,6 +187,21 @@ extern "C" {
         return Result;
     }
 
+    LIBRARY_EXPORT BOOL WINAPI DetourInsertMenuA(
+        _In_        HMENU hMenu,
+        _In_        UINT uPosition,
+        _In_        UINT uFlags,
+        _In_        UINT_PTR uIDNewItem,
+        _In_opt_    LPCSTR lpNewItem
+        )
+    {
+        LPWSTR lpuszNewItem = AnsiToUnicode(lpNewItem);
+        BOOL Result = InsertMenu(hMenu, uPosition, uFlags, uIDNewItem, lpuszNewItem);
+
+        KeepLastErrorAndFree(lpuszNewItem);
+        return Result;
+    }
+
     LIBRARY_EXPORT int WINAPI DetourMessageBoxExA(
         _In_opt_    HWND hWnd,
         _In_opt_    LPCSTR lpText,

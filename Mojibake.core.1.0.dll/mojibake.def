@@ -39,6 +39,7 @@ EXPORTS
     DetourDefWindowProcA
     DetourCallWindowProcA
     DetourDialogBoxParamA
+    DetourInsertMenuA
     DetourMessageBoxA
     DetourMessageBoxExA
     DetourSendMessageA
