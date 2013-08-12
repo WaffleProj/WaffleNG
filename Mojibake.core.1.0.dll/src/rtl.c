@@ -16,12 +16,12 @@ LPWSTR WINAPI AnsiToUnicode(
         }
         else
         {
-            return 0;
+            return NULL;
         }
     }
     else
     {
-        return 0;
+        return NULL;
     }
 }
 
@@ -39,7 +39,9 @@ LPSTR WINAPI ProgramCPToWindowsCP(
         return lpszNewText;
     }
     else
-        return 0;
+    {
+        return NULL;
+    }
 }
 
 VOID WINAPI KeepLastErrorAndFree(

@@ -3,6 +3,102 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+    LIBRARY_EXPORT BOOL WINAPI DetourCreateProcessW(
+        _In_opt_    LPCWSTR lpApplicationName,
+        _Inout_opt_ LPWSTR lpCommandLine,
+        _In_opt_    LPSECURITY_ATTRIBUTES lpProcessAttributes,
+        _In_opt_    LPSECURITY_ATTRIBUTES lpThreadAttributes,
+        _In_        BOOL bInheritHandles,
+        _In_        DWORD dwCreationFlags,
+        _In_opt_    LPVOID lpEnvironment,
+        _In_opt_    LPCWSTR lpCurrentDirectory,
+        _In_opt_    LPSTARTUPINFOW lpStartupInfo,
+        _Out_opt_   LPPROCESS_INFORMATION lpProcessInformation
+        )
+    {
+        static LPCREATEPROCESSW BackupCreateProcessW;
+        if (!BackupCreateProcessW)
+        {
+            BackupCreateProcessW = (LPCREATEPROCESSW) WaffleGetBackupAddress(TEXT("kernel32.dll"), TEXT("CreateProcessW"));
+        }
+
+        TCHAR szMessage[1024];
+        wsprintf(szMessage, TEXT("This program wants to launch another program:\nAppName = %s\nCmdLine = %s\nIs this what you want to do?"), lpApplicationName, lpCommandLine);
+        if (MessageBox(0, szMessage, 0, MB_YESNO) == IDYES)
+        {
+            return BackupCreateProcessW(lpApplicationName, lpCommandLine, lpProcessAttributes, lpThreadAttributes, bInheritHandles, dwCreationFlags, lpEnvironment, lpCurrentDirectory, lpStartupInfo, lpProcessInformation);
+        }
+        else
+        {
+            SetLastError(ERROR_ACCESS_DENIED);
+            return FALSE;
+        }
+    }
+
+    LIBRARY_EXPORT BOOL WINAPI DetourCreateProcessA(
+        _In_opt_    LPCSTR lpApplicationName,
+        _Inout_opt_ LPSTR lpCommandLine,
+        _In_opt_    LPSECURITY_ATTRIBUTES lpProcessAttributes,
+        _In_opt_    LPSECURITY_ATTRIBUTES lpThreadAttributes,
+        _In_        BOOL bInheritHandles,
+        _In_        DWORD dwCreationFlags,
+        _In_opt_    LPVOID lpEnvironment,
+        _In_opt_    LPCSTR lpCurrentDirectory,
+        _In_opt_    LPSTARTUPINFOA lpStartupInfo,
+        _Out_opt_   LPPROCESS_INFORMATION lpProcessInformation
+        )
+    {
+        LPWSTR lpuszApplicationName = NULL;
+        LPWSTR lpuszCommandLine = NULL;
+        LPWSTR lpuszCurrentDirectory = NULL;
+        LPSTARTUPINFOW lpuStartupInfo = NULL;
+        STARTUPINFOW StartupInfo;
+        if (lpApplicationName)
+        {
+            lpuszApplicationName = AnsiToUnicode(lpApplicationName);
+        }
+        if (lpCommandLine)
+        {
+            lpuszCommandLine = AnsiToUnicode(lpCommandLine);
+        }
+        if (lpCurrentDirectory)
+        {
+            lpuszCurrentDirectory = AnsiToUnicode(lpCurrentDirectory);
+        }
+        if (lpStartupInfo)
+        {
+            lpuStartupInfo = &StartupInfo;
+            RtlMoveMemory(&StartupInfo, lpStartupInfo, sizeof(WIN32_FIND_DATA));
+            lpuStartupInfo->lpReserved = AnsiToUnicode(lpStartupInfo->lpReserved);
+            lpuStartupInfo->lpDesktop = AnsiToUnicode(lpStartupInfo->lpDesktop);
+            lpuStartupInfo->lpTitle = AnsiToUnicode(lpStartupInfo->lpTitle);
+        }
+
+        BOOL Result = DetourCreateProcessW(lpuszApplicationName, lpuszCommandLine, lpProcessAttributes, lpThreadAttributes, bInheritHandles, dwCreationFlags, lpEnvironment, lpuszCurrentDirectory, lpuStartupInfo, lpProcessInformation);
+
+        DWORD LastError = GetLastError();
+        if (lpApplicationName)
+        {
+            WaffleFree(lpuszApplicationName);
+        }
+        if (lpCommandLine)
+        {
+            WaffleFree(lpuszCommandLine);
+        }
+        if (lpCurrentDirectory)
+        {
+            WaffleFree(lpuszCurrentDirectory);
+        }
+        if (lpStartupInfo)
+        {
+            WaffleFree(lpuStartupInfo->lpReserved);
+            WaffleFree(lpuStartupInfo->lpDesktop);
+            WaffleFree(lpuStartupInfo->lpTitle);
+        }
+        SetLastError(LastError);
+        return Result;
+    }
+
     LIBRARY_EXPORT DWORD WINAPI DetourGetCurrentDirectoryA(
         _In_    DWORD nBufferLength,
         _Out_   LPSTR lpBuffer
@@ -84,14 +180,7 @@ extern "C" {
 
         DWORD LastError = GetLastError();
 
-        lpFindFileData->dwFileAttributes = FindFileData.dwFileAttributes;
-        lpFindFileData->ftCreationTime = FindFileData.ftCreationTime;
-        lpFindFileData->ftLastAccessTime = FindFileData.ftLastAccessTime;
-        lpFindFileData->ftLastWriteTime = FindFileData.ftLastWriteTime;
-        lpFindFileData->nFileSizeHigh = FindFileData.nFileSizeHigh;
-        lpFindFileData->nFileSizeLow = FindFileData.nFileSizeLow;
-        lpFindFileData->dwReserved0 = FindFileData.dwReserved0;
-        lpFindFileData->dwReserved1 = FindFileData.dwReserved1;
+        RtlMoveMemory(lpFindFileData, &FindFileData, offsetof(WIN32_FIND_DATAA, dwReserved1));
         WideCharToMultiByte(stNewEnvir.AnsiCodePage, 0, FindFileData.cFileName, -1, lpFindFileData->cFileName, sizeof(lpFindFileData->cFileName), NULL, NULL);
         WideCharToMultiByte(stNewEnvir.AnsiCodePage, 0, FindFileData.cAlternateFileName, -1, lpFindFileData->cAlternateFileName, sizeof(lpFindFileData->cAlternateFileName), NULL, NULL);
 
@@ -110,14 +199,7 @@ extern "C" {
 
         DWORD LastError = GetLastError();
 
-        lpFindFileData->dwFileAttributes = FindFileData.dwFileAttributes;
-        lpFindFileData->ftCreationTime = FindFileData.ftCreationTime;
-        lpFindFileData->ftLastAccessTime = FindFileData.ftLastAccessTime;
-        lpFindFileData->ftLastWriteTime = FindFileData.ftLastWriteTime;
-        lpFindFileData->nFileSizeHigh = FindFileData.nFileSizeHigh;
-        lpFindFileData->nFileSizeLow = FindFileData.nFileSizeLow;
-        lpFindFileData->dwReserved0 = FindFileData.dwReserved0;
-        lpFindFileData->dwReserved1 = FindFileData.dwReserved1;
+        RtlMoveMemory(lpFindFileData, &FindFileData, offsetof(WIN32_FIND_DATAA, dwReserved1));
         WideCharToMultiByte(stNewEnvir.AnsiCodePage, 0, FindFileData.cFileName, -1, lpFindFileData->cFileName, sizeof(lpFindFileData->cFileName), NULL, NULL);
         WideCharToMultiByte(stNewEnvir.AnsiCodePage, 0, FindFileData.cAlternateFileName, -1, lpFindFileData->cAlternateFileName, sizeof(lpFindFileData->cAlternateFileName), NULL, NULL);
 

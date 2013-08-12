@@ -3,6 +3,8 @@ EXPORTS
     ComponentInit
     ThreadInit
     
+    DetourCreateProcessA
+    DetourCreateProcessW
     DetourGetCurrentDirectoryA
     DetourSetCurrentDirectoryA
     DetourCreateDirectoryA
@@ -32,6 +34,7 @@ EXPORTS
     DetourIsDBCSLeadByteEx
     DetourRaiseException
     
+    DetourCreateWindowA
     DetourCreateWindowExA
     DetourDefWindowProcA
     DetourCallWindowProcA
