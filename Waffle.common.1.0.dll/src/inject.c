@@ -69,6 +69,37 @@ LIBRARY_EXPORT VOID WINAPI WaffleExecute(
 
     WaffleCreateProcess(lpApplicationName, lpCommandLine, NULL, NULL, TRUE, CREATE_SUSPENDED, 0, lpCurrentDirectory, NULL, &stProcessInfo);
 
+#if	defined(WAFFLE_PORT_ENTRY_POINT)    //the workaround for xp
+    CONTEXT stContext;
+    stContext.ContextFlags = CONTEXT_FULL;
+    GetThreadContext(stProcessInfo.hThread, &stContext);
+    LPBYTE lpEntryPoint = (LPBYTE) stContext.WAFFLE_PORT_ENTRY_POINT;
+
+    BYTE BackupEntryPoint[WAFFLE_PORT_ENTRY_POINT_LOOP_SIZE];
+    ReadProcessMemory(stProcessInfo.hProcess, lpEntryPoint, BackupEntryPoint, WAFFLE_PORT_ENTRY_POINT_LOOP_SIZE, NULL);
+    WriteProcessMemory(stProcessInfo.hProcess, lpEntryPoint, WAFFLE_PORT_ENTRY_POINT_LOOP, WAFFLE_PORT_ENTRY_POINT_LOOP_SIZE, NULL);
+    FlushInstructionCache(stProcessInfo.hProcess, lpEntryPoint, WAFFLE_PORT_ENTRY_POINT_LOOP_SIZE);
+
+    ResumeThread(stProcessInfo.hThread);
+
+    for (;;)
+    {
+        Sleep(100);
+        SuspendThread(stProcessInfo.hThread);
+        GetThreadContext(stProcessInfo.hThread, &stContext);
+        if ((LPBYTE) stContext.WAFFLE_PORT_PROGRAM_POINTER == lpEntryPoint)
+        {
+            WriteProcessMemory(stProcessInfo.hProcess, lpEntryPoint, BackupEntryPoint, WAFFLE_PORT_ENTRY_POINT_LOOP_SIZE, NULL);
+            FlushInstructionCache(stProcessInfo.hProcess, lpEntryPoint, WAFFLE_PORT_ENTRY_POINT_LOOP_SIZE);
+            break;
+        }
+        else
+        {
+            ResumeThread(stProcessInfo.hThread);
+        }
+    }
+#endif
+
     lpstProcessSetting->dwThreadId = stProcessInfo.dwThreadId;
     lpstProcessSetting->dwProcessId = stProcessInfo.dwProcessId;
     WaffleGetFileHash(lpApplicationName, lpstProcessSetting->szProcessHash);
@@ -76,12 +107,6 @@ LIBRARY_EXPORT VOID WINAPI WaffleExecute(
     TCHAR szWaffleCommonDll[MAX_PATH];
     wsprintf(szWaffleCommonDll, TEXT("%s\\Waffle\\%s\\Waffle.common.1.0.dll"), lpstProcessSetting->szComponentDirectory, WAFFLE_PORT_MACHINE_STRING);
     WaffleInjectDll(stProcessInfo.hProcess, szWaffleCommonDll);
-    //*/
-    /*
-    LPTHREAD_START_ROUTINE lpSleep = (LPTHREAD_START_ROUTINE) WaffleGetProcAddress(GetModuleHandle(TEXT("kernel32.dll")), TEXT("Sleep"));
-    WaitForSingleObject(CreateRemoteThread(stProcessInfo.hProcess, NULL, 0, lpSleep, NULL, 0, NULL), INFINITE);
-    ResumeThread(stProcessInfo.hThread);
-    //*/
 
     CloseHandle(stProcessInfo.hThread);
     CloseHandle(stProcessInfo.hProcess);

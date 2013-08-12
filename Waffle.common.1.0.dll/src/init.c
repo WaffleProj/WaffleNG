@@ -21,7 +21,7 @@ VOID __fastcall SetThreadEnvironment(
     static LPTHREADINIT ThreadInit;
     if (!ThreadInit)
     {
-        ThreadInit = (LPTHREADINIT) WaffleGetProcAddress(hComponent, TEXT("ThreadInit"));
+    ThreadInit = (LPTHREADINIT) WaffleGetProcAddress(hComponent, TEXT("ThreadInit"));
     }
 
     ThreadInit(lpstThread);
@@ -54,7 +54,7 @@ LIBRARY_EXPORT SIZE_T WINAPI WaffleInit(
     }
 
     //return 0; //for attaching debugger
-    
+
     HANDLE hThread = OpenThread(THREAD_GET_CONTEXT | THREAD_SET_CONTEXT | THREAD_SUSPEND_RESUME, FALSE, lpstProcessSetting->dwThreadId);
 
     CONTEXT stContext;
@@ -62,18 +62,19 @@ LIBRARY_EXPORT SIZE_T WINAPI WaffleInit(
     GetThreadContext(hThread, &stContext);
 
     PCONTEXT lpstContext = (PCONTEXT) WaffleAlloc(sizeof(CONTEXT));
+    RtlMoveMemory(lpstContext, &stContext, sizeof(stContext));
+
     LPWAFFLE_THREAD_CONTEXT lpstThread = (LPWAFFLE_THREAD_CONTEXT) WaffleAlloc(sizeof(WAFFLE_THREAD_CONTEXT));
     lpstThread->hThread = hThread;
     lpstThread->lpstContext = lpstContext;
     lpstThread->lpstProcessSetting = lpstProcessSetting;
 
-    RtlMoveMemory(lpstContext, &stContext, sizeof(stContext));
     stContext.WAFFLE_PORT_STACK_POINTER -= 8 * sizeof(SIZE_T);        //Protect stack
     stContext.WAFFLE_PORT_PROGRAM_POINTER = (SIZE_T) SetThreadEnvironment;
     stContext.WAFFLE_PORT_FASTCALL_ARGUMENT = (SIZE_T) lpstThread;
     SetThreadContext(hThread, &stContext);
 
     ResumeThread(hThread);
-    
+
     return 0;
 }
