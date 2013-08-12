@@ -4,6 +4,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+    /*
     LIBRARY_EXPORT ATOM WINAPI DetourRegisterClassA(
         _In_    const WNDCLASSA *lpWndClass
         )
@@ -45,6 +46,7 @@ extern "C" {
         SetLastError(LastError);
         return Result;
     }
+    */
 
     HWND WINAPI DetourCreateWindowA(
         _In_opt_    LPCSTR lpClassName,
@@ -178,7 +180,10 @@ extern "C" {
         }
         LRESULT Result = DialogBoxParam(hInstance, lpuTemplateName, hWndParent, lpDialogFunc, dwInitParam);
 
-        KeepLastErrorAndFree(lpuTemplateName);
+        if ((SIZE_T) lpTemplateName > 0xFFFF)
+        {
+            KeepLastErrorAndFree(lpuTemplateName);
+        }
         return Result;
     }
 

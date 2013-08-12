@@ -32,8 +32,6 @@ EXPORTS
     DetourIsDBCSLeadByteEx
     DetourRaiseException
     
-    DetourRegisterClassA
-    DetourRegisterClassExA
     DetourCreateWindowExA
     DetourDefWindowProcA
     DetourCallWindowProcA
