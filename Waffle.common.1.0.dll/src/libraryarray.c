@@ -1,5 +1,25 @@
 ﻿#include "..\common.h"
 
+LIBRARY_EXPORT int WINAPI WaffleFindLibrary(
+    _In_    LPVOID lpMemory
+    )
+{
+    if (!lpstProcessSetting->lpstLibrary)
+    {
+        return 0;
+    }
+
+    int i;
+    for (i = lpstProcessSetting->lpstLibrary[0].dwBehind; i >= 0; i--)
+    {
+        if (((SIZE_T) lpMemory >= (SIZE_T) lpstProcessSetting->lpstLibrary[i].hSource) && ((SIZE_T) lpMemory <= lpstProcessSetting->lpstLibrary[i].hSourceEnd))
+        {
+            return i;
+        }
+    }
+    return -1;
+}
+
 LIBRARY_EXPORT VOID WINAPI WaffleCopyLibrary(
     _In_    LPWAFFLE_LIBRARY_ARRAY lpstNewLibrary
     )
@@ -8,6 +28,19 @@ LIBRARY_EXPORT VOID WINAPI WaffleCopyLibrary(
     if (!lpstNewLibrary->hSource)
     {
         return;
+    }
+
+    if (lpstProcessSetting->lpstLibrary)
+    {
+        int i;
+        for (i = lpstProcessSetting->lpstLibrary[0].dwBehind; i >= 0; i--)
+        {
+            if (lpstProcessSetting->lpstLibrary[i].hSource == lpstNewLibrary->hSource)
+            {
+                RtlMoveMemory(lpstNewLibrary, &lpstProcessSetting->lpstLibrary[i], sizeof(WAFFLE_LIBRARY_ARRAY));
+                return;
+            }
+        }
     }
 
     //Get dll base address and size
@@ -35,6 +68,8 @@ LIBRARY_EXPORT VOID WINAPI WaffleCopyLibrary(
         }
         addrPointer = (PBYTE) stMemInfo.BaseAddress + stMemInfo.RegionSize;
     }
+
+    return;
 }
 
 LIBRARY_EXPORT VOID WINAPI WaffleAddLibrary(
@@ -53,7 +88,12 @@ LIBRARY_EXPORT VOID WINAPI WaffleAddLibrary(
     }
     else
     {
-        int i;
+        int i = lpstProcessSetting->lpstLibrary[0].dwBehind - lpstNewLibrary->dwBehind;
+        if (lpstProcessSetting->lpstLibrary[i].hSource == lpstNewLibrary->hSource)
+        {
+            return;
+        }
+
         for (i = lpstProcessSetting->lpstLibrary[0].dwBehind; i >= 0; i--)
         {
             lpstProcessSetting->lpstLibrary[i].dwBehind++;

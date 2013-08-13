@@ -21,7 +21,7 @@ LIBRARY_EXPORT LONG CALLBACK WaffleExceptionHandler(
     switch (ExceptionInfo->ExceptionRecord->ExceptionCode)
     {
     case WAFFLE_PORT_EXCEPTION_CODE:
-        if (*(WAFFLE_PORT_EXCEPTION_INSTRUCTION_DATA *) (ExceptionInfo->ExceptionRecord->ExceptionAddress) == (WAFFLE_PORT_EXCEPTION_INSTRUCTION_DATA) WAFFLE_PORT_EXCEPTION_INSTRUCTION)
+        //if (*(WAFFLE_PORT_EXCEPTION_INSTRUCTION_DATA *) (ExceptionInfo->ExceptionRecord->ExceptionAddress) == (WAFFLE_PORT_EXCEPTION_INSTRUCTION_DATA) WAFFLE_PORT_EXCEPTION_INSTRUCTION)
         {
             SIZE_T lpCaller = *(SIZE_T *) (ExceptionInfo->ContextRecord->WAFFLE_PORT_STACK_POINTER);
             SIZE_T lpDetour = WaffleFindDetourAddress(ExceptionInfo->ExceptionRecord->ExceptionAddress, (PVOID) lpCaller);

@@ -4,6 +4,7 @@ EXPORTS
     WaffleArgvW
     WaffleArgpW
 
+    WaffleFindLibrary
     WaffleCopyLibraryW
     WaffleSetDetour
     WaffleAddFunctionW

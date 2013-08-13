@@ -11,11 +11,35 @@ LIBRARY_EXPORT BOOL WINAPI WaffleAddFunction(
     {
         return FALSE;
     }
+
     LPBYTE lpSource = WaffleGetProcAddress(lpstNewLibrary->hSource, lpszFunction);
     if (!lpSource)  //This function doesn't exist
     {
         return FALSE;
     }
+
+    WAFFLE_LIBRARY_ARRAY stLibrary;
+    RtlZeroMemory(&stLibrary, sizeof(stLibrary));
+    LPWAFFLE_LIBRARY_ARRAY lpstOldLibrary = lpstNewLibrary;
+
+    /*
+    if (WaffleFindLibrary(lpSource) < 0)  //def file->export:DefWindowProcA=ntdll.NtdllDefWindowProc_A
+    {
+        HMODULE hModule;
+        if (GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, (LPCTSTR) lpSource, &hModule))
+        {
+            lpstNewLibrary = &stLibrary;
+            stLibrary.lpszLibrary = (LPCTSTR) WaffleAlloc(MAX_PATH * sizeof(TCHAR));
+            GetModuleFileName(hModule, (LPTSTR) stLibrary.lpszLibrary, MAX_PATH);
+            WaffleCopyLibrary(lpstNewLibrary);
+        }
+        else
+        {
+            return FALSE;
+        }
+    }
+    */
+
     if (!lpstNewLibrary->lpstFunction)
     {
         lpstNewLibrary->lpstFunction = (LPWAFFLE_FUNCTION_ARRAY) WaffleAlloc(sizeof(WAFFLE_FUNCTION_ARRAY));
@@ -43,7 +67,14 @@ LIBRARY_EXPORT BOOL WINAPI WaffleAddFunction(
     lpstNewLibrary->lpstFunction[lpstNewLibrary->lpstFunction[0].dwBehind].dwBehind = 0;
     lpstNewLibrary->lpstFunction[lpstNewLibrary->lpstFunction[0].dwBehind].lpszFunction = lpszFunction;
     lpstNewLibrary->lpstFunction[lpstNewLibrary->lpstFunction[0].dwBehind].lpSource = lpSource;
-    lpstNewLibrary->lpstFunction[lpstNewLibrary->lpstFunction[0].dwBehind].lpBackup = WaffleGetProcAddress(lpstNewLibrary->hBackup, lpszFunction);
+    if (lpstNewLibrary == &stLibrary)
+    {
+        lpstNewLibrary->lpstFunction[lpstNewLibrary->lpstFunction[0].dwBehind].lpBackup = (LPBYTE) ((SIZE_T) WaffleGetProcAddress(lpstOldLibrary->hSource, lpszFunction) - (SIZE_T) lpstNewLibrary->hSource + (SIZE_T) lpstNewLibrary->hBackup);
+    }
+    else
+    {
+        lpstNewLibrary->lpstFunction[lpstNewLibrary->lpstFunction[0].dwBehind].lpBackup = WaffleGetProcAddress(lpstNewLibrary->hBackup, lpszFunction);
+    }
     if (!hDetour)
     {
         lpstNewLibrary->lpstFunction[lpstNewLibrary->lpstFunction[0].dwBehind].lpDetour = 0;
@@ -72,6 +103,12 @@ LIBRARY_EXPORT BOOL WINAPI WaffleAddFunction(
             MessageBox(0, szMissing, 0, 0);
         }
     }
+
+    if (lpstNewLibrary == &stLibrary)
+    {
+        WaffleAddLibrary(lpstNewLibrary);
+    }
+
     return TRUE;
 }
 
@@ -109,23 +146,19 @@ LIBRARY_EXPORT LPVOID WINAPI WaffleGetBackupAddress(
     _In_    LPCTSTR lpszFunction
     )
 {
+    HMODULE hModule = GetModuleHandle(lpszLibrary);
+    LPBYTE lpFunction = WaffleGetProcAddress(hModule, lpszFunction);
+
     int i;
     for (i = lpstProcessSetting->lpstLibrary[0].dwBehind; i >= 0; i--)
     {
-        if (!Wafflelstrcmpi(lpszLibrary, lpstProcessSetting->lpstLibrary[i].lpszLibrary))
+        int j;
+        for (j = lpstProcessSetting->lpstLibrary[i].lpstFunction[0].dwBehind; j >= 0; j--)
         {
-            //return WaffleGetProcAddress(lpstProcessSetting->lpstLibrary[i].hBackup, lpszFunction); //uses WideCharToMultiByte
-            //*
-            int j;
-            for (j = lpstProcessSetting->lpstLibrary[i].lpstFunction[0].dwBehind; j >= 0; j--)
+            if (lpFunction == lpstProcessSetting->lpstLibrary[i].lpstFunction[j].lpSource)
             {
-            if (!Wafflelstrcmp(lpszFunction, lpstProcessSetting->lpstLibrary[i].lpstFunction[j].lpszFunction))
-            {
-            return lpstProcessSetting->lpstLibrary[i].lpstFunction[j].lpBackup;
+                return lpstProcessSetting->lpstLibrary[i].lpstFunction[j].lpBackup;
             }
-            }
-            break;
-            //*/
         }
     }
     return NULL;
