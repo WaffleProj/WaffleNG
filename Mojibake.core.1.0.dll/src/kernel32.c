@@ -68,7 +68,7 @@ extern "C" {
         if (lpStartupInfo)
         {
             lpuStartupInfo = &StartupInfo;
-            RtlMoveMemory(&StartupInfo, lpStartupInfo, sizeof(WIN32_FIND_DATA));
+            RtlMoveMemory(&StartupInfo, lpStartupInfo, sizeof(STARTUPINFOW));
             lpuStartupInfo->lpReserved = AnsiToUnicode(lpStartupInfo->lpReserved);
             lpuStartupInfo->lpDesktop = AnsiToUnicode(lpStartupInfo->lpDesktop);
             lpuStartupInfo->lpTitle = AnsiToUnicode(lpStartupInfo->lpTitle);
