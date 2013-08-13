@@ -114,8 +114,8 @@ LIBRARY_EXPORT LPVOID WINAPI WaffleGetBackupAddress(
     {
         if (!Wafflelstrcmpi(lpszLibrary, lpstProcessSetting->lpstLibrary[i].lpszLibrary))
         {
-            return WaffleGetProcAddress(lpstProcessSetting->lpstLibrary[i].hBackup, lpszFunction); //uses WideCharToMultiByte
-            /*
+            //return WaffleGetProcAddress(lpstProcessSetting->lpstLibrary[i].hBackup, lpszFunction); //uses WideCharToMultiByte
+            //*
             int j;
             for (j = lpstProcessSetting->lpstLibrary[i].lpstFunction[0].dwBehind; j >= 0; j--)
             {
@@ -125,7 +125,7 @@ LIBRARY_EXPORT LPVOID WINAPI WaffleGetBackupAddress(
             }
             }
             break;
-            */
+            //*/
         }
     }
     return NULL;
