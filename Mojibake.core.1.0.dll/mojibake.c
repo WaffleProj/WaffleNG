@@ -55,7 +55,7 @@ LIBRARY_EXPORT SIZE_T WINAPI ComponentInit(
     stNewEnvir.DefaultCharSet = (BYTE) WaffleGetOptionInt(TEXT("DefaultCharSet"), stOldEnvir.DefaultCharSet);
 
     //Get fake font info
-    EnumFontsA(GetDC(NULL), "MS Gothic", MojibakeEnumFontsProcA, NULL);
+    EnumFontsA(GetDC(NULL), "MS Gothic", MojibakeEnumFontsProcA, 0);
 
     return 0;
 }

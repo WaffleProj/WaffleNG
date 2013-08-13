@@ -165,6 +165,112 @@ extern "C" {
         }
     }
 
+    LIBRARY_EXPORT HWND WINAPI DetourCreateDialogA(
+        _In_opt_    HINSTANCE hInstance,
+        _In_        LPCSTR lpTemplate,
+        _In_opt_    HWND hWndParent,
+        _In_opt_    DLGPROC lpDialogFunc
+        )
+    {
+        LPWSTR lpuTemplate = (LPWSTR) lpTemplate;
+        if ((SIZE_T) lpTemplate > 0xFFFF)
+        {
+            lpuTemplate = AnsiToUnicode(lpTemplate);
+        }
+        HWND Result = CreateDialog(hInstance, lpuTemplate, hWndParent, lpDialogFunc);
+
+        if ((SIZE_T) lpTemplate > 0xFFFF)
+        {
+            KeepLastErrorAndFree(lpuTemplate);
+        }
+        return Result;
+    }
+
+    LIBRARY_EXPORT HWND WINAPI DetourCreateDialogIndirectA(
+        _In_opt_    HINSTANCE hInstance,
+        _In_        LPCDLGTEMPLATE lpTemplate,
+        _In_opt_    HWND hWndParent,
+        _In_opt_    DLGPROC lpDialogFunc
+        )
+    {
+        return CreateDialogIndirect(hInstance, lpTemplate, hWndParent, lpDialogFunc);
+    }
+
+    LIBRARY_EXPORT HWND WINAPI DetourCreateDialogIndirectParamA(
+        _In_opt_    HINSTANCE hInstance,
+        _In_        LPCDLGTEMPLATE lpTemplate,
+        _In_opt_    HWND hWndParent,
+        _In_opt_    DLGPROC lpDialogFunc,
+        _In_        LPARAM lParamInit
+        )
+    {
+        return CreateDialogIndirectParam(hInstance, lpTemplate, hWndParent, lpDialogFunc, lParamInit);
+    }
+
+    LIBRARY_EXPORT HWND WINAPI DetourCreateDialogParamA(
+        _In_opt_    HINSTANCE hInstance,
+        _In_        LPCSTR lpTemplateName,
+        _In_opt_    HWND hWndParent,
+        _In_opt_    DLGPROC lpDialogFunc,
+        _In_        LPARAM dwInitParam
+        )
+    {
+        LPWSTR lpuTemplateName = (LPWSTR) lpTemplateName;
+        if ((SIZE_T) lpTemplateName > 0xFFFF)
+        {
+            lpuTemplateName = AnsiToUnicode(lpTemplateName);
+        }
+        HWND Result = CreateDialogParam(hInstance, lpuTemplateName, hWndParent, lpDialogFunc, dwInitParam);
+
+        if ((SIZE_T) lpTemplateName > 0xFFFF)
+        {
+            KeepLastErrorAndFree(lpuTemplateName);
+        }
+        return Result;
+    }
+
+    LIBRARY_EXPORT LRESULT WINAPI DetourDialogBoxA(
+        _In_opt_    HINSTANCE hInstance,
+        _In_        LPCSTR lpTemplate,
+        _In_opt_    HWND hWndParent,
+        _In_opt_    DLGPROC lpDialogFunc
+        )
+    {
+        LPWSTR lpuTemplate = (LPWSTR) lpTemplate;
+        if ((SIZE_T) lpTemplate > 0xFFFF)
+        {
+            lpuTemplate = AnsiToUnicode(lpTemplate);
+        }
+        LRESULT Result = DialogBox(hInstance, lpuTemplate, hWndParent, lpDialogFunc);
+
+        if ((SIZE_T) lpTemplate > 0xFFFF)
+        {
+            KeepLastErrorAndFree(lpuTemplate);
+        }
+        return Result;
+    }
+
+    LIBRARY_EXPORT INT_PTR WINAPI DetourDialogBoxIndirectA(
+        _In_opt_    HINSTANCE hInstance,
+        _In_        LPCDLGTEMPLATE lpTemplate,
+        _In_opt_    HWND hWndParent,
+        _In_opt_    DLGPROC lpDialogFunc
+        )
+    {
+        return DialogBoxIndirect(hInstance, lpTemplate, hWndParent, lpDialogFunc);
+    }
+
+    LIBRARY_EXPORT INT_PTR WINAPI DetourDialogBoxIndirectParamA(
+        _In_opt_    HINSTANCE hInstance,
+        _In_        LPCDLGTEMPLATE lpTemplate,
+        _In_opt_    HWND hWndParent,
+        _In_opt_    DLGPROC lpDialogFunc,
+        _In_        LPARAM lParamInit
+        )
+    {
+        return DialogBoxIndirectParam(hInstance, lpTemplate, hWndParent, lpDialogFunc, lParamInit);
+    }
+
     LIBRARY_EXPORT LRESULT WINAPI DetourDialogBoxParamA(
         _In_opt_    HINSTANCE hInstance,
         _In_        LPCSTR lpTemplateName,
@@ -184,6 +290,23 @@ extern "C" {
         {
             KeepLastErrorAndFree(lpuTemplateName);
         }
+        return Result;
+    }
+
+    LIBRARY_EXPORT UINT WINAPI DetourGetDlgItemTextA(
+        _In_    HWND hDlg,
+        _In_    int nIDDlgItem,
+        _Out_   LPSTR lpString,
+        _In_    int nMaxCount
+        )
+    {
+        LPWSTR lpuszString = (LPWSTR) WaffleAlloc(nMaxCount * sizeof(WCHAR));
+        UINT Result = GetDlgItemText(hDlg, nIDDlgItem, lpuszString, nMaxCount);
+
+        DWORD LastError = GetLastError();
+        WideCharToMultiByte(stNewEnvir.AnsiCodePage, 0, lpuszString, -1, lpString, nMaxCount, NULL, FALSE);
+        WaffleFree(lpuszString);
+        SetLastError(LastError);
         return Result;
     }
 
