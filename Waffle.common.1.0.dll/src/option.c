@@ -1,5 +1,31 @@
 ﻿#include "..\common.h"
 
+LIBRARY_EXPORT VOID WINAPI WaffleCheckOptionEncoding(
+    _In_    LPCTSTR lpFileName
+    )
+{
+    HANDLE hFile = CreateFile(lpFileName, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+    if (hFile)
+    {
+        DWORD dwFile;
+        WORD wBOM = 0xFEFF;
+        switch (GetLastError())
+        {
+        case ERROR_ALREADY_EXISTS:
+            ReadFile(hFile, &wBOM, 2, &dwFile, NULL);
+            if (wBOM != 0xFEFF && wBOM != 0xFFFE)
+            {
+                MessageBox(0, TEXT("FIXME:At least one of your config file is in the multibyte character set. Please use UTF-16."), 0, 0);
+            }
+            break;
+        case 0:
+            WriteFile(hFile, &wBOM, 2, &dwFile, NULL);
+            break;
+        }
+        CloseHandle(hFile);
+    }
+}
+
 LIBRARY_EXPORT VOID WINAPI WaffleGetOptionString(
     _In_        LPCTSTR lpszKeyName,
     _Inout_     LPTSTR lpszValue,
@@ -17,6 +43,7 @@ LIBRARY_EXPORT VOID WINAPI WaffleGetOptionString(
     //1.Check Hash.ini
     TCHAR szProcessHash[MAX_PATH];
     wsprintf(szProcessHash, TEXT("%s\\Hash.ini"), szConfigPath);
+    WaffleCheckOptionEncoding(szProcessHash);
     GetPrivateProfileString(lpstProcessSetting->szProcessHash, lpszKeyName, lpszDefaultValue, lpszValue, nSize, szProcessHash);
     if (Wafflelstrcmp(lpszValue, lpszDefaultValue))
     {
@@ -26,6 +53,7 @@ LIBRARY_EXPORT VOID WINAPI WaffleGetOptionString(
     //2.Check Option.ini
     TCHAR szOption[MAX_PATH];
     wsprintf(szOption, TEXT("%s\\Option.ini"), szConfigPath);
+    WaffleCheckOptionEncoding(szOption);
     GetPrivateProfileString(TEXT("Default"), lpszKeyName, lpszDefaultValue, lpszValue, nSize, szOption);
     return;
 }
@@ -43,11 +71,13 @@ LIBRARY_EXPORT VOID WINAPI WaffleSetOptionString(
     if (bGlobal)
     {
         wsprintf(szOption, TEXT("%s\\Option.ini"), szConfigPath);
+        WaffleCheckOptionEncoding(szOption);
         WritePrivateProfileString(TEXT("Default"), lpszKeyName, lpszValue, szOption);
     }
     else
     {
         wsprintf(szOption, TEXT("%s\\Hash.ini"), szConfigPath);
+        WaffleCheckOptionEncoding(szOption);
         WritePrivateProfileString(lpstProcessSetting->szProcessHash, lpszKeyName, lpszValue, szOption);
     }
 
@@ -105,6 +135,8 @@ LIBRARY_EXPORT LPTSTR WINAPI WaffleGetOptionSectionNames(
     {
         return NULL;
     }
+
+    WaffleCheckOptionEncoding(szOption);
     while (GetPrivateProfileSectionNames(lpszSection, nSizeOfSection, szOption) == nSizeOfSection - 2)
     {
         nSizeOfSection = nSizeOfSection * 2;
@@ -137,6 +169,8 @@ LIBRARY_EXPORT LPTSTR WINAPI WaffleGetOptionSectionKeys(
     {
         return NULL;
     }
+
+    WaffleCheckOptionEncoding(szOption);
     while (GetPrivateProfileSection(lpszSection, lpszKey, nSizeOfKey, szOption) == nSizeOfKey - 2)
     {
         nSizeOfKey = nSizeOfKey * 2;

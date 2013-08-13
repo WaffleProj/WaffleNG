@@ -36,6 +36,7 @@ EXPORTS
 
     WaffleWriteLogFileW
     
+    WaffleCheckOptionEncodingW
     WaffleGetOptionStringW
     WaffleSetOptionStringW
     WaffleGetOptionIntW
