@@ -455,35 +455,35 @@ extern "C" {
         return BackupWideCharToMultiByte(CodePage, dwFlags, lpWideCharStr, cchWideChar, lpMultiByteStr, cbMultiByte, lpDefaultChar, lpUsedDefaultChar);
     }
 
+    /*
     LIBRARY_EXPORT int WINAPI DetourCompareStringA(
-        _In_    LCID Locale,
-        _In_    DWORD dwCmpFlags,
-        _In_    LPCSTR lpString1,
-        _In_    int cchCount1,
-        _In_    LPCSTR lpString2,
-        _In_    int cchCount2
-        )
+    _In_    LCID Locale,
+    _In_    DWORD dwCmpFlags,
+    _In_    LPCSTR lpString1,
+    _In_    int cchCount1,
+    _In_    LPCSTR lpString2,
+    _In_    int cchCount2
+    )
     {
-        /*
-        static LPCOMPARESTRINGA BackupCompareStringA;
-        if (!BackupCompareStringA)
-        {
-        BackupCompareStringA = (LPCOMPARESTRINGA) WaffleGetBackupAddress(TEXT("kernel32.dll"), TEXT("CompareStringA"));
-        }
-        */
-
-        LPWSTR lpuString1 = AnsiToUnicode(lpString1);
-        LPWSTR lpuString2 = AnsiToUnicode(lpString2);
-        //MessageBox(0, lpuString1, lpuString2, 0);
-        //int Result = BackupCompareStringA(Locale, dwCmpFlags, lpString1, cchCount1, lpString2, cchCount2);
-        int Result = CompareString(Locale, dwCmpFlags, lpuString1, cchCount1, lpuString2, cchCount2);
-
-        DWORD LastError = GetLastError();
-        WaffleFree(lpuString1);
-        WaffleFree(lpuString2);
-        SetLastError(LastError);
-        return Result;
+    static LPCOMPARESTRINGA BackupCompareStringA;
+    if (!BackupCompareStringA)
+    {
+    BackupCompareStringA = (LPCOMPARESTRINGA) WaffleGetBackupAddress(TEXT("kernel32.dll"), TEXT("CompareStringA"));
     }
+
+    LPWSTR lpuString1 = AnsiToUnicode(lpString1);
+    LPWSTR lpuString2 = AnsiToUnicode(lpString2);
+    //MessageBox(0, lpuString1, lpuString2, 0);
+    //int Result = BackupCompareStringA(Locale, dwCmpFlags, lpString1, cchCount1, lpString2, cchCount2);
+    int Result = CompareString(Locale, dwCmpFlags, lpuString1, cchCount1, lpuString2, cchCount2);
+
+    DWORD LastError = GetLastError();
+    WaffleFree(lpuString1);
+    WaffleFree(lpuString2);
+    SetLastError(LastError);
+    return Result;
+    }
+    */
 
     LIBRARY_EXPORT BOOL WINAPI DetourIsDBCSLeadByteEx(
         _In_    UINT CodePage,

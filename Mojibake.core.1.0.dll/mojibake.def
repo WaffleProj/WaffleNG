@@ -30,7 +30,6 @@ EXPORTS
     DetourGetSystemDefaultLangID
     DetourMultiByteToWideChar
     DetourWideCharToMultiByte
-    DetourCompareStringA
     DetourIsDBCSLeadByte
     DetourIsDBCSLeadByteEx
     DetourRaiseException
