@@ -116,8 +116,9 @@ extern "C" {
         case WM_SETTEXT:
             {
                 LPWSTR lpuszString = AnsiToUnicode((LPCSTR) lParam);
-                MessageBox(0, lpuszString, L"DetourDefWindowProcA", 0);
+                //DefWindowProc(hWnd, Msg, wParam, (LPARAM) lpuszString);
                 WaffleFree(lpuszString);
+                //break;
             }
         default:
             {
