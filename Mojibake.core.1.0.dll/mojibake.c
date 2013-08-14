@@ -57,6 +57,9 @@ LIBRARY_EXPORT SIZE_T WINAPI ComponentInit(
     //Get fake font info
     EnumFontsA(GetDC(NULL), "MS Gothic", MojibakeEnumFontsProcA, 0);
 
+    //Subclass system controls
+    MojibakeSubclass();
+
     return 0;
 }
 

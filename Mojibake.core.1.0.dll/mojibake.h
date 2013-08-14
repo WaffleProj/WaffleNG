@@ -4,6 +4,7 @@
 #define WAFFLE_COMPONENT_BUILD
 #include <waffle.h>
 #include "src\rtl.h"
+#include "src\subclass.h"
 
 typedef struct
 {

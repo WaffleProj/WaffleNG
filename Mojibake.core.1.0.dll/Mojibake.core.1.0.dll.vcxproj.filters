@@ -21,6 +21,9 @@
     <ClInclude Include="src\rtl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\subclass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="mojibake.c">
@@ -36,6 +39,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\user32.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\subclass.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
