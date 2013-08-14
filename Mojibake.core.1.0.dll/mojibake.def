@@ -37,7 +37,6 @@ EXPORTS
     DetourCreateWindowA
     DetourCreateWindowExA
     DetourDefWindowProcA
-    DetourCallWindowProcA
     DetourCreateDialogA
     DetourCreateDialogIndirectA
     DetourCreateDialogIndirectParamA
@@ -50,8 +49,6 @@ EXPORTS
     DetourInsertMenuA
     DetourMessageBoxA
     DetourMessageBoxExA
-    DetourSendMessageA
-    DetourSetWindowTextA
     DetourExitWindowsEx
 
     DetourEnumFontsA
