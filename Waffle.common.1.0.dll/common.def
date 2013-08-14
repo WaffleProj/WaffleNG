@@ -18,25 +18,26 @@ EXPORTS
     WaffleInlineHandler
     WaffleExceptionDetour
     WaffleExceptionHandler
-    
+
     WaffleGetModuleDirectoryW
     WaffleDisableWow64FsRedirection
     WaffleRevertWow64FsRedirection
-    
+
     WaffleGetFileHashW
-    
+
     WaffleInit
 
     WaffleLoadComponentW
     WaffleAddComponentW
     WaffleFindComponent
-    
+
     WaffleCreateProcessW
     WaffleInjectDllW
     WaffleExecuteW
 
+    WaffleWriteLogFileA
     WaffleWriteLogFileW
-    
+
     WaffleCheckOptionEncodingW
     WaffleGetOptionStringW
     WaffleSetOptionStringW
@@ -45,13 +46,18 @@ EXPORTS
     WaffleGetOptionSectionKeysW
     WaffleGetOptionSectionNamesW
     WaffleGetOptionStringNumberW
-    
+
     WaffleGetMachineTypeW
-    
+
+    WafflelstrlenW
+    WafflelstrlenA
+    WafflelstrcatW
+    WafflelstrcatA
     WafflelstrcmpiW
     WafflelstrcmpiA
     WafflelstrcmpW
     WafflelstrcmpA
+
     WaffleStrToIntW
     WaffleStrToIntA
     WaffleGetProcAddressW
@@ -70,7 +76,7 @@ EXPORTS
     WaffleLeaveReaderLock
     WaffleLeaveWriterLock
     WaffleReleaseRWLock
-    
+
     WaffleOpenProcessSettingW
     WaffleCreateProcessSettingW
     WaffleResumeMainThread

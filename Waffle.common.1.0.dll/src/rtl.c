@@ -1,5 +1,73 @@
 ﻿#include "..\common.h"
 
+LIBRARY_EXPORT int WINAPI WafflelstrlenW(
+    _In_    LPCWSTR lpString
+    )
+{
+    if (lpString)
+    {
+        int i;
+        for (i = 0; !lpString[i]; i++);
+        return i;
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+LIBRARY_EXPORT int WINAPI WafflelstrlenA(
+    _In_    LPCSTR lpString
+    )
+{
+    if (lpString)
+    {
+        int i;
+        for (i = 0; !lpString[i]; i++);
+        return i;
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+LIBRARY_EXPORT LPWSTR WINAPI WafflelstrcatW(
+    _In_    LPWSTR lpString1,
+    _In_    LPCWSTR lpString2
+    )
+{
+    if (!lpString1)
+    {
+        return NULL;
+    }
+
+    if (lpString2)
+    {
+        int i, j;
+        for (i = WafflelstrlenW(lpString1), j = 0; !lpString2[j]; lpString1[i] = lpString2[j], i++, j++);
+    }
+    return lpString1;
+}
+
+LIBRARY_EXPORT LPSTR WINAPI WafflelstrcatA(
+    _In_    LPSTR lpString1,
+    _In_    LPCSTR lpString2
+    )
+{
+    if (!lpString1)
+    {
+        return NULL;
+    }
+
+    if (lpString2)
+    {
+        int i, j;
+        for (i = WafflelstrlenA(lpString1), j = 0; !lpString2[j]; lpString1[i] = lpString2[j], i++, j++);
+    }
+    return lpString1;
+}
+
 LIBRARY_EXPORT int WINAPI WafflelstrcmpiW(
     _In_    LPCWSTR lpString1,
     _In_    LPCWSTR lpString2
@@ -276,12 +344,16 @@ LIBRARY_EXPORT LPBYTE WINAPI WaffleGetProcAddressA(
     _In_    LPCSTR lpszFuncName
     )
 {
+    LPBYTE lpAddress = NULL;
+
     //GetProcAddress won't work if hModule is invalid
     if (!hModule)
     {
         return NULL;
     }
 
+    SIZE_T lpExportTableBegin = 0;
+    SIZE_T lpExportTableEnd = 0;
     if (((PIMAGE_DOS_HEADER) hModule)->e_magic == IMAGE_DOS_SIGNATURE)
     {
         PIMAGE_DATA_DIRECTORY lpDataDirectory;
@@ -290,20 +362,22 @@ LIBRARY_EXPORT LPBYTE WINAPI WaffleGetProcAddressA(
         {
             PIMAGE_NT_HEADERS lpNtHeader = (PIMAGE_NT_HEADERS) ((SIZE_T) hModule + ((PIMAGE_DOS_HEADER) hModule)->e_lfanew);
             PIMAGE_OPTIONAL_HEADER lpOptionalHeader = &(lpNtHeader->OptionalHeader);
-            lpDataDirectory = (PIMAGE_DATA_DIRECTORY) (lpOptionalHeader->DataDirectory + IMAGE_DIRECTORY_ENTRY_EXPORT);
+            lpDataDirectory = &lpOptionalHeader->DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT];
         }
         else if (Magic == IMAGE_NT_OPTIONAL_HDR64_MAGIC)
         {
             PIMAGE_NT_HEADERS64 lpNtHeader = (PIMAGE_NT_HEADERS64) ((SIZE_T) hModule + ((PIMAGE_DOS_HEADER) hModule)->e_lfanew);
             PIMAGE_OPTIONAL_HEADER64 lpOptionalHeader = &(lpNtHeader->OptionalHeader);
-            lpDataDirectory = (PIMAGE_DATA_DIRECTORY) (lpOptionalHeader->DataDirectory + IMAGE_DIRECTORY_ENTRY_EXPORT);
+            lpDataDirectory = &lpOptionalHeader->DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT];
         }
         else
         {
             return NULL;
         }
 
-        PIMAGE_EXPORT_DIRECTORY lpExportTable = (PIMAGE_EXPORT_DIRECTORY) ((SIZE_T) hModule + lpDataDirectory->VirtualAddress);
+        lpExportTableBegin = (SIZE_T) hModule + lpDataDirectory->VirtualAddress;
+        PIMAGE_EXPORT_DIRECTORY lpExportTable = (PIMAGE_EXPORT_DIRECTORY) lpExportTableBegin;
+        lpExportTableEnd = (SIZE_T) lpExportTable + lpDataDirectory->Size;
 
         DWORD nName = lpExportTable->NumberOfNames;
         DWORD nFunction = lpExportTable->NumberOfFunctions;
@@ -334,17 +408,34 @@ LIBRARY_EXPORT LPBYTE WINAPI WaffleGetProcAddressA(
                     End = i - 1;
                 }
             }
-            return (LPBYTE) ((SIZE_T) hModule + lpFunction[lpOrdinal[i]]);
+            lpAddress = (LPBYTE) ((SIZE_T) hModule + lpFunction[lpOrdinal[i]]);
         }
         else
         {
             if ((SIZE_T) lpszFuncName <= nFunction)
             {
-                return (LPBYTE) ((SIZE_T) hModule + lpFunction[(SIZE_T) lpszFuncName - lpExportTable->Base]);
+                lpAddress = (LPBYTE) ((SIZE_T) hModule + lpFunction[(SIZE_T) lpszFuncName - lpExportTable->Base]);
             }
         }
     }
-    return NULL;
+
+    if (lpAddress) //check if this address is pointing to another library
+    {
+        if (lpExportTableBegin < (SIZE_T) lpAddress && (SIZE_T) lpAddress < lpExportTableEnd)
+        {
+            LPCSTR lpszExport = (LPCSTR) lpAddress;
+            CHAR szLibrary[1024];   //H·A·R·D·C·O·D·E·D～
+            int i;
+            for (i = 0; lpszExport[i] != '.'; szLibrary[i] = lpszExport[i], i++);       //maybe the name of this library contains dot?
+            szLibrary[i] = '\0';
+            i++;
+            WafflelstrcatA(szLibrary, ".dll");
+            HMODULE hExport = GetModuleHandleA(szLibrary);
+            lpAddress = WaffleGetProcAddressA(hExport, &lpszExport[i]);
+        }
+    }
+
+    return lpAddress;
 }
 
 LIBRARY_EXPORT VOID WINAPI WaffleIntBox(

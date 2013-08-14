@@ -45,7 +45,7 @@ LIBRARY_EXPORT SIZE_T WINAPI WaffleInit(
 
     WaffleLoadDetourOption();
 
-    DWORD x, y;
+    int x, y;   //we should use the signed data
     AddVectoredExceptionHandler(TRUE, WaffleExceptionHandler);
     for (x = lpstProcessSetting->lpstLibrary[0].dwBehind; x >= 0; x--)
     {

@@ -1,7 +1,17 @@
 ﻿#include "..\common.h"
 
-LIBRARY_EXPORT VOID WINAPI WaffleWriteLogFile(
-    _In_    LPCTSTR lpszMessage
+LIBRARY_EXPORT VOID WINAPI WaffleWriteLogFileA(
+    _In_    LPCSTR lpszMessage
+    )
+{
+    LPWSTR lpuszMessage = (LPWSTR) WaffleAlloc((WafflelstrlenA(lpszMessage) + 1) * 2);
+    int i;
+    for (i = 0; lpszMessage[i]; lpuszMessage[i] = lpszMessage[i], i++);
+    WaffleWriteLogFileW(lpuszMessage);
+}
+
+LIBRARY_EXPORT VOID WINAPI WaffleWriteLogFileW(
+    _In_    LPCWSTR lpszMessage
     )
 {
     static HANDLE hLogFile;
