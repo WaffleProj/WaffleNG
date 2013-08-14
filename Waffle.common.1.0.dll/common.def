@@ -6,11 +6,11 @@ EXPORTS
 
     WaffleFindLibrary
     WaffleCopyLibraryW
+    WaffleAddDetour
     WaffleSetDetour
+    WaffleLoadDetourOption
     WaffleAddFunctionW
     WaffleAddLibraryW
-    WaffleCreateFunctionArrayW
-    WaffleCreateLibraryArrayW
     WaffleGetBackupAddressW
     WaffleFindDetourAddress
 

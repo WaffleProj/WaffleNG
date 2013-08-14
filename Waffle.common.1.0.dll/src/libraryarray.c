@@ -24,8 +24,7 @@ LIBRARY_EXPORT VOID WINAPI WaffleCopyLibrary(
     _In_    LPWAFFLE_LIBRARY_ARRAY lpstNewLibrary
     )
 {
-    lpstNewLibrary->hSource = GetModuleHandle(lpstNewLibrary->lpszLibrary);
-    if (!lpstNewLibrary->hSource)
+    if (!lpstNewLibrary)
     {
         return;
     }
@@ -35,9 +34,11 @@ LIBRARY_EXPORT VOID WINAPI WaffleCopyLibrary(
         int i;
         for (i = lpstProcessSetting->lpstLibrary[0].dwBehind; i >= 0; i--)
         {
-            if (lpstProcessSetting->lpstLibrary[i].hSource == lpstNewLibrary->hSource)
+            if (lpstNewLibrary->hSource == lpstProcessSetting->lpstLibrary[i].hSource)
             {
-                RtlMoveMemory(lpstNewLibrary, &lpstProcessSetting->lpstLibrary[i], sizeof(WAFFLE_LIBRARY_ARRAY));
+                lpstNewLibrary->hSourceEnd = lpstProcessSetting->lpstLibrary[i].hSourceEnd;
+                lpstNewLibrary->hBackup = lpstProcessSetting->lpstLibrary[i].hBackup;
+                lpstNewLibrary->hBackupEnd = lpstProcessSetting->lpstLibrary[i].hBackupEnd;
                 return;
             }
         }
@@ -73,77 +74,63 @@ LIBRARY_EXPORT VOID WINAPI WaffleCopyLibrary(
 }
 
 LIBRARY_EXPORT VOID WINAPI WaffleAddLibrary(
-    _In_    LPWAFFLE_LIBRARY_ARRAY lpstNewLibrary
+    _In_    HMODULE hModule
     )
 {
-    if (!lpstProcessSetting->lpstLibrary)
+    //Check argument
+    if (!hModule)
     {
-        lpstProcessSetting->lpstLibrary = (LPWAFFLE_LIBRARY_ARRAY) WaffleAlloc(sizeof(WAFFLE_LIBRARY_ARRAY));
-        if (!lpstProcessSetting->lpstLibrary)
+        return;
+    }
+
+    //Do nothing if we have one
+    if (lpstProcessSetting->lpstLibrary)
+    {
+        int i;
+        for (i = lpstProcessSetting->lpstLibrary[0].dwBehind; i >= 0; i--)
+        {
+            if (hModule == lpstProcessSetting->lpstLibrary[i].hSource)
+            {
+                return;
+            }
+        }
+    }
+
+    LPWAFFLE_LIBRARY_ARRAY lpstLibrary = lpstProcessSetting->lpstLibrary;
+
+    //Allocate the memory for new library
+    if (!lpstLibrary)
+    {
+        lpstLibrary = (LPWAFFLE_LIBRARY_ARRAY) WaffleAlloc(sizeof(WAFFLE_LIBRARY_ARRAY));
+        if (!lpstLibrary)
         {
             MessageBox(0, TEXT("FIXME:Unable to allocate memory for library array"), 0, 0);
             ExitProcess(0);
         }
-        lpstNewLibrary->dwBehind = 0;
     }
     else
     {
-        int i = lpstProcessSetting->lpstLibrary[0].dwBehind - lpstNewLibrary->dwBehind;
-        if (lpstProcessSetting->lpstLibrary[i].hSource == lpstNewLibrary->hSource)
+        int i;
+        for (i = lpstLibrary[0].dwBehind; i >= 0; i--)
         {
-            return;
+            lpstLibrary[i].dwBehind++;
         }
-
-        for (i = lpstProcessSetting->lpstLibrary[0].dwBehind; i >= 0; i--)
-        {
-            lpstProcessSetting->lpstLibrary[i].dwBehind++;
-        }
-        lpstProcessSetting->lpstLibrary = (LPWAFFLE_LIBRARY_ARRAY) WaffleReAlloc(lpstProcessSetting->lpstLibrary, sizeof(WAFFLE_LIBRARY_ARRAY)*(lpstProcessSetting->lpstLibrary[0].dwBehind + 1));
-        if (!lpstProcessSetting->lpstLibrary)
+        lpstLibrary = (LPWAFFLE_LIBRARY_ARRAY) WaffleReAlloc(lpstLibrary, sizeof(WAFFLE_LIBRARY_ARRAY) * (lpstLibrary[0].dwBehind + 1));
+        if (!lpstLibrary)
         {
             MessageBox(0, TEXT("FIXME:Unable to add elements in library array"), 0, 0);
             ExitProcess(0);
         }
     }
-    RtlMoveMemory(&lpstProcessSetting->lpstLibrary[lpstProcessSetting->lpstLibrary[0].dwBehind], lpstNewLibrary, sizeof(WAFFLE_LIBRARY_ARRAY));
-    lpstProcessSetting->lpstLibrary[lpstProcessSetting->lpstLibrary[0].dwBehind].dwBehind = 0;
-}
+    lpstProcessSetting->lpstLibrary = lpstLibrary;
 
-LIBRARY_EXPORT int WINAPI WaffleCreateLibraryArray(VOID)
-{
-    LPTSTR lpszSection = WaffleGetOptionSectionNames(TEXT("Detour.ini"));
-    if (!lpszSection)
-    {
-        MessageBox(0, TEXT("FIXME:Unable to allocate more memory to create library array"), 0, 0);
-        return 0;
-    }
-
-    int nLibrary = 0;
-    {
-        LPTSTR lpszNextSection = lpszSection;
-        DWORD nSizeOfSection = lstrlen(lpszNextSection);
-        while (nSizeOfSection)
-        {
-            //Check if we already loaded this library
-            //for now we just load everything because we don't have a function to work with LoadLibrary
-            //HMODULE hLibrary = GetModuleHandle(lpszNext);
-            HMODULE hLibrary = LoadLibrary(lpszNextSection);
-            if (hLibrary)
-            {
-                nLibrary++;
-                WAFFLE_LIBRARY_ARRAY stLibrary;
-                RtlZeroMemory(&stLibrary, sizeof(stLibrary));
-                stLibrary.lpszLibrary = lpszNextSection;
-                WaffleCopyLibrary(&stLibrary);
-                if (WaffleCreateFunctionArray(&stLibrary))
-                {
-                    WaffleAddLibrary(&stLibrary);
-                }
-            }
-
-            lpszNextSection = lpszNextSection + nSizeOfSection + 1;
-            nSizeOfSection = lstrlen(lpszNextSection);
-        }
-    }
-    return nLibrary;
+    //get the information
+    WAFFLE_LIBRARY_ARRAY stNewLibrary;
+    stNewLibrary.dwBehind = 0;
+    stNewLibrary.lpszLibrary = (LPTSTR) WaffleAlloc(MAX_PATH * sizeof(TCHAR));
+    GetModuleFileName(hModule, stNewLibrary.lpszLibrary, MAX_PATH);
+    stNewLibrary.hSource = hModule;
+    stNewLibrary.lpstFunction = NULL;
+    WaffleCopyLibrary(&stNewLibrary);
+    RtlMoveMemory(&lpstLibrary[lpstLibrary[0].dwBehind], &stNewLibrary, sizeof(WAFFLE_LIBRARY_ARRAY));
 }

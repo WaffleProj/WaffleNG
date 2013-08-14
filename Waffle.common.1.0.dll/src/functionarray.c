@@ -1,49 +1,36 @@
 ﻿#include "..\common.h"
 
-LIBRARY_EXPORT BOOL WINAPI WaffleAddFunction(
-    _In_    LPWAFFLE_LIBRARY_ARRAY lpstNewLibrary,
-    _In_    LPCTSTR lpszFunction,
-    _In_    HMODULE hDetour,
-    _In_    LPCTSTR lpszDetour
+LIBRARY_EXPORT VOID WINAPI WaffleAddFunction(
+    _In_    LPWAFFLE_FUNCTION_ARRAY lpstNewFunction,
+    _In_    HMODULE hDetour
     )
 {
-    if (lpszFunction[0] == TEXT('#')) //This is a comment
+    //Check argument
+    if (!lpstNewFunction->lpSource)
     {
-        return FALSE;
+        return;
     }
 
-    LPBYTE lpSource = WaffleGetProcAddress(lpstNewLibrary->hSource, lpszFunction);
-    if (!lpSource)  //This function doesn't exist
+    //Do nothing if we have one
+    LPWAFFLE_LIBRARY_ARRAY lpstLibrary = &lpstProcessSetting->lpstLibrary[WaffleFindLibrary(lpstNewFunction->lpSource)];
+    LPWAFFLE_FUNCTION_ARRAY lpstFunction = lpstLibrary->lpstFunction;
+    if (lpstFunction)
     {
-        return FALSE;
-    }
-
-    WAFFLE_LIBRARY_ARRAY stLibrary;
-    RtlZeroMemory(&stLibrary, sizeof(stLibrary));
-    LPWAFFLE_LIBRARY_ARRAY lpstOldLibrary = lpstNewLibrary;
-
-    /*
-    if (WaffleFindLibrary(lpSource) < 0)  //def file->export:DefWindowProcA=ntdll.NtdllDefWindowProc_A
-    {
-        HMODULE hModule;
-        if (GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, (LPCTSTR) lpSource, &hModule))
+        int j;
+        for (j = lpstFunction[0].dwBehind; j >= 0; j--)
         {
-            lpstNewLibrary = &stLibrary;
-            stLibrary.lpszLibrary = (LPCTSTR) WaffleAlloc(MAX_PATH * sizeof(TCHAR));
-            GetModuleFileName(hModule, (LPTSTR) stLibrary.lpszLibrary, MAX_PATH);
-            WaffleCopyLibrary(lpstNewLibrary);
-        }
-        else
-        {
-            return FALSE;
+            if (lpstNewFunction->lpSource == lpstFunction[j].lpSource)
+            {
+                return;
+            }
         }
     }
-    */
 
-    if (!lpstNewLibrary->lpstFunction)
+    //Allocate the memory for new library
+    if (!lpstFunction)
     {
-        lpstNewLibrary->lpstFunction = (LPWAFFLE_FUNCTION_ARRAY) WaffleAlloc(sizeof(WAFFLE_FUNCTION_ARRAY));
-        if (!lpstNewLibrary->lpstFunction)
+        lpstFunction = (LPWAFFLE_FUNCTION_ARRAY) WaffleAlloc(sizeof(WAFFLE_FUNCTION_ARRAY));
+        if (!lpstFunction)
         {
             MessageBox(0, TEXT("FIXME:Unable to allocate memory for function array"), 0, 0);
             ExitProcess(0);
@@ -52,95 +39,38 @@ LIBRARY_EXPORT BOOL WINAPI WaffleAddFunction(
     else
     {
         int i;
-        for (i = lpstNewLibrary->lpstFunction[0].dwBehind; i >= 0; i--)
+        for (i = lpstFunction[0].dwBehind; i >= 0; i--)
         {
-            lpstNewLibrary->lpstFunction[i].dwBehind++;
+            lpstFunction[i].dwBehind++;
         }
-        lpstNewLibrary->lpstFunction = (LPWAFFLE_FUNCTION_ARRAY) WaffleReAlloc(lpstNewLibrary->lpstFunction, sizeof(WAFFLE_FUNCTION_ARRAY)*(lpstNewLibrary->lpstFunction[0].dwBehind + 1));
-        if (!lpstNewLibrary->lpstFunction)
+        lpstFunction = (LPWAFFLE_FUNCTION_ARRAY) WaffleReAlloc(lpstFunction, sizeof(WAFFLE_FUNCTION_ARRAY) * (lpstFunction[0].dwBehind + 1));
+        if (!lpstFunction)
         {
             MessageBox(0, TEXT("FIXME:Unable to add elements in function array"), 0, 0);
             ExitProcess(0);
         }
     }
+    lpstLibrary->lpstFunction = lpstFunction;
 
-    lpstNewLibrary->lpstFunction[lpstNewLibrary->lpstFunction[0].dwBehind].dwBehind = 0;
-    lpstNewLibrary->lpstFunction[lpstNewLibrary->lpstFunction[0].dwBehind].lpszFunction = lpszFunction;
-    lpstNewLibrary->lpstFunction[lpstNewLibrary->lpstFunction[0].dwBehind].lpSource = lpSource;
-    if (lpstNewLibrary == &stLibrary)
-    {
-        lpstNewLibrary->lpstFunction[lpstNewLibrary->lpstFunction[0].dwBehind].lpBackup = (LPBYTE) ((SIZE_T) WaffleGetProcAddress(lpstOldLibrary->hSource, lpszFunction) - (SIZE_T) lpstNewLibrary->hSource + (SIZE_T) lpstNewLibrary->hBackup);
-    }
-    else
-    {
-        lpstNewLibrary->lpstFunction[lpstNewLibrary->lpstFunction[0].dwBehind].lpBackup = WaffleGetProcAddress(lpstNewLibrary->hBackup, lpszFunction);
-    }
-    if (!hDetour)
-    {
-        lpstNewLibrary->lpstFunction[lpstNewLibrary->lpstFunction[0].dwBehind].lpDetour = 0;
-    }
-    else if (!lpszDetour)
-    {
-        DWORD nSize = lstrlen(lpszFunction) + sizeof(TEXT("Detour"));
-        LPTSTR lpszDefaultDetour = (LPTSTR) WaffleAlloc(nSize*sizeof(TCHAR));
-        wsprintf(lpszDefaultDetour, TEXT("Detour%s"), lpszFunction);
-        lpstNewLibrary->lpstFunction[lpstNewLibrary->lpstFunction[0].dwBehind].lpDetour = WaffleGetProcAddress(hDetour, lpszDefaultDetour);
-        if (!lpstNewLibrary->lpstFunction[lpstNewLibrary->lpstFunction[0].dwBehind].lpDetour)
-        {
-            TCHAR szMissing[256];
-            wsprintf(szMissing, TEXT("FIXME:Cannot find %s for %s"), lpszDefaultDetour, lpszFunction);
-            MessageBox(0, szMissing, 0, 0);
-        }
-        WaffleFree(lpszDefaultDetour);
-    }
-    else
-    {
-        lpstNewLibrary->lpstFunction[lpstNewLibrary->lpstFunction[0].dwBehind].lpDetour = WaffleGetProcAddress(hDetour, lpszDetour);
-        if (!lpstNewLibrary->lpstFunction[lpstNewLibrary->lpstFunction[0].dwBehind].lpDetour)
-        {
-            TCHAR szMissing[256];
-            wsprintf(szMissing, TEXT("FIXME:Cannot find %s for %s"), lpszDetour, lpszFunction);
-            MessageBox(0, szMissing, 0, 0);
-        }
-    }
+    //get the information
+    lpstNewFunction->dwBehind = 0;
+    //lpstNewFunction->lpBackup = (LPBYTE) (lpstLibrary->hSourceEnd - (SIZE_T) lpstNewFunction->lpSource + lpstLibrary->hBackupEnd);
+    lpstNewFunction->lpBackup = (LPBYTE) ((SIZE_T) lpstNewFunction->lpSource - (SIZE_T) lpstLibrary->hSource + (SIZE_T) lpstLibrary->hBackup);
 
-    if (lpstNewLibrary == &stLibrary)
+    DWORD nSize = lstrlen(lpstNewFunction->lpszFunction) + sizeof(TEXT("Detour")) / sizeof(TCHAR);
+    LPTSTR lpszDetour = (LPTSTR) WaffleAlloc(nSize * sizeof(TCHAR));
+    wsprintf(lpszDetour, TEXT("Detour%s"), lpstNewFunction->lpszFunction);
+    lpstNewFunction->lpDetour = WaffleGetProcAddress(hDetour, lpszDetour);
+    if (!lpstNewFunction->lpDetour)
     {
-        WaffleAddLibrary(lpstNewLibrary);
+        TCHAR szMissing[256];
+        wsprintf(szMissing, TEXT("FIXME:Cannot find %s"), lpszDetour);
+        MessageBox(0, szMissing, 0, 0);
     }
+    WaffleFree(lpszDetour);
 
-    return TRUE;
+    RtlMoveMemory(&lpstFunction[lpstFunction[0].dwBehind], lpstNewFunction, sizeof(WAFFLE_FUNCTION_ARRAY));
 }
-
-LIBRARY_EXPORT DWORD WINAPI WaffleCreateFunctionArray(
-    _In_    LPWAFFLE_LIBRARY_ARRAY lpstNewLibrary
-    )
-{
-    //GetAllKey
-    LPTSTR lpszKey = WaffleGetOptionSectionKeys(TEXT("Detour.ini"), lpstNewLibrary->lpszLibrary);
-    //get the list
-    DWORD nFunction = 0;
-
-    LPTSTR lpszNextKey = lpszKey;
-    DWORD nSizeOfKey = lstrlen(lpszNextKey);
-    while (nSizeOfKey)
-    {
-        int i;
-        for (i = 0; lpszNextKey[i] != TEXT('=') && lpszNextKey[i] != TEXT('\0'); i++);  //FIXME
-        lpszNextKey[i] = TEXT('\0');
-
-        DWORD nSizeOfFunction = lstrlen(lpszNextKey);
-        if (WaffleAddFunction(lpstNewLibrary, lpszNextKey, WaffleLoadComponent(lpszNextKey + nSizeOfFunction + 1), NULL))
-        {
-            nFunction++;
-        }
-
-        lpszNextKey = lpszNextKey + nSizeOfKey + 1;
-        nSizeOfKey = lstrlen(lpszNextKey);
-    }
-    return nFunction;
-}
-
 LIBRARY_EXPORT LPVOID WINAPI WaffleGetBackupAddress(
     _In_    LPCTSTR lpszLibrary,
     _In_    LPCTSTR lpszFunction

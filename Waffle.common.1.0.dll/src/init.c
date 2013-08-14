@@ -35,23 +35,23 @@ LIBRARY_EXPORT SIZE_T WINAPI WaffleInit(
     _In_    LPVOID lpReserved
     )
 {
-    TCHAR szExecutable[MAX_PATH];
-    GetModuleFileName(NULL, szExecutable, sizeof(szExecutable) / sizeof(szExecutable[0]));
-    WaffleSetOptionString(TEXT("ProgramName"), szExecutable, FALSE);
     lpstProcessSetting->hGlobalMutex = CreateMutex(NULL, FALSE, NULL);
 
     WaffleAddComponent(TEXT("Waffle.common.1.0.dll"));  //so we can use WaffleAlloc
 
-    int nLibrary = WaffleCreateLibraryArray();
-    if (nLibrary > 0)
+    TCHAR szExecutable[MAX_PATH];
+    GetModuleFileName(NULL, szExecutable, sizeof(szExecutable) / sizeof(szExecutable[0]));
+    WaffleSetOptionString(TEXT("ProgramName"), szExecutable, FALSE);
+
+    WaffleLoadDetourOption();
+
+    DWORD x, y;
+    AddVectoredExceptionHandler(TRUE, WaffleExceptionHandler);
+    for (x = lpstProcessSetting->lpstLibrary[0].dwBehind; x >= 0; x--)
     {
-        AddVectoredExceptionHandler(TRUE, WaffleExceptionHandler);
-        for (nLibrary--; nLibrary >= 0; nLibrary--)
-        {
-            DWORD countFunction;
-            for (countFunction = 0; WaffleSetDetour(nLibrary, countFunction); countFunction++);
-        }
+        for (y = 0; WaffleSetDetour(x, y); y++);
     }
+
 
     //return 0; //for attaching debugger
 
