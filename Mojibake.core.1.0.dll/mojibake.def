@@ -14,6 +14,7 @@ EXPORTS
     DetourFindNextFileA
     DetourGetFileAttributesA
     DetourSetFileAttributesA
+    DetourGetFullPathNameA
     DetourGetModuleFileNameA
     DetourGetModuleHandleA
     DetourLoadLibraryA
@@ -47,6 +48,7 @@ EXPORTS
     DetourDialogBoxParamA
     DetourGetDlgItemTextA
     DetourInsertMenuA
+    DetourLoadStringA
     DetourMessageBoxA
     DetourMessageBoxExA
     DetourExitWindowsEx

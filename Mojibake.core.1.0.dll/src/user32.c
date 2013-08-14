@@ -363,6 +363,34 @@ extern "C" {
         return Result;
     }
 
+    LIBRARY_EXPORT int WINAPI DetourLoadStringA(
+        _In_opt_    HINSTANCE hInstance,
+        _In_        UINT uID,
+        _Out_       LPSTR lpBuffer,
+        _In_        int nBufferMax
+        )
+    {
+        static LPLOADSTRINGA BackupLoadStringA;
+        if (!BackupLoadStringA)
+        {
+            BackupLoadStringA = (LPLOADSTRINGA) WaffleGetBackupAddress(TEXT("user32.dll"), TEXT("LoadStringA"));
+        }
+
+        if (!nBufferMax)
+        {
+            MessageBox(0, TEXT("DetourLoadStringA with zero nBufferMax"), 0, 0);
+            return BackupLoadStringA(hInstance, uID, lpBuffer, nBufferMax);
+        }
+
+        LPWSTR lpuBuffer = (LPWSTR) WaffleAlloc(nBufferMax * sizeof(WCHAR));
+        int Result = LoadString(hInstance, uID, lpuBuffer, nBufferMax);
+        DWORD LastError = GetLastError();
+        WideCharToMultiByte(stNewEnvir.AnsiCodePage, 0, lpuBuffer, -1, lpBuffer, nBufferMax * sizeof(CHAR), NULL, FALSE);
+        WaffleFree(lpuBuffer);
+        SetLastError(LastError);
+        return Result;
+    }
+
     LIBRARY_EXPORT int WINAPI DetourMessageBoxExA(
         _In_opt_    HWND hWnd,
         _In_opt_    LPCSTR lpText,
@@ -394,48 +422,48 @@ extern "C" {
 
     /*
     LIBRARY_EXPORT LRESULT WINAPI DetourSendMessageA(
-        _In_    HWND hWnd,
-        _In_    UINT Msg,
-        _In_    WPARAM wParam,
-        _In_    LPARAM lParam
-        )
+    _In_    HWND hWnd,
+    _In_    UINT Msg,
+    _In_    WPARAM wParam,
+    _In_    LPARAM lParam
+    )
     {
-        static LPSENDMESSAGEA BackupSendMessageA;
-        if (!BackupSendMessageA)
-        {
-            BackupSendMessageA = (LPSENDMESSAGEA) WaffleGetBackupAddress(TEXT("user32.dll"), TEXT("SendMessageA"));
-        }
+    static LPSENDMESSAGEA BackupSendMessageA;
+    if (!BackupSendMessageA)
+    {
+    BackupSendMessageA = (LPSENDMESSAGEA) WaffleGetBackupAddress(TEXT("user32.dll"), TEXT("SendMessageA"));
+    }
 
-        LRESULT Result;
-        switch (Msg)
-        {
-        case WM_SETTEXT:
-            {
-                LPWSTR lpuszString = AnsiToUnicode((LPCSTR) lParam);
-                Result = SendMessage(hWnd, Msg, wParam, (LPARAM) lpuszString);
-                KeepLastErrorAndFree(lpuszString);
-                break;
-            }
-        default:
-            {
-                return BackupSendMessageA(hWnd, Msg, wParam, lParam);
-            }
-        }
+    LRESULT Result;
+    switch (Msg)
+    {
+    case WM_SETTEXT:
+    {
+    LPWSTR lpuszString = AnsiToUnicode((LPCSTR) lParam);
+    Result = SendMessage(hWnd, Msg, wParam, (LPARAM) lpuszString);
+    KeepLastErrorAndFree(lpuszString);
+    break;
+    }
+    default:
+    {
+    return BackupSendMessageA(hWnd, Msg, wParam, lParam);
+    }
+    }
 
-        return Result;
+    return Result;
     }
 
     LIBRARY_EXPORT BOOL WINAPI DetourSetWindowTextA(
-        _In_        HWND hWnd,
-        _In_opt_    LPCSTR lpString
-        )
+    _In_        HWND hWnd,
+    _In_opt_    LPCSTR lpString
+    )
     {
-        LPWSTR lpuszString = AnsiToUnicode(lpString);
-        //MessageBox(0,lpuszString,TEXT("DetourSetWindowTextA"),0);
-        BOOL Result = SetWindowText(hWnd, lpuszString);
+    LPWSTR lpuszString = AnsiToUnicode(lpString);
+    //MessageBox(0,lpuszString,TEXT("DetourSetWindowTextA"),0);
+    BOOL Result = SetWindowText(hWnd, lpuszString);
 
-        KeepLastErrorAndFree(lpuszString);
-        return Result;
+    KeepLastErrorAndFree(lpuszString);
+    return Result;
     }
     */
 

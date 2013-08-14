@@ -230,6 +230,41 @@ extern "C" {
         return Result;
     }
 
+    LIBRARY_EXPORT DWORD WINAPI DetourGetFullPathNameA(
+        _In_    LPCSTR lpFileName,
+        _In_    DWORD nBufferLength,
+        _Out_   LPSTR lpBuffer,
+        _Out_   LPSTR *lpFilePart
+        )
+    {
+        LPWSTR lpuszFileName = AnsiToUnicode(lpFileName);
+        LPWSTR lpuBuffer = (LPWSTR) WaffleAlloc(sizeof(WCHAR) * nBufferLength);
+        LPWSTR lpuFilePart = NULL;
+
+        LPWSTR *lplpuFilePart = NULL;
+        if (lpFilePart)
+        {
+            lplpuFilePart = &lpuFilePart;
+        }
+
+        GetFullPathName(lpuszFileName, nBufferLength, lpuBuffer, lplpuFilePart);
+
+        DWORD LastError = GetLastError();
+        WideCharToMultiByte(stNewEnvir.AnsiCodePage, 0, lpuBuffer, -1, lpBuffer, nBufferLength, NULL, NULL);
+        WaffleFree(lpuszFileName);
+        WaffleFree(lpuBuffer);
+        int Result = lstrlenA(lpBuffer);        //This is not the correct method to get the return value, but it should work in the most of cases.
+        if (lpFilePart && lpuFilePart)
+        {
+            *lpFilePart = lpBuffer + Result;
+            int i;
+            for (i = Result; (*lpFilePart)[i] != '\\'; i--);
+            *lpFilePart = *lpFilePart + i;
+        }
+        SetLastError(LastError);
+        return Result;
+    }
+
     LIBRARY_EXPORT DWORD WINAPI DetourGetModuleFileNameA(
         _In_opt_    HMODULE hModule,
         _Out_       LPSTR lpFilename,
