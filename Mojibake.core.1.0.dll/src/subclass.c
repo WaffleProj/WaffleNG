@@ -16,7 +16,7 @@ LRESULT CALLBACK MojibakeSubclassComboBox(
         {
             LPWSTR lpuszText = (LPWSTR) AnsiToUnicode((LPCSTR) lParam);
             Result = CallWindowProc(stSubclass.lpComboBoxW, hwnd, uMsg, wParam, (LPARAM) lpuszText);
-            KeepLastErrorAndFree(lpuszText);
+            MojibakeFree(lpuszText);
             break;
         }
     case CB_GETLBTEXTLEN:
@@ -27,7 +27,7 @@ LRESULT CALLBACK MojibakeSubclassComboBox(
             LPWSTR lpuszText = (LPWSTR) WaffleAlloc(nText * sizeof(WCHAR));
             CallWindowProcA(stSubclass.lpComboBoxA, hwnd, CB_GETLBTEXT, wParam, (LPARAM) lpuszText);
             Result = (WideCharToMultiByte(stNewEnvir.AnsiCodePage, 0, lpuszText, -1, NULL, 0, NULL, NULL) - 1) * 2;
-            WaffleFree(lpuszText);
+            MojibakeFree(lpuszText);
             SetLastError(LastError);
             break;
         }
@@ -38,7 +38,7 @@ LRESULT CALLBACK MojibakeSubclassComboBox(
             CallWindowProc(stSubclass.lpComboBoxW, hwnd, uMsg, wParam, (LPARAM) lpuszText);
             DWORD LastError = GetLastError();
             Result = WideCharToMultiByte(stNewEnvir.AnsiCodePage, 0, lpuszText, -1, (LPSTR) lParam, 0x7FFFFFFF, NULL, NULL) - 1;
-            WaffleFree(lpuszText);
+            MojibakeFree(lpuszText);
             SetLastError(LastError);
             break;
         }

@@ -5,6 +5,17 @@
 extern "C" {
 #endif
 
+    LPWSTR WINAPI MBCSToUnicode(
+        _In_    UINT AnsiCodePage,
+        _In_    LPCSTR lpszText
+        );
+
+    LPSTR WINAPI MBCSToMBCS(
+        _In_    UINT FromCodePage,
+        _In_    UINT ToCodePage,
+        _In_    LPCSTR lpszText
+        );
+
     LPWSTR WINAPI AnsiToUnicode(
         _In_    LPCSTR lpszText
         );
@@ -13,7 +24,7 @@ extern "C" {
         _In_    LPCSTR lpszText
         );
 
-    VOID WINAPI KeepLastErrorAndFree(
+    VOID WINAPI MojibakeFree(
         _In_    LPVOID lpMem
         );
 

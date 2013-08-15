@@ -32,11 +32,13 @@ EXPORTS
     DetourWideCharToMultiByte
     DetourIsDBCSLeadByte
     DetourIsDBCSLeadByteEx
-    DetourRaiseException
+    DetourGetPrivateProfileIntA
+    DetourGetPrivateProfileStringA
     
     DetourCreateWindowA
     DetourCreateWindowExA
     DetourDefWindowProcA
+    DetourDefDlgProcA
     DetourCreateDialogA
     DetourCreateDialogIndirectA
     DetourCreateDialogIndirectParamA
@@ -46,13 +48,19 @@ EXPORTS
     DetourDialogBoxIndirectParamA
     DetourDialogBoxParamA
     DetourGetDlgItemTextA
+    DetourSetDlgItemTextA
     DetourLoadMenuA
     DetourAppendMenuA
     DetourInsertMenuA
     DetourInsertMenuItemA
     DetourLoadStringA
+    DetourGetMenuItemInfoA
+    DetourSetMenuItemInfoA
     DetourMessageBoxA
     DetourMessageBoxExA
+    DetourCallWindowProcA
+    DetourSendMessageA
+    DetourSetWindowTextA
     DetourExitWindowsEx
 
     DetourEnumFontsA

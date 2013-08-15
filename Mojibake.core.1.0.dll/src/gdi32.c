@@ -79,7 +79,7 @@ extern "C" {
         }
         HFONT Result = DetourCreateFontW(nHeight, nWidth, nEscapement, nOrientation, fnWeight, fdwItalic, fdwUnderline, fdwStrikeOut, fdwCharSet, fdwOutputPrecision, fdwClipPrecision, fdwQuality, fdwPitchAndFamily, lpuszFace);
 
-        KeepLastErrorAndFree(lpuszFace);
+        MojibakeFree(lpuszFace);
         return Result;
     }
 
@@ -122,7 +122,7 @@ extern "C" {
         {
             lstrcpy(lf.lfFaceName, TEXT("MS Gothic"));
         }
-        WaffleFree(lfuFaceName);
+        MojibakeFree(lfuFaceName);
 
         return DetourCreateFontIndirectW(&lf);
     }
@@ -168,10 +168,10 @@ extern "C" {
         lstrcpy(enumlfex.elfEnumLogfontEx.elfFullName, elfuFullName);
         lstrcpy(enumlfex.elfEnumLogfontEx.elfStyle, elfuStyle);
         lstrcpy(enumlfex.elfEnumLogfontEx.elfScript, elfuScript);
-        WaffleFree(lfuFaceName);
-        WaffleFree(elfuFullName);
-        WaffleFree(elfuStyle);
-        WaffleFree(elfuScript);
+        MojibakeFree(lfuFaceName);
+        MojibakeFree(elfuFullName);
+        MojibakeFree(elfuStyle);
+        MojibakeFree(elfuScript);
 
         return DetourCreateFontIndirectExW(&enumlfex);
     }
@@ -187,7 +187,7 @@ extern "C" {
         LPWSTR lpuszString = AnsiToUnicode(lpString);
         BOOL Result = TextOut(hdc, nXStart, nYStart, lpuszString, cchString);
 
-        KeepLastErrorAndFree(lpuszString);
+        MojibakeFree(lpuszString);
         return Result;
     }
 

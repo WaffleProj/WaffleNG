@@ -76,26 +76,24 @@ extern "C" {
 
         BOOL Result = DetourCreateProcessW(lpuszApplicationName, lpuszCommandLine, lpProcessAttributes, lpThreadAttributes, bInheritHandles, dwCreationFlags, lpEnvironment, lpuszCurrentDirectory, lpuStartupInfo, lpProcessInformation);
 
-        DWORD LastError = GetLastError();
         if (lpApplicationName)
         {
-            WaffleFree(lpuszApplicationName);
+            MojibakeFree(lpuszApplicationName);
         }
         if (lpCommandLine)
         {
-            WaffleFree(lpuszCommandLine);
+            MojibakeFree(lpuszCommandLine);
         }
         if (lpCurrentDirectory)
         {
-            WaffleFree(lpuszCurrentDirectory);
+            MojibakeFree(lpuszCurrentDirectory);
         }
         if (lpStartupInfo)
         {
-            WaffleFree(lpuStartupInfo->lpReserved);
-            WaffleFree(lpuStartupInfo->lpDesktop);
-            WaffleFree(lpuStartupInfo->lpTitle);
+            MojibakeFree(lpuStartupInfo->lpReserved);
+            MojibakeFree(lpuStartupInfo->lpDesktop);
+            MojibakeFree(lpuStartupInfo->lpTitle);
         }
-        SetLastError(LastError);
         return Result;
     }
 
@@ -108,10 +106,12 @@ extern "C" {
         if (lpBuffer)
         {
             LPWSTR lpuBuffer = (LPWSTR) WaffleAlloc(nBufferLength*sizeof(WCHAR));
-            Result = GetCurrentDirectory(nBufferLength, lpuBuffer);
+            GetCurrentDirectory(nBufferLength, lpuBuffer);
+
             DWORD LastError = GetLastError();
             WideCharToMultiByte(stNewEnvir.AnsiCodePage, 0, lpuBuffer, -1, lpBuffer, nBufferLength - 1, NULL, NULL);
-            WaffleFree(lpuBuffer);
+            Result = lstrlenA(lpBuffer);
+            MojibakeFree(lpuBuffer);
             SetLastError(LastError);
         }
         return Result;
@@ -124,7 +124,7 @@ extern "C" {
         LPWSTR lpuszPathName = AnsiToUnicode(lpPathName);
         BOOL Result = SetCurrentDirectory(lpuszPathName);
 
-        KeepLastErrorAndFree(lpuszPathName);
+        MojibakeFree(lpuszPathName);
         return Result;
     }
 
@@ -136,7 +136,7 @@ extern "C" {
         LPWSTR lpuszPathName = AnsiToUnicode(lpPathName);
         BOOL Result = CreateDirectory(lpuszPathName, lpSecurityAttributes);
 
-        KeepLastErrorAndFree(lpuszPathName);
+        MojibakeFree(lpuszPathName);
         return Result;
     }
 
@@ -154,7 +154,7 @@ extern "C" {
         //MessageBox(0,lpuszFileName,TEXT("DetourCreateFileA"),0);
         HANDLE Result = CreateFile(lpuszFileName, dwDesiredAccess, dwShareMode, lpSecurityAttributes, dwCreationDisposition, dwFlagsAndAttributes, hTemplateFile);
 
-        KeepLastErrorAndFree(lpuszFileName);
+        MojibakeFree(lpuszFileName);
         return Result;
     }
 
@@ -165,7 +165,7 @@ extern "C" {
         LPWSTR lpuszFileName = AnsiToUnicode(lpFileName);
         BOOL Result = DeleteFile(lpuszFileName);
 
-        KeepLastErrorAndFree(lpuszFileName);
+        MojibakeFree(lpuszFileName);
         return Result;
     }
 
@@ -184,7 +184,7 @@ extern "C" {
         WideCharToMultiByte(stNewEnvir.AnsiCodePage, 0, FindFileData.cFileName, -1, lpFindFileData->cFileName, sizeof(lpFindFileData->cFileName), NULL, NULL);
         WideCharToMultiByte(stNewEnvir.AnsiCodePage, 0, FindFileData.cAlternateFileName, -1, lpFindFileData->cAlternateFileName, sizeof(lpFindFileData->cAlternateFileName), NULL, NULL);
 
-        WaffleFree(lpuszFileName);
+        MojibakeFree(lpuszFileName);
         SetLastError(LastError);
         return Result;
     }
@@ -214,7 +214,7 @@ extern "C" {
         LPWSTR lpuszFileName = AnsiToUnicode(lpFileName);
         DWORD Result = GetFileAttributes(lpuszFileName);
 
-        KeepLastErrorAndFree(lpuszFileName);
+        MojibakeFree(lpuszFileName);
         return Result;
     }
 
@@ -226,7 +226,7 @@ extern "C" {
         LPWSTR lpuszFileName = AnsiToUnicode(lpFileName);
         BOOL Result = SetFileAttributes(lpuszFileName, dwFileAttributes);
 
-        KeepLastErrorAndFree(lpuszFileName);
+        MojibakeFree(lpuszFileName);
         return Result;
     }
 
@@ -251,15 +251,22 @@ extern "C" {
 
         DWORD LastError = GetLastError();
         WideCharToMultiByte(stNewEnvir.AnsiCodePage, 0, lpuBuffer, -1, lpBuffer, nBufferLength, NULL, NULL);
-        WaffleFree(lpuszFileName);
-        WaffleFree(lpuBuffer);
+        MojibakeFree(lpuszFileName);
+        MojibakeFree(lpuBuffer);
         int Result = lstrlenA(lpBuffer);        //This is not the correct method to get the return value, but it should work in the most of cases.
         if (lpFilePart && lpuFilePart)
         {
             *lpFilePart = lpBuffer + Result;
             int i;
             for (i = Result; (*lpFilePart)[i] != '\\'; i--);
-            *lpFilePart = *lpFilePart + i;
+            if ((*lpFilePart)[i - 1] == ':') //This is a driver
+            {
+                *lpFilePart = NULL;
+            }
+            else
+            {
+                *lpFilePart = *lpFilePart + i;
+            }
         }
         SetLastError(LastError);
         return Result;
@@ -277,7 +284,7 @@ extern "C" {
 
         DWORD LastError = GetLastError();
         WideCharToMultiByte(stNewEnvir.AnsiCodePage, 0, lpuszFilename, -1, lpFilename, nSize, NULL, NULL);
-        WaffleFree(lpuszFilename);
+        MojibakeFree(lpuszFilename);
         int Result = lstrlenA(lpFilename);
         SetLastError(LastError);
         return Result;
@@ -296,7 +303,7 @@ extern "C" {
 
         if (lpModuleName)
         {
-            KeepLastErrorAndFree(lpuszModuleName);
+            MojibakeFree(lpuszModuleName);
         }
         return Result;
     }
@@ -308,7 +315,7 @@ extern "C" {
         LPWSTR lpuszFileName = AnsiToUnicode(lpFileName);
         HMODULE Result = LoadLibrary(lpuszFileName);
 
-        KeepLastErrorAndFree(lpuszFileName);
+        MojibakeFree(lpuszFileName);
         return Result;
     }
 
@@ -321,7 +328,7 @@ extern "C" {
         LPWSTR lpuszFileName = AnsiToUnicode(lpFileName);
         HMODULE Result = LoadLibraryEx(lpuszFileName, hFile, dwFlags);
 
-        KeepLastErrorAndFree(lpuszFileName);
+        MojibakeFree(lpuszFileName);
         return Result;
     }
 
@@ -477,10 +484,8 @@ extern "C" {
     //int Result = BackupCompareStringA(Locale, dwCmpFlags, lpString1, cchCount1, lpString2, cchCount2);
     int Result = CompareString(Locale, dwCmpFlags, lpuString1, cchCount1, lpuString2, cchCount2);
 
-    DWORD LastError = GetLastError();
-    WaffleFree(lpuString1);
-    WaffleFree(lpuString2);
-    SetLastError(LastError);
+    MojibakeFree(lpuString1);
+    MojibakeFree(lpuString2);
     return Result;
     }
     */
@@ -516,64 +521,48 @@ extern "C" {
         return DetourIsDBCSLeadByteEx(stNewEnvir.AnsiCodePage, TestChar);
     }
 
-    /*
-    ExceptionCode = 0eedfade
-    ExceptionFlags = 00000001
-    NumberOfArguments = 00000007
-    Arguments[0] = 00000000000186EC
-    Arguments[1] = 000000000812E668
-    Arguments[2] = 0000000000017854
-    Arguments[3] = 000000000037F3E8
-    Arguments[4] = 0000000000000000
-    Arguments[5] = 000000000037F3DC
-    Arguments[6] = 000000000037F3C0
-
-    CPU Disasm
-    Address   Hex dump          Command                                  Comments
-    0001375C  /$ /5A            pop     edx
-    0001375D  |. |54            push    esp                             ; mov lpArguments[6],esp    ;
-    0001375E  |. |55            push    ebp                             ; mov lpArguments[5],ebp    ;
-    0001375F  |. |57            push    edi                             ; mov lpArguments[4],edi    ;
-    00013760  |. |56            push    esi                             ; mov lpArguments[3],esi    ;
-    00013761  |. |53            push    ebx                             ; mov lpArguments[2],ebx    ;
-    00013762  |. |50            push    eax                             ; mov lpArguments[1],eax    ;
-    00013763  |. |52            push    edx                             ; mov lpArguments[0],edx    ; return address
-    00013764  |. |54            push    esp                             ; push lpArguments
-    00013765  |. |6A 07         push    7                               ; push nNumberOfArguments
-    00013767  |. |6A 01         push    1                               ; push dwExceptionFlags
-    00013769  |. |68 DEFAED0E   push    0EEDFADE                        ; push dwExceptionCode
-    0001376E  |. |52            push    edx                             ; call RaiseException
-    0001376F  \.-|E9 44DBFFFF   jmp     <jmp.&kernel32.RaiseException>
-
-    */
-    LIBRARY_EXPORT void WINAPI DetourRaiseException(
-        _In_    DWORD dwExceptionCode,
-        _In_    DWORD dwExceptionFlags,
-        _In_    DWORD nNumberOfArguments,
-        _In_    const ULONG_PTR *lpArguments
+    LIBRARY_EXPORT UINT WINAPI DetourGetPrivateProfileIntA(
+        _In_    LPCSTR lpAppName,
+        _In_    LPCSTR lpKeyName,
+        _In_    INT nDefault,
+        _In_    LPCSTR lpFileName
         )
     {
-        static LPRAISEEXCEPTION BackupRaiseException;
-        if (!BackupRaiseException)
+        static LPGETPRIVATEPROFILEINTA BackupGetPrivateProfileIntA;
+        if (!BackupGetPrivateProfileIntA)
         {
-            BackupRaiseException = (LPRAISEEXCEPTION) WaffleGetBackupAddress(TEXT("kernel32.dll"), TEXT("RaiseException"));
+            BackupGetPrivateProfileIntA = (LPGETPRIVATEPROFILEINTA) WaffleGetBackupAddress(TEXT("kernel32.dll"), TEXT("GetPrivateProfileIntA"));
         }
 
-        TCHAR szExceptionRecord[4096];
+        LPSTR lpszFileName = MBCSToMBCS(stNewEnvir.AnsiCodePage, stOldEnvir.AnsiCodePage, lpFileName);
 
-        wsprintf(szExceptionRecord, TEXT("ExceptionCode = %08x\nExceptionFlags = %08x\nNumberOfArguments = %08x"), dwExceptionCode, dwExceptionFlags, nNumberOfArguments);
+        UINT Result = BackupGetPrivateProfileIntA(lpAppName, lpKeyName, nDefault, lpszFileName);
 
-        DWORD i;
-        for (i = 0; i < nNumberOfArguments; i++)
+        MojibakeFree(lpszFileName);
+        return Result;
+    }
+
+    LIBRARY_EXPORT DWORD WINAPI DetourGetPrivateProfileStringA(
+        _In_    LPCSTR lpAppName,
+        _In_    LPCSTR lpKeyName,
+        _In_    LPCSTR lpDefault,
+        _Out_   LPSTR lpReturnedString,
+        _In_    DWORD nSize,
+        _In_    LPCSTR lpFileName
+        )
+    {
+        static LPGETPRIVATEPROFILESTRINGA BackupGetPrivateProfileStringA;
+        if (!BackupGetPrivateProfileStringA)
         {
-            TCHAR szBuf[256];
-            wsprintf(szBuf, TEXT("\nArguments[%u] = %016I64X"), i, (UINT64) (lpArguments[i]));
-            lstrcat(szExceptionRecord, szBuf);
+            BackupGetPrivateProfileStringA = (LPGETPRIVATEPROFILESTRINGA) WaffleGetBackupAddress(TEXT("kernel32.dll"), TEXT("GetPrivateProfileStringA"));
         }
-        //MessageBox(0, szExceptionRecord, 0, 0);
-        WaffleWriteLogFile(szExceptionRecord);
 
-        BackupRaiseException(dwExceptionCode, dwExceptionFlags, nNumberOfArguments, lpArguments);
+        LPSTR lpszFileName = MBCSToMBCS(stNewEnvir.AnsiCodePage, stOldEnvir.AnsiCodePage, lpFileName);
+
+        DWORD Result = BackupGetPrivateProfileStringA(lpAppName, lpKeyName, lpDefault, lpReturnedString, nSize, lpszFileName);
+
+        MojibakeFree(lpszFileName);
+        return Result;
     }
 #ifdef __cplusplus
 };
