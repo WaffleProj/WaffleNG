@@ -348,6 +348,40 @@ extern "C" {
         return Result;
     }
 
+    LIBRARY_EXPORT HMENU WINAPI DetourLoadMenuA(
+        _In_opt_    HINSTANCE hInstance,
+        _In_        LPCSTR lpMenuName
+        )
+    {
+        LPWSTR lpuMenuName = (LPWSTR) lpMenuName;
+        if ((SIZE_T) lpMenuName > 0xFFFF)
+        {
+            lpuMenuName = AnsiToUnicode(lpMenuName);
+        }
+
+        HMENU Result = LoadMenu(hInstance, lpuMenuName);
+
+        if ((SIZE_T) lpMenuName > 0xFFFF)
+        {
+            KeepLastErrorAndFree(lpuMenuName);
+        }
+        return Result;
+    }
+
+    LIBRARY_EXPORT BOOL WINAPI DetourAppendMenuA(
+        _In_        HMENU hMenu,
+        _In_        UINT uFlags,
+        _In_        UINT_PTR uIDNewItem,
+        _In_opt_    LPCSTR lpNewItem
+        )
+    {
+        LPWSTR lpuszNewItem = AnsiToUnicode(lpNewItem);
+        BOOL Result = AppendMenu(hMenu, uFlags, uIDNewItem, lpuszNewItem);
+
+        KeepLastErrorAndFree(lpuszNewItem);
+        return Result;
+    }
+
     LIBRARY_EXPORT BOOL WINAPI DetourInsertMenuA(
         _In_        HMENU hMenu,
         _In_        UINT uPosition,
@@ -360,6 +394,23 @@ extern "C" {
         BOOL Result = InsertMenu(hMenu, uPosition, uFlags, uIDNewItem, lpuszNewItem);
 
         KeepLastErrorAndFree(lpuszNewItem);
+        return Result;
+    }
+
+    LIBRARY_EXPORT BOOL WINAPI DetourInsertMenuItemA(
+        _In_    HMENU hMenu,
+        _In_    UINT uItem,
+        _In_    BOOL fByPosition,
+        _In_    LPCMENUITEMINFOA lpmii
+        )
+    {
+        MENUITEMINFOW mii;
+        RtlMoveMemory(&mii, lpmii, sizeof(mii));
+        mii.dwTypeData = AnsiToUnicode(lpmii->dwTypeData);
+        mii.cch = lstrlen(mii.dwTypeData);
+        BOOL Result = InsertMenuItem(hMenu, uItem, fByPosition, &mii);
+
+        KeepLastErrorAndFree(mii.dwTypeData);
         return Result;
     }
 

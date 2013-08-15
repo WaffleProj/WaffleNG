@@ -46,7 +46,10 @@ EXPORTS
     DetourDialogBoxIndirectParamA
     DetourDialogBoxParamA
     DetourGetDlgItemTextA
+    DetourLoadMenuA
+    DetourAppendMenuA
     DetourInsertMenuA
+    DetourInsertMenuItemA
     DetourLoadStringA
     DetourMessageBoxA
     DetourMessageBoxExA
