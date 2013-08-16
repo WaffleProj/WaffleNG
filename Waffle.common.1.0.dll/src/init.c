@@ -54,6 +54,7 @@ LIBRARY_EXPORT SIZE_T WINAPI WaffleInit(
 
 
     //return 0; //for attaching debugger
+    //MessageBoxA(0, "Attach", 0, 0);
 
     HANDLE hThread = OpenThread(THREAD_GET_CONTEXT | THREAD_SET_CONTEXT | THREAD_SUSPEND_RESUME, FALSE, lpstProcessSetting->dwThreadId);
 

@@ -331,7 +331,7 @@ LIBRARY_EXPORT LPBYTE WINAPI WaffleGetProcAddressW(
     _In_    LPCWSTR lpszFuncName
     )
 {
-    DWORD nSize = WideCharToMultiByte(CP_ACP, 0, lpszFuncName, -1, NULL, 0, NULL, NULL);;
+    DWORD nSize = WideCharToMultiByte(CP_ACP, 0, lpszFuncName, -1, NULL, 0, NULL, NULL);
     LPSTR lpszFunction = (LPSTR) WaffleAlloc(nSize*sizeof(CHAR));
     WideCharToMultiByte(CP_ACP, 0, lpszFuncName, -1, lpszFunction, nSize, NULL, NULL);
     LPBYTE lpFunction = WaffleGetProcAddressA(hModule, lpszFunction);
