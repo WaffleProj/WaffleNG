@@ -564,6 +564,38 @@ extern "C" {
         MojibakeFree(lpszFileName);
         return Result;
     }
+
+    LIBRARY_EXPORT LONG WINAPI DetourRegQueryValueExA(
+        _In_        HKEY hKey,
+        _In_opt_    LPCSTR lpValueName,
+        _Reserved_  LPDWORD lpReserved,
+        _Out_opt_   LPDWORD lpType,
+        _Out_opt_   LPBYTE lpData,
+        _Inout_opt_ LPDWORD lpcbData
+        )
+    {
+        LPWSTR lpuszValueName = AnsiToUnicode(lpValueName);
+        DWORD cbData = *lpcbData;
+        *lpcbData = *lpcbData  * sizeof(WCHAR);
+        LPBYTE lpuData = (LPBYTE) WaffleAlloc(cbData * sizeof(WCHAR));    //lpcbData might be NULL
+        LPBYTE lpcData = (LPBYTE) WaffleAlloc(cbData * sizeof(CHAR));    //lpcbData might be NULL
+
+        LONG Result = RegQueryValueEx(hKey, lpuszValueName, lpReserved, lpType, lpuData, lpcbData);
+        *lpcbData = cbData;
+
+        DWORD LastError = GetLastError();
+        WideCharToMultiByte(stNewEnvir.AnsiCodePage, 0, (LPWSTR) lpuData, -1, (LPSTR) lpcData, cbData * sizeof(CHAR), NULL, NULL);
+        int i;
+        for (i = cbData; i >= 0; i--)
+        {
+            lpData[i] = lpcData[i];
+        }
+
+        MojibakeFree(lpuszValueName);
+        MojibakeFree(lpuData);
+        SetLastError(LastError);
+        return Result;
+    }
 #ifdef __cplusplus
 };
 #endif
