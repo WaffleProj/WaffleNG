@@ -44,9 +44,6 @@
     <ClCompile Include="src\setting.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\rtl.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\option.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -72,6 +69,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\detour\detour.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rtl\smartarray.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\rtl\rtl.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

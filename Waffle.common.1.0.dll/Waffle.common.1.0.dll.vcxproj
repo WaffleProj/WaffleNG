@@ -290,7 +290,8 @@
     <ClCompile Include="src\logfile.c" />
     <ClCompile Include="src\option.c" />
     <ClCompile Include="src\platform.c" />
-    <ClCompile Include="src\rtl.c" />
+    <ClCompile Include="src\rtl\rtl.c" />
+    <ClCompile Include="src\rtl\smartarray.c" />
     <ClCompile Include="src\setting.c" />
   </ItemGroup>
   <ItemGroup>
