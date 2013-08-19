@@ -3,6 +3,7 @@
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
 #if (WAFFLE_PORT_MACHINE == WAFFLE_PORT_MACHINE_I386)
+
 LIBRARY_EXPORT BOOL WINAPI WaffleInlineDetour(
     _In_    LPBYTE  lpFunction
     )
@@ -60,6 +61,36 @@ LIBRARY_EXPORT VOID __cdecl WaffleInlineHandler(
 }
 #pragma optimize("", on)
 #pragma GCC pop_options
+
+#elif (WAFFLE_PORT_MACHINE == WAFFLE_PORT_MACHINE_AMD64)
+
+LIBRARY_EXPORT BOOL WINAPI WaffleInlineDetour(
+    _In_    LPBYTE  lpFunction
+    )
+{
+    //Detect is there any 0xC3(ret)/0xCC(int3)/0x90(nop) so we won't overwrite the next function.
+    int i;
+    for (i = 0; i < 7; i++)
+    {
+        if ((lpFunction[i] == 0xC3) || (lpFunction[i] == 0xCC) || (lpFunction[i] == 0x90))
+        {
+            return FALSE;
+        }
+    }
+
+    DWORD flOldProtect;
+    VirtualProtect(lpHotpatch, 7, PAGE_EXECUTE_READWRITE, &flOldProtect);
+
+    lpHotpatch[0] = 0xE8;    //call
+    *(LPDWORD) &lpHotpatch[1] = (DWORD) WaffleInlineHandler - (DWORD) lpFunction;
+    *(LPWORD) &lpHotpatch[5] = 0xF9EB;    //jmp $-7
+
+    FlushInstructionCache(GetCurrentProcess(), lpHotpatch, 7);
+    VirtualProtect(lpHotpatch, 7, flOldProtect, &flOldProtect);
+
+    return TRUE;
+}
+
 #else
 LIBRARY_EXPORT BOOL WINAPI WaffleInlineDetour(
     _In_    LPBYTE  lpFunction

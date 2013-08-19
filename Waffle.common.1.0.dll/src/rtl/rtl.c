@@ -1,4 +1,4 @@
-﻿#include "..\common.h"
+﻿#include "..\..\common.h"
 
 LIBRARY_EXPORT int WINAPI WafflelstrlenW(
     _In_    LPCWSTR lpString
