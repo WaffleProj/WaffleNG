@@ -62,7 +62,8 @@ LIBRARY_EXPORT VOID __cdecl WaffleInlineHandler(
 #pragma optimize("", on)
 #pragma GCC pop_options
 
-#elif (WAFFLE_PORT_MACHINE == WAFFLE_PORT_MACHINE_AMD64)
+#elif (WAFFLE_PORT_MACHINE == 0xFFFF)
+//#elif (WAFFLE_PORT_MACHINE == WAFFLE_PORT_MACHINE_AMD64)
 
 LIBRARY_EXPORT BOOL WINAPI WaffleInlineDetour(
     _In_    LPBYTE  lpFunction
@@ -78,6 +79,14 @@ LIBRARY_EXPORT BOOL WINAPI WaffleInlineDetour(
         }
     }
 
+    //"\xEB\xFE"        //jmp   $
+    //"\x8B\xFF"        //mov   edi,edi
+    
+    //"\x68\x00\x00\x00\x00"    //push  low_dword
+    //"\xC7\x44\x24\x04\x00\x00\x00\x00"    //mov dword ptr [rsp+4],high_dword
+    //"\xFF\x24\x24"    //jmp qword ptr [rsp]
+    //16 bytes
+
     DWORD flOldProtect;
     VirtualProtect(lpHotpatch, 7, PAGE_EXECUTE_READWRITE, &flOldProtect);
 
@@ -89,22 +98,6 @@ LIBRARY_EXPORT BOOL WINAPI WaffleInlineDetour(
     VirtualProtect(lpHotpatch, 7, flOldProtect, &flOldProtect);
 
     return TRUE;
-}
-
-#else
-LIBRARY_EXPORT BOOL WINAPI WaffleInlineDetour(
-    _In_    LPBYTE  lpFunction
-    )
-{
-    return FALSE;
-}
-
-LIBRARY_EXPORT VOID WaffleInlineHandler(
-    _In_    SIZE_T *lpReserved
-    )
-{
-    DebugBreak();
-    return;
 }
 #endif
 

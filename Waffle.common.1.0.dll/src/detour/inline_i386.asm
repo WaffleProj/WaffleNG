@@ -1,14 +1,12 @@
-		.x64
-		.model flat
+                .386
+                .model flat, stdcall
+                option casemap :none
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-		.code
+                .code
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-start:
+TestFunction    proc
+
+                ret
+TestFunction    endp
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-		push	12345678h
-		mov	dword ptr [rsp+4],9ABCDEF0h
-		jmp	qword ptr [rsp]
-		
-		finit
-;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-		end	start
+                end

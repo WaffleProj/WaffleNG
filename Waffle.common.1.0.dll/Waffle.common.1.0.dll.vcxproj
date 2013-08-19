@@ -279,6 +279,10 @@
     <ClCompile Include="src\componentarray.c" />
     <ClCompile Include="src\detour\detour.c" />
     <ClCompile Include="src\detour\inline.c" />
+    <ClCompile Include="src\detour\inline_default.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="src\detour\veh.c" />
     <ClCompile Include="src\libraryarray.c" />
     <ClCompile Include="src\cmdarg.c" />
@@ -296,6 +300,39 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="common.def" />
+    <CustomBuild Include="src\detour\inline_i386.asm">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">ml /nologo /c /coff /safeseh /Fo "$(ProjectDir)$(IntermediateOutputPath)%(FileName).obj" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)$(IntermediateOutputPath)%(FileName).obj</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+      </Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">ml /nologo /c /coff /safeseh /Fo "$(ProjectDir)$(IntermediateOutputPath)%(FileName).obj" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)$(IntermediateOutputPath)%(FileName).obj</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+      </Message>
+    </CustomBuild>
+    <CustomBuild Include="src\detour\inline_amd64.asm">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ml64 /nologo /c /Fo "$(ProjectDir)$(IntermediateOutputPath)%(FileName).obj" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)$(IntermediateOutputPath)%(FileName).obj</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">ml64 /nologo /c /Fo "$(ProjectDir)$(IntermediateOutputPath)%(FileName).obj" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjectDir)$(IntermediateOutputPath)%(FileName).obj</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </Message>
+    </CustomBuild>
+    <CustomBuild Include="src\detour\inline_arm.asm">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">armasm -o "$(ProjectDir)$(IntermediateOutputPath)%(FileName).obj" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">$(ProjectDir)$(IntermediateOutputPath)%(FileName).obj</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
+      </Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">armasm -o "$(ProjectDir)$(IntermediateOutputPath)%(FileName).obj" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">$(ProjectDir)$(IntermediateOutputPath)%(FileName).obj</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
+      </Message>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="common.rc" />
