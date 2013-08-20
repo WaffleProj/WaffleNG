@@ -16,8 +16,8 @@ call	Common	Compile	src\libraryarray.c
 call	Common	Compile	src\logfile.c
 call	Common	Compile	src\option.c
 call	Common	Compile	src\platform.c
-call	Common	Compile	src\rtl.c
 call	Common	Compile	src\setting.c
+call	Common	Compile	src\rtl\rtl.c
 call	Common	Compile	src\detour\detour.c
 call	Common	Compile	src\detour\inline.c
 call	Common	Compile	src\detour\veh.c

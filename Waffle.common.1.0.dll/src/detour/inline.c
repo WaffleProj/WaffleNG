@@ -2,6 +2,7 @@
 #pragma GCC diagnostic ignored "-Wunknown-pragmas"
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
+#if     defined(__GNUC__)
 #if (WAFFLE_PORT_MACHINE == WAFFLE_PORT_MACHINE_I386)
 
 LIBRARY_EXPORT BOOL WINAPI WaffleInlineDetour(
@@ -62,6 +63,21 @@ LIBRARY_EXPORT VOID __cdecl WaffleInlineHandler(
 #pragma optimize("", on)
 #pragma GCC pop_options
 
+#elif (WAFFLE_PORT_MACHINE == WAFFLE_PORT_MACHINE_AMD64)
+LIBRARY_EXPORT BOOL WINAPI WaffleInlineDetour(
+    _In_    LPBYTE  lpFunction
+    )
+{
+    return FALSE;
+}
+
+LIBRARY_EXPORT VOID WaffleInlineHandler(
+    _In_    SIZE_T *lpReserved
+    )
+{
+    DebugBreak();
+    return;
+}
 #elif (WAFFLE_PORT_MACHINE == 0xFFFF)
 //#elif (WAFFLE_PORT_MACHINE == WAFFLE_PORT_MACHINE_AMD64)
 
@@ -128,3 +144,5 @@ LIBRARY_EXPORT NOINLINE LPVOID WINAPI WaffleGetCallersAddress(
 
     return ReturnAddress;
 }
+
+#endif

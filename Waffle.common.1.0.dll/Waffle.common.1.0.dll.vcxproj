@@ -279,10 +279,6 @@
     <ClCompile Include="src\componentarray.c" />
     <ClCompile Include="src\detour\detour.c" />
     <ClCompile Include="src\detour\inline.c" />
-    <ClCompile Include="src\detour\inline_default.c">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="src\detour\veh.c" />
     <ClCompile Include="src\libraryarray.c" />
     <ClCompile Include="src\cmdarg.c" />

@@ -497,8 +497,7 @@ LIBRARY_EXPORT LPVOID WINAPI WaffleAlloc(
         return (LPVOID) GlobalAlloc(GPTR, dwBytes);
     }
 
-    int i = WaffleFindComponent(WaffleGetCallersAddress(NULL));
-
+    int i = WaffleFindComponent(WAFFLE_PORT_RETURN_ADDRESS);
     if (i >= 0)
     {
         if (!lpstProcessSetting->lpstComponent[i].hHeap)
@@ -534,7 +533,7 @@ LIBRARY_EXPORT LPVOID WINAPI WaffleReAlloc(
         return (LPVOID) GlobalReAlloc(lpMemory, dwBytes, GHND);
     }
 
-    int i = WaffleFindComponent(WaffleGetCallersAddress(NULL));
+    int i = WaffleFindComponent(WAFFLE_PORT_RETURN_ADDRESS);
 
     if (i >= 0)
     {
@@ -555,7 +554,7 @@ LIBRARY_EXPORT LPVOID WINAPI WaffleFree(
         return (LPVOID) GlobalFree(lpMemory);
     }
 
-    int i = WaffleFindComponent(WaffleGetCallersAddress(NULL));
+    int i = WaffleFindComponent(WAFFLE_PORT_RETURN_ADDRESS);
 
     if (i >= 0)
     {
