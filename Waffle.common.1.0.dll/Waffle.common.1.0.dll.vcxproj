@@ -278,7 +278,6 @@
     <ClCompile Include="common.c" />
     <ClCompile Include="src\componentarray.c" />
     <ClCompile Include="src\detour\detour.c" />
-    <ClCompile Include="src\detour\inline.c" />
     <ClCompile Include="src\detour\veh.c" />
     <ClCompile Include="src\libraryarray.c" />
     <ClCompile Include="src\cmdarg.c" />

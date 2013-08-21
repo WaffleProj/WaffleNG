@@ -2,7 +2,6 @@
 #pragma GCC diagnostic ignored "-Wunknown-pragmas"
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
-#if     defined(__GNUC__)
 #if (WAFFLE_PORT_MACHINE == WAFFLE_PORT_MACHINE_I386)
 
 LIBRARY_EXPORT BOOL WINAPI WaffleInlineDetour(
@@ -63,7 +62,7 @@ LIBRARY_EXPORT VOID __cdecl WaffleInlineHandler(
 #pragma optimize("", on)
 #pragma GCC pop_options
 
-#elif (WAFFLE_PORT_MACHINE == WAFFLE_PORT_MACHINE_AMD64)
+#else
 LIBRARY_EXPORT BOOL WINAPI WaffleInlineDetour(
     _In_    LPBYTE  lpFunction
     )
@@ -78,8 +77,9 @@ LIBRARY_EXPORT VOID WaffleInlineHandler(
     DebugBreak();
     return;
 }
-#elif (WAFFLE_PORT_MACHINE == 0xFFFF)
-//#elif (WAFFLE_PORT_MACHINE == WAFFLE_PORT_MACHINE_AMD64)
+
+/*
+#elif (WAFFLE_PORT_MACHINE == WAFFLE_PORT_MACHINE_AMD64)
 
 LIBRARY_EXPORT BOOL WINAPI WaffleInlineDetour(
     _In_    LPBYTE  lpFunction
@@ -115,6 +115,7 @@ LIBRARY_EXPORT BOOL WINAPI WaffleInlineDetour(
 
     return TRUE;
 }
+*/
 #endif
 
 LIBRARY_EXPORT NOINLINE LPVOID WINAPI WaffleGetCallersAddress(
@@ -122,17 +123,14 @@ LIBRARY_EXPORT NOINLINE LPVOID WINAPI WaffleGetCallersAddress(
     )
 {
 #if     defined(__GNUC__)
-    LPVOID ReturnAddress = __builtin_return_address(0);
+    LPVOID ReturnAddress = __builtin_return_address(0); //use 1?
 #endif
 
 #if     defined(_MSC_VER)
 #if     WAFFLE_PORT_MACHINE == WAFFLE_PORT_MACHINE_I386
     LPVOID FramePointer = (&CallersCaller)[-2];
     LPVOID ReturnAddress = ((LPVOID *) (FramePointer))[1];
-#elif   WAFFLE_PORT_MACHINE == WAFFLE_PORT_MACHINE_AMD64
-    LPVOID ReturnAddress = (&CallersCaller)[-1];
-#elif   WAFFLE_PORT_MACHINE == WAFFLE_PORT_MACHINE_ARMNT
-#pragma message ("WaffleGetCallersAddress need to be implemented")
+#else
     LPVOID ReturnAddress = NULL;
 #endif
 #endif
@@ -144,5 +142,3 @@ LIBRARY_EXPORT NOINLINE LPVOID WINAPI WaffleGetCallersAddress(
 
     return ReturnAddress;
 }
-
-#endif

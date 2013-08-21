@@ -65,9 +65,6 @@
     <ClCompile Include="src\detour\veh.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\detour\inline.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\detour\detour.c">
       <Filter>Source Files</Filter>
     </ClCompile>

@@ -19,13 +19,13 @@ call	Common	Compile	src\platform.c
 call	Common	Compile	src\setting.c
 call	Common	Compile	src\rtl\rtl.c
 call	Common	Compile	src\detour\detour.c
-call	Common	Compile	src\detour\inline.c
+call	Common	Compile	src\detour\inline_c.c
 call	Common	Compile	src\detour\veh.c
 if	"%Machine%" == "I386"	(
-ld	--subsystem windows --dll -L%MinGW%\lib -L%OUTPUT_PATH%\Component\Waffle\%Machine% --enable-stdcall-fixup -kill-at -e _DllMain -o %OUTPUT_PATH%\Component\%Project%\%Machine%\%Project%.common.1.0.dll common.o cmdarg.o componentarray.o filesystem.o functionarray.o hash.o init.o inject.o libraryarray.o logfile.o option.o platform.o rtl.o setting.o detour.o inline.o veh.o -lkernel32 -luser32 -ladvapi32 -lpsapi
+ld	--subsystem windows --dll -L%MinGW%\lib -L%OUTPUT_PATH%\Component\Waffle\%Machine% --enable-stdcall-fixup -kill-at -e _DllMain -o %OUTPUT_PATH%\Component\%Project%\%Machine%\%Project%.common.1.0.dll common.o cmdarg.o componentarray.o filesystem.o functionarray.o hash.o init.o inject.o libraryarray.o logfile.o option.o platform.o rtl.o setting.o detour.o inline_c.o veh.o -lkernel32 -luser32 -ladvapi32 -lpsapi
 	)
 if	"%Machine%" == "AMD64"	(
-ld	--subsystem windows --dll -L%MinGW%\lib -L%OUTPUT_PATH%\Component\Waffle\%Machine% --enable-stdcall-fixup -kill-at -e  DllMain -o %OUTPUT_PATH%\Component\%Project%\%Machine%\%Project%.common.1.0.dll common.o cmdarg.o componentarray.o filesystem.o functionarray.o hash.o init.o inject.o libraryarray.o logfile.o option.o platform.o rtl.o setting.o detour.o inline.o veh.o -lkernel32 -luser32 -ladvapi32 -lpsapi
+ld	--subsystem windows --dll -L%MinGW%\lib -L%OUTPUT_PATH%\Component\Waffle\%Machine% --enable-stdcall-fixup -kill-at -e  DllMain -o %OUTPUT_PATH%\Component\%Project%\%Machine%\%Project%.common.1.0.dll common.o cmdarg.o componentarray.o filesystem.o functionarray.o hash.o init.o inject.o libraryarray.o logfile.o option.o platform.o rtl.o setting.o detour.o inline_c.o veh.o -lkernel32 -luser32 -ladvapi32 -lpsapi
 	)
 call	Common	CleanUp
 :nocommondll

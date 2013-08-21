@@ -1,0 +1,106 @@
+/*------------------------------------------------------------------------
+Module:        MODALPROPSHEET.C
+Author:        Daniel Guerrero Miralles
+Project:
+State:
+Creation Date: 6/11/98
+Description:   Template for a modal Property Sheet.
+------------------------------------------------------------------------*/
+// THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF
+// ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO
+// THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+// PARTICULAR PURPOSE.
+// (c) Copyright 1998 Daniel Guerrero Miralles. All Rights Reserved.
+
+#include "PropSheetPage.h"
+
+
+/* --- Constants --- */
+
+#define MODALPROPSHEET_TITLE TEXT("Property Sheet")
+#define MODALPROPSHEET_NUMPAGES 1
+#define MODALPROPSHEET_STARTPAGE 0
+
+
+/* --- Prototypes --- */
+
+static BOOL CALLBACK ModalPropSheetProc(HWND, UINT, WPARAM, LPARAM);
+
+
+/* --- Globals --- */
+
+DLGPROC lpfnModalPropSheet_DefProc = NULL;
+
+
+/* --- Private Functions --- */
+
+static void ModalPropSheet_PreCreate(LPDLGTEMPLATE lpDlgTemplate)
+{
+    // TODO: add pre-creation code here
+}
+
+static void ModalPropSheet_Initialize(HWND hwnd)
+{
+    lpfnModalPropSheet_DefProc = (DLGPROC) SubclassDialog(hwnd, ModalPropSheetProc);
+    // TODO: add initialization code here
+}
+
+static void ModalPropSheet_OnDestroy(HWND hwnd)
+{
+    // TODO : add de-initialization code here
+}
+
+
+/* --- Callbacks --- */
+
+static BOOL CALLBACK ModalPropSheetProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+    BOOL fDefResult;
+
+    fDefResult = (BOOL) CallWindowProc((WNDPROC) lpfnModalPropSheet_DefProc, hwnd, msg, wParam, lParam);
+    switch (msg)
+    {
+    case WM_DESTROY:
+        HANDLE_WM_DESTROY(hwnd, wParam, lParam, ModalPropSheet_OnDestroy);
+        break;
+        // TODO: add handlers to new messages here
+    }
+    return fDefResult;
+}
+
+static int CALLBACK ModalPropSheet_InitCallback(HWND hwnd, UINT uMsg, LPARAM lParam)
+{
+    switch (uMsg)
+    {
+    case PSCB_INITIALIZED:
+        ModalPropSheet_Initialize(hwnd);
+        break;
+    case PSCB_PRECREATE:
+        ModalPropSheet_PreCreate((LPDLGTEMPLATE) lParam);
+        break;
+    }
+    return 0;
+}
+
+
+/* --- Public functions --- */
+
+int DoModalPropSheet(HINSTANCE hInstance, HWND hwParent)
+{
+    PROPSHEETPAGE aPsp[MODALPROPSHEET_NUMPAGES];
+    PROPSHEETHEADER Psh;
+
+    // TODO: fill the PROPSHEETHEADER structures for each page
+    //PropSheetPage_FillPropPage(&aPsp[0], hInstance); // <- example
+
+    Psh.dwSize = sizeof (PROPSHEETHEADER);
+    Psh.dwFlags = PSH_PROPSHEETPAGE | PSH_USECALLBACK;
+    Psh.hwndParent = hwParent;
+    Psh.pszCaption = MODALPROPSHEET_TITLE;
+    Psh.nPages = MODALPROPSHEET_NUMPAGES;
+    Psh.nStartPage = MODALPROPSHEET_STARTPAGE;
+    Psh.ppsp = (LPCPROPSHEETPAGE) &aPsp[0];
+    Psh.pfnCallback = (PFNPROPSHEETCALLBACK) ModalPropSheet_InitCallback;
+
+    return PropertySheet(&Psh);
+}
