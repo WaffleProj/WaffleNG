@@ -390,7 +390,7 @@ LIBRARY_EXPORT LPBYTE WINAPI WaffleGetProcAddressA(
             int Direction = 1;
             DWORD Begin = 0;
             DWORD End = nName;
-            DWORD i;
+            DWORD i = 0;
             while (Direction)
             {
                 if (Begin > End)

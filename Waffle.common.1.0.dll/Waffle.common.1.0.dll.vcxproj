@@ -5,6 +5,10 @@
       <Configuration>Debug</Configuration>
       <Platform>ARM</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|Itanium">
+      <Configuration>Debug</Configuration>
+      <Platform>Itanium</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
       <Platform>Win32</Platform>
@@ -16,6 +20,10 @@
     <ProjectConfiguration Include="Release|ARM">
       <Configuration>Release</Configuration>
       <Platform>ARM</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Itanium">
+      <Configuration>Release</Configuration>
+      <Platform>Itanium</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="Release|Win32">
       <Configuration>Release</Configuration>
@@ -49,6 +57,12 @@
     <PlatformToolset>v120</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Itanium'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>Windows7.1SDK</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
@@ -70,11 +84,18 @@
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Itanium'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>Windows7.1SDK</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <Import Project="$(SolutionDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(SolutionDir)\Microsoft.Cpp.$(Platform).user.props')" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'" Label="PropertySheets">
@@ -83,13 +104,19 @@
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Itanium'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Itanium'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
@@ -99,14 +126,12 @@
     <IncludePath>$(SolutionDir)SDK\Include;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)SDK\Lib\I386;$(LibraryPath)</LibraryPath>
     <LibraryWPath>$(WindowsSDK_MetadataPath)</LibraryWPath>
-    <IntDir>$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <TargetName>Waffle.common.1.0</TargetName>
     <IncludePath>$(SolutionDir)SDK\Include;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)SDK\Lib\ARMNT;$(LibraryPath)</LibraryPath>
     <LibraryWPath>$(WindowsSDK_MetadataPath)</LibraryWPath>
-    <IntDir>$(Platform)\$(Configuration)\</IntDir>
     <OutDir>$(SolutionDir)Component\Waffle\ARMNT\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -116,20 +141,26 @@
     <LibraryWPath>$(WindowsSDK_MetadataPath)</LibraryWPath>
     <OutDir>$(SolutionDir)Component\Waffle\AMD64\</OutDir>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Itanium'">
+    <TargetName>Waffle.common.1.0</TargetName>
+    <IncludePath>$(SolutionDir)SDK\Include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)SDK\Lib\IA64;$(LibraryPath)</LibraryPath>
+    <LibraryWPath>$(WindowsSDK_MetadataPath)</LibraryWPath>
+    <OutDir>$(SolutionDir)Component\Waffle\IA64\</OutDir>
+    <ExecutablePath>C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE;$(ExecutablePath)</ExecutablePath>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <TargetName>Waffle.common.1.0</TargetName>
     <OutDir>$(SolutionDir)Component\Waffle\I386\</OutDir>
     <IncludePath>$(SolutionDir)SDK\Include;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)SDK\Lib\I386;$(LibraryPath)</LibraryPath>
     <RunCodeAnalysis>true</RunCodeAnalysis>
-    <IntDir>$(Platform)\$(Configuration)\</IntDir>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <IncludePath>$(SolutionDir)SDK\Include;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)SDK\Lib\ARMNT;$(LibraryPath)</LibraryPath>
     <RunCodeAnalysis>true</RunCodeAnalysis>
-    <IntDir>$(Platform)\$(Configuration)\</IntDir>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <TargetName>Waffle.common.1.0</TargetName>
     <OutDir>$(SolutionDir)Component\Waffle\ARMNT\</OutDir>
@@ -141,6 +172,13 @@
     <TargetName>Waffle.common.1.0</TargetName>
     <OutDir>$(SolutionDir)Component\Waffle\AMD64\</OutDir>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Itanium'">
+    <IncludePath>$(SolutionDir)SDK\Include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)SDK\Lib\IA64;$(LibraryPath)</LibraryPath>
+    <TargetName>Waffle.common.1.0</TargetName>
+    <OutDir>$(SolutionDir)Component\Waffle\IA64\</OutDir>
+    <ExecutablePath>C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE;$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -197,6 +235,25 @@
       <SubSystem>Windows</SubSystem>
       <EntryPointSymbol>DllMain</EntryPointSymbol>
       <ImportLibrary>$(SolutionDir)SDK\Lib\AMD64\$(TargetName).lib</ImportLibrary>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Itanium'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <DisableSpecificWarnings>4068;4100</DisableSpecificWarnings>
+      <EnablePREfast>true</EnablePREfast>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <EntryPointSymbol>DllMain</EntryPointSymbol>
+      <ImportLibrary>$(SolutionDir)SDK\Lib\IA64\$(TargetName).lib</ImportLibrary>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -270,6 +327,29 @@
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Itanium'">
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <DisableSpecificWarnings>4068;4100</DisableSpecificWarnings>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <SubSystem>Windows</SubSystem>
+      <EntryPointSymbol>DllMain</EntryPointSymbol>
+      <ImportLibrary>$(SolutionDir)SDK\Lib\IA64\$(TargetName).lib</ImportLibrary>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="common.h" />
     <ClInclude Include="resource.h" />
@@ -327,6 +407,13 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">$(ProjectDir)$(IntermediateOutputPath)%(FileName).obj</Outputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
       </Message>
+    </CustomBuild>
+    <CustomBuild Include="src\detour\inline_ia64.asm">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Itanium'">ias -o "$(ProjectDir)$(IntermediateOutputPath)%(FileName).obj" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Itanium'">$(ProjectDir)$(IntermediateOutputPath)%(FileName).obj</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Itanium'">ias -o "$(ProjectDir)$(IntermediateOutputPath)%(FileName).obj" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Itanium'">$(ProjectDir)$(IntermediateOutputPath)%(FileName).obj</Outputs>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>

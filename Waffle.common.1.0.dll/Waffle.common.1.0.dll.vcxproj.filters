@@ -79,6 +79,9 @@
     <None Include="common.def">
       <Filter>Source Files</Filter>
     </None>
+    <None Include="src\detour\inline_ia64.asm">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="common.rc">
