@@ -37,7 +37,6 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{A12814BB-9FAF-40CD-ADEE-95D58D092B3B}</ProjectGuid>
     <RootNamespace>Mojibakecore10dll</RootNamespace>
-    <ProjectName>Mojibake.core.1.0.dll</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -148,6 +147,7 @@
     <LibraryPath>$(SolutionDir)SDK\Lib\IA64;$(LibraryPath)</LibraryPath>
     <LibraryWPath>$(WindowsSDK_MetadataPath)</LibraryWPath>
     <OutDir>$(SolutionDir)Component\Mojibake\IA64\</OutDir>
+    <ExecutablePath>C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE;$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)Component\Mojibake\I386\</OutDir>
@@ -178,6 +178,7 @@
     <IncludePath>$(SolutionDir)SDK\Include;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)SDK\Lib\IA64;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)Component\Mojibake\IA64\</OutDir>
+    <ExecutablePath>C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE;$(ExecutablePath)</ExecutablePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
