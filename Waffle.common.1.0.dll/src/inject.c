@@ -69,7 +69,8 @@ LIBRARY_EXPORT VOID WINAPI WaffleExecute(
 
     WaffleCreateProcess(lpApplicationName, lpCommandLine, NULL, NULL, TRUE, CREATE_SUSPENDED, 0, lpCurrentDirectory, NULL, &stProcessInfo);
 
-#if	defined(WAFFLE_PORT_ENTRY_POINT)    //the workaround for xp
+    /*
+#if	defined(WAFFLE_PORT_ENTRY_POINT)    //the workaround for xp, will cause problem with .net program under win 7
     CONTEXT stContext;
     stContext.ContextFlags = CONTEXT_FULL;
     GetThreadContext(stProcessInfo.hThread, &stContext);
@@ -99,6 +100,7 @@ LIBRARY_EXPORT VOID WINAPI WaffleExecute(
         }
     }
 #endif
+    */
 
     lpstProcessSetting->dwThreadId = stProcessInfo.dwThreadId;
     lpstProcessSetting->dwProcessId = stProcessInfo.dwProcessId;

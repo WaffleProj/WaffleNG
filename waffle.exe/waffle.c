@@ -54,6 +54,7 @@ VOID WINAPI Main(VOID)
     {
         LPWAFFLE_PROCESS_SETTING lpstProcessSetting = WaffleCreateProcessSetting();
         lstrcpy(lpstProcessSetting->szComponent, szComponent);
+        lstrcpy(lpstProcessSetting->szMachine, WAFFLE_PORT_MACHINE_STRING);
 
         lstrcpy(lpstProcessSetting->szComponentDirectory, szPath);
         int i = lstrlen(lpstProcessSetting->szComponentDirectory);
@@ -99,6 +100,11 @@ VOID WINAPI Main(VOID)
                 break;
             }
         case WAFFLE_PORT_MACHINE_ARMNT:
+            {
+                lstrcat(szLoader, TEXT("\\ARMNT\\Waffle.exe"));
+                break;
+            }
+        case WAFFLE_PORT_MACHINE_IA64:
             {
                 lstrcat(szLoader, TEXT("\\ARMNT\\Waffle.exe"));
                 break;

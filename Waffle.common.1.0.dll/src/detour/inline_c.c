@@ -95,6 +95,7 @@ LIBRARY_EXPORT BOOL WINAPI WaffleInlineDetour(
         }
     }
 
+    //FF 25 XX XX XX XX jmp [rip+dword]
     //"\xEB\xFE"        //jmp   $
     //"\x8B\xFF"        //mov   edi,edi
     
