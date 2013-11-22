@@ -581,10 +581,9 @@ extern "C" {
         LPBYTE lpcData = (LPBYTE) WaffleAlloc(cbData * sizeof(CHAR));    //lpcbData might be NULL
 
         LONG Result = RegQueryValueEx(hKey, lpuszValueName, lpReserved, lpType, lpuData, lpcbData);
-        *lpcbData = cbData;
 
         DWORD LastError = GetLastError();
-        WideCharToMultiByte(stNewEnvir.AnsiCodePage, 0, (LPWSTR) lpuData, -1, (LPSTR) lpcData, cbData * sizeof(CHAR), NULL, NULL);
+        *lpcbData = WideCharToMultiByte(stNewEnvir.AnsiCodePage, 0, (LPWSTR) lpuData, -1, (LPSTR) lpcData, cbData * sizeof(CHAR), NULL, NULL);
         int i;
         for (i = cbData; i >= 0; i--)
         {
@@ -594,6 +593,10 @@ extern "C" {
         MojibakeFree(lpuszValueName);
         MojibakeFree(lpuData);
         SetLastError(LastError);
+        if (Result != ERROR_SUCCESS)
+        {
+            *lpcbData = cbData;
+        }
         return Result;
     }
 #ifdef __cplusplus

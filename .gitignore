@@ -6,6 +6,11 @@
 *.a
 
 # Visual Studio files
+*.aps
+*.res
+*.log
+*.tlog
+*.lastbuildstate
 *Win32*
 *x64*
 *ARM*
