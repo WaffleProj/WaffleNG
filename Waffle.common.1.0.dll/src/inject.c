@@ -41,6 +41,7 @@ LIBRARY_EXPORT BOOL WINAPI WaffleCreateProcess(
 
 LIBRARY_EXPORT VOID WINAPI WaffleInjectDll(
     _In_    HANDLE hProcess,
+    _In_    HANDLE hThread,
     _In_    LPCTSTR lpszDllFull
     )
 {
@@ -108,7 +109,7 @@ LIBRARY_EXPORT VOID WINAPI WaffleExecute(
 
     TCHAR szWaffleCommonDll[MAX_PATH];
     wsprintf(szWaffleCommonDll, TEXT("%s\\Waffle\\%s\\Waffle.common.1.0.dll"), lpstProcessSetting->szComponentDirectory, WAFFLE_PORT_MACHINE_STRING);
-    WaffleInjectDll(stProcessInfo.hProcess, szWaffleCommonDll);
+    WaffleInjectDll(stProcessInfo.hProcess, stProcessInfo.hThread, szWaffleCommonDll);
 
     CloseHandle(stProcessInfo.hThread);
     CloseHandle(stProcessInfo.hProcess);

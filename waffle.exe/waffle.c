@@ -54,7 +54,6 @@ VOID WINAPI Main(VOID)
     {
         LPWAFFLE_PROCESS_SETTING lpstProcessSetting = WaffleCreateProcessSetting();
         lstrcpy(lpstProcessSetting->szComponent, szComponent);
-        lstrcpy(lpstProcessSetting->szMachine, WAFFLE_PORT_MACHINE_STRING);
 
         lstrcpy(lpstProcessSetting->szComponentDirectory, szPath);
         int i = lstrlen(lpstProcessSetting->szComponentDirectory);
