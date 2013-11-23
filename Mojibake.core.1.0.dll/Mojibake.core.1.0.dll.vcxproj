@@ -238,6 +238,8 @@
       <EntryPointSymbol>DllMain</EntryPointSymbol>
       <ImportLibrary>$(SolutionDir)SDK\Lib\AMD64\$(TargetName).lib</ImportLibrary>
       <AdditionalDependencies>Waffle.common.1.0.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalOptions>/ignore:4197 %(AdditionalOptions)</AdditionalOptions>
+      <ModuleDefinitionFile>mojibake.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Itanium'">
@@ -327,6 +329,8 @@
       <EntryPointSymbol>DllMain</EntryPointSymbol>
       <ImportLibrary>$(SolutionDir)SDK\Lib\AMD64\$(TargetName).lib</ImportLibrary>
       <AdditionalDependencies>Waffle.common.1.0.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalOptions>/ignore:4197 %(AdditionalOptions)</AdditionalOptions>
+      <ModuleDefinitionFile>mojibake.def</ModuleDefinitionFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Itanium'">
