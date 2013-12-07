@@ -11,7 +11,7 @@
 *.log
 *.tlog
 *.lastbuildstate
-*Win32*
-*x64*
-*ARM*
-*Itanium*
+*/Win32/
+*/x64/
+*/ARM/
+*/Itanium/
