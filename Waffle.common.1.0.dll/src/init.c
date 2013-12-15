@@ -35,6 +35,8 @@ LIBRARY_EXPORT SIZE_T WINAPI WaffleInit(
     _In_    LPVOID lpReserved
     )
 {
+    MessageBox(0, TEXT("WaffleInit"), 0, 0);
+
     lpstProcessSetting->hGlobalMutex = CreateMutex(NULL, FALSE, NULL);
 
     WaffleAddComponent(TEXT("Waffle.common.1.0.dll"));  //so we can use WaffleAlloc
@@ -47,17 +49,22 @@ LIBRARY_EXPORT SIZE_T WINAPI WaffleInit(
 
     int x, y;   //we should use the signed data
     AddVectoredExceptionHandler(TRUE, WaffleExceptionHandler);
-    for (x = lpstProcessSetting->lpstLibrary[0].dwBehind; x >= 0; x--)
+
+    if (lpstProcessSetting->lpstLibrary)
     {
-        for (y = 0; WaffleSetDetour(x, y); y++);
+        for (x = lpstProcessSetting->lpstLibrary[0].dwBehind; x >= 0; x--)
+        {
+            for (y = 0; WaffleSetDetour(x, y); y++);
+        }
     }
+
 
 
     //return 0; //for attaching debugger
     //MessageBoxA(0, "Attach", 0, 0);
 
     HANDLE hThread = OpenThread(THREAD_GET_CONTEXT | THREAD_SET_CONTEXT | THREAD_SUSPEND_RESUME, FALSE, lpstProcessSetting->dwThreadId);
-
+    /*
     CONTEXT stContext;
     stContext.ContextFlags = CONTEXT_FULL;
     GetThreadContext(hThread, &stContext);
@@ -74,7 +81,7 @@ LIBRARY_EXPORT SIZE_T WINAPI WaffleInit(
     stContext.WAFFLE_PORT_PROGRAM_POINTER = (SIZE_T) SetThreadEnvironment;
     stContext.WAFFLE_PORT_FASTCALL_ARGUMENT = (SIZE_T) lpstThread;
     SetThreadContext(hThread, &stContext);
-
+    */
     ResumeThread(hThread);
 
     return 0;

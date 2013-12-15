@@ -29,6 +29,9 @@ LIBRARY_EXPORT BOOL WINAPI WaffleSetDetour(
     }
 
     //MessageBox(0, lpstProcessSetting->lpstLibrary[dwLibrary].lpstFunction[dwFunction].lpszFunction, lpstProcessSetting->lpstLibrary[dwLibrary].lpszLibrary, 0);
+    //ARM FIX!
+    lpstProcessSetting->lpstLibrary[dwLibrary].lpstFunction[dwFunction].lpSource--;
+    lpstProcessSetting->lpstLibrary[dwLibrary].lpstFunction[dwFunction].lpBackup--;
     if (!bDetour)
     {
         bDetour = WaffleInlineDetour(lpstProcessSetting->lpstLibrary[dwLibrary].lpstFunction[dwFunction].lpSource);

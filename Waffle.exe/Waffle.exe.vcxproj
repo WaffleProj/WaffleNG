@@ -127,6 +127,7 @@
     <LibraryPath>$(SolutionDir)SDK\Lib\I386;$(LibraryPath)</LibraryPath>
     <LibraryWPath>$(WindowsSDK_MetadataPath)</LibraryWPath>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <TargetName>Waffle</TargetName>
@@ -134,6 +135,7 @@
     <LibraryPath>$(SolutionDir)SDK\Lib\ARMNT;$(LibraryPath)</LibraryPath>
     <LibraryWPath>$(WindowsSDK_MetadataPath)</LibraryWPath>
     <OutDir>$(SolutionDir)Component\Waffle\ARMNT\</OutDir>
+    <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <TargetName>Waffle</TargetName>
@@ -141,6 +143,7 @@
     <LibraryPath>$(SolutionDir)SDK\Lib\AMD64;$(LibraryPath)</LibraryPath>
     <LibraryWPath>$(WindowsSDK_MetadataPath)</LibraryWPath>
     <OutDir>$(SolutionDir)Component\Waffle\AMD64\</OutDir>
+    <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Itanium'">
     <TargetName>Waffle</TargetName>
@@ -149,6 +152,7 @@
     <LibraryWPath>$(WindowsSDK_MetadataPath)</LibraryWPath>
     <OutDir>$(SolutionDir)Component\Waffle\IA64\</OutDir>
     <ExecutablePath>C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE;$(ExecutablePath)</ExecutablePath>
+    <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)Component\Waffle\I386\</OutDir>
@@ -158,6 +162,7 @@
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <TargetName>Waffle</TargetName>
@@ -166,6 +171,7 @@
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <OutDir>$(SolutionDir)Component\Waffle\ARMNT\</OutDir>
+    <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <TargetName>Waffle</TargetName>
@@ -174,6 +180,7 @@
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <OutDir>$(SolutionDir)Component\Waffle\AMD64\</OutDir>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Itanium'">
     <TargetName>Waffle</TargetName>
@@ -181,6 +188,7 @@
     <LibraryPath>$(SolutionDir)SDK\Lib\IA64;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)Component\Waffle\IA64\</OutDir>
     <ExecutablePath>C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE;$(ExecutablePath)</ExecutablePath>
+    <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -192,6 +200,8 @@
       <DisableSpecificWarnings>4068;4100</DisableSpecificWarnings>
       <EnablePREfast>true</EnablePREfast>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <MinimalRebuild>false</MinimalRebuild>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -210,6 +220,7 @@
       <DisableSpecificWarnings>4068;4100</DisableSpecificWarnings>
       <EnablePREfast>true</EnablePREfast>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <MinimalRebuild>false</MinimalRebuild>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -228,6 +239,7 @@
       <DisableSpecificWarnings>4068;4100</DisableSpecificWarnings>
       <EnablePREfast>true</EnablePREfast>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <MinimalRebuild>false</MinimalRebuild>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -246,6 +258,7 @@
       <DisableSpecificWarnings>4068;4100</DisableSpecificWarnings>
       <EnablePREfast>true</EnablePREfast>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <MinimalRebuild>false</MinimalRebuild>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
