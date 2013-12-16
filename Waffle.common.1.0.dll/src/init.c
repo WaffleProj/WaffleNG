@@ -6,6 +6,10 @@ LIBRARY_EXPORT SIZE_T WINAPI WaffleInit(
     )
 {
     MessageBox(0, TEXT("WaffleInit"), 0, 0);
+    if (IsDebuggerPresent())
+    {
+        DebugBreak();
+    }
 
     lpstProcessSetting->hGlobalMutex = CreateMutex(NULL, FALSE, NULL);
 

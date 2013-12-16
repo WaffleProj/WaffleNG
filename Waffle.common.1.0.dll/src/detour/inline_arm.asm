@@ -3,23 +3,21 @@
 WaffleGetCallersAddress	proc
 		export	WaffleGetCallersAddress
 		mov	r0,0
-		;mov	r1,0
-		mov	pc,lr
+		bx	lr
 WaffleGetCallersAddress	endp
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 WaffleInlineHandler	proc
 		export	WaffleInlineHandler
 		bkpt	0
+		dcw	0xDEFE	;__debugbreak
 		mov	r0,0
-		;mov	r1,0
-		mov	pc,lr
+		bx	lr
 WaffleInlineHandler	endp
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 WaffleInlineDetour	proc
 		export	WaffleInlineDetour
 		mov	r0,0
-		;mov	r1,0
-		mov	pc,lr
+		bx	lr
 WaffleInlineDetour	endp
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 		end
