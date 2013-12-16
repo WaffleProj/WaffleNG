@@ -269,7 +269,8 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
-      <EntryPointSymbol>DllMain</EntryPointSymbol>
+      <EntryPointSymbol>
+      </EntryPointSymbol>
       <ImportLibrary>$(SolutionDir)SDK\Lib\IA64\$(TargetName).lib</ImportLibrary>
       <AdditionalDependencies>Waffle.common.1.0.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
@@ -364,7 +365,8 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <SubSystem>Windows</SubSystem>
-      <EntryPointSymbol>DllMain</EntryPointSymbol>
+      <EntryPointSymbol>
+      </EntryPointSymbol>
       <ImportLibrary>$(SolutionDir)SDK\Lib\IA64\$(TargetName).lib</ImportLibrary>
       <AdditionalDependencies>Waffle.common.1.0.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>

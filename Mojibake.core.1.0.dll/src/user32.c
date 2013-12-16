@@ -70,31 +70,31 @@ extern "C" {
             }
             */
         case WM_GETTEXTLENGTH:
-            {
-                LRESULT nText = DefWindowProc(hWnd, Msg, wParam, lParam) + 1;
-                DWORD LastError = GetLastError();
+        {
+            LRESULT nText = DefWindowProc(hWnd, Msg, wParam, lParam) + 1;
+            DWORD LastError = GetLastError();
 
-                LPWSTR lpuszText = (LPWSTR) WaffleAlloc(nText * sizeof(WCHAR));
-                DefWindowProc(hWnd, WM_GETTEXT, nText, (LPARAM) lpuszText);
-                Result = WideCharToMultiByte(stNewEnvir.AnsiCodePage, 0, lpuszText, -1, NULL, 0, NULL, NULL) - 1;
-                MojibakeFree(lpuszText);
-                SetLastError(LastError);
-                break;
-            }
+            LPWSTR lpuszText = (LPWSTR) WaffleAlloc(nText * sizeof(WCHAR));
+            DefWindowProc(hWnd, WM_GETTEXT, nText, (LPARAM) lpuszText);
+            Result = WideCharToMultiByte(stNewEnvir.AnsiCodePage, 0, lpuszText, -1, NULL, 0, NULL, NULL) - 1;
+            MojibakeFree(lpuszText);
+            SetLastError(LastError);
+            break;
+        }
         case WM_GETTEXT:
-            {
-                LPWSTR lpuszText = (LPWSTR) WaffleAlloc(wParam * sizeof(WCHAR));
-                DefWindowProc(hWnd, Msg, wParam, (LPARAM) lpuszText);
-                DWORD LastError = GetLastError();
-                Result = WideCharToMultiByte(stNewEnvir.AnsiCodePage, 0, lpuszText, -1, (LPSTR) lParam, (unsigned int) wParam * sizeof(CHAR), NULL, NULL) - 1;
-                MojibakeFree(lpuszText);
-                SetLastError(LastError);
-                break;
-            }
+        {
+            LPWSTR lpuszText = (LPWSTR) WaffleAlloc(wParam * sizeof(WCHAR));
+            DefWindowProc(hWnd, Msg, wParam, (LPARAM) lpuszText);
+            DWORD LastError = GetLastError();
+            Result = WideCharToMultiByte(stNewEnvir.AnsiCodePage, 0, lpuszText, -1, (LPSTR) lParam, (unsigned int) wParam * sizeof(CHAR), NULL, NULL) - 1;
+            MojibakeFree(lpuszText);
+            SetLastError(LastError);
+            break;
+        }
         default:
-            {
-                return BackupDefWindowProcA(hWnd, Msg, wParam, lParam);
-            }
+        {
+            return BackupDefWindowProcA(hWnd, Msg, wParam, lParam);
+        }
         }
 
         return Result;
@@ -126,31 +126,31 @@ extern "C" {
             }
             */
         case WM_GETTEXTLENGTH:
-            {
-                LRESULT nText = DefWindowProc(hDlg, Msg, wParam, lParam) + 1;
-                DWORD LastError = GetLastError();
+        {
+            LRESULT nText = DefWindowProc(hDlg, Msg, wParam, lParam) + 1;
+            DWORD LastError = GetLastError();
 
-                LPWSTR lpuszText = (LPWSTR) WaffleAlloc(nText * sizeof(WCHAR));
-                DefDlgProc(hDlg, WM_GETTEXT, nText, (LPARAM) lpuszText);
-                Result = WideCharToMultiByte(stNewEnvir.AnsiCodePage, 0, lpuszText, -1, NULL, 0, NULL, NULL) - 1;
-                MojibakeFree(lpuszText);
-                SetLastError(LastError);
-                break;
-            }
+            LPWSTR lpuszText = (LPWSTR) WaffleAlloc(nText * sizeof(WCHAR));
+            DefDlgProc(hDlg, WM_GETTEXT, nText, (LPARAM) lpuszText);
+            Result = WideCharToMultiByte(stNewEnvir.AnsiCodePage, 0, lpuszText, -1, NULL, 0, NULL, NULL) - 1;
+            MojibakeFree(lpuszText);
+            SetLastError(LastError);
+            break;
+        }
         case WM_GETTEXT:
-            {
-                LPWSTR lpuszText = (LPWSTR) WaffleAlloc(wParam * sizeof(WCHAR));
-                DefDlgProc(hDlg, Msg, wParam, (LPARAM) lpuszText);
-                DWORD LastError = GetLastError();
-                Result = WideCharToMultiByte(stNewEnvir.AnsiCodePage, 0, lpuszText, -1, (LPSTR) lParam, (unsigned int) wParam * sizeof(CHAR), NULL, NULL) - 1;
-                MojibakeFree(lpuszText);
-                SetLastError(LastError);
-                break;
-            }
+        {
+            LPWSTR lpuszText = (LPWSTR) WaffleAlloc(wParam * sizeof(WCHAR));
+            DefDlgProc(hDlg, Msg, wParam, (LPARAM) lpuszText);
+            DWORD LastError = GetLastError();
+            Result = WideCharToMultiByte(stNewEnvir.AnsiCodePage, 0, lpuszText, -1, (LPSTR) lParam, (unsigned int) wParam * sizeof(CHAR), NULL, NULL) - 1;
+            MojibakeFree(lpuszText);
+            SetLastError(LastError);
+            break;
+        }
         default:
-            {
-                return BackupDefDlgProcA(hDlg, Msg, wParam, lParam);
-            }
+        {
+            return BackupDefDlgProcA(hDlg, Msg, wParam, lParam);
+        }
         }
 
         return Result;
@@ -551,33 +551,33 @@ extern "C" {
         switch (Msg)
         {
         case WM_SETTEXT:
-            {
-                /*
-                Result = BackupCallWindowProcA(lpPrevWndFunc, hWnd, Msg, wParam, lParam);
-                LPWSTR lpuszString = AnsiToUnicode((LPCSTR) lParam);
-                Result = CallWindowProc(lpPrevWndFunc, hWnd, Msg, wParam, (LPARAM) lpuszString);
-                MojibakeFree(lpuszString);
-                */
+        {
+            /*
+            Result = BackupCallWindowProcA(lpPrevWndFunc, hWnd, Msg, wParam, lParam);
+            LPWSTR lpuszString = AnsiToUnicode((LPCSTR) lParam);
+            Result = CallWindowProc(lpPrevWndFunc, hWnd, Msg, wParam, (LPARAM) lpuszString);
+            MojibakeFree(lpuszString);
+            */
 
-                Result = BackupCallWindowProcA(lpPrevWndFunc, hWnd, Msg, wParam, lParam);
+            Result = BackupCallWindowProcA(lpPrevWndFunc, hWnd, Msg, wParam, lParam);
 
-                DWORD LastError = GetLastError();
-                LRESULT sizeString = DefWindowProcA(hWnd, WM_GETTEXTLENGTH, 0, 0);
-                sizeString++;
-                LPSTR lpszString = (LPSTR) WaffleAlloc(sizeString);
-                DefWindowProcA(hWnd, WM_GETTEXT, sizeString, (LPARAM) lpszString);
-                LPWSTR lpuszString = AnsiToUnicode(lpszString);
-                DefWindowProc(hWnd, WM_SETTEXT, 0, (LPARAM) lpuszString);
-                MojibakeFree(lpuszString);
-                MojibakeFree(lpszString);
-                SetLastError(LastError);
+            DWORD LastError = GetLastError();
+            LRESULT sizeString = DefWindowProcA(hWnd, WM_GETTEXTLENGTH, 0, 0);
+            sizeString++;
+            LPSTR lpszString = (LPSTR) WaffleAlloc(sizeString);
+            DefWindowProcA(hWnd, WM_GETTEXT, sizeString, (LPARAM) lpszString);
+            LPWSTR lpuszString = AnsiToUnicode(lpszString);
+            DefWindowProc(hWnd, WM_SETTEXT, 0, (LPARAM) lpuszString);
+            MojibakeFree(lpuszString);
+            MojibakeFree(lpszString);
+            SetLastError(LastError);
 
-                break;
-            }
+            break;
+        }
         default:
-            {
-                return BackupCallWindowProcA(lpPrevWndFunc, hWnd, Msg, wParam, lParam);
-            }
+        {
+            return BackupCallWindowProcA(lpPrevWndFunc, hWnd, Msg, wParam, lParam);
+        }
         }
 
         return Result;
@@ -600,16 +600,16 @@ extern "C" {
         switch (Msg)
         {
         case WM_SETTEXT:
-            {
-                LPWSTR lpuszString = AnsiToUnicode((LPCSTR) lParam);
-                Result = SendMessage(hWnd, Msg, wParam, (LPARAM) lpuszString);
-                MojibakeFree(lpuszString);
-                break;
-            }
+        {
+            LPWSTR lpuszString = AnsiToUnicode((LPCSTR) lParam);
+            Result = SendMessage(hWnd, Msg, wParam, (LPARAM) lpuszString);
+            MojibakeFree(lpuszString);
+            break;
+        }
         default:
-            {
-                return BackupSendMessageA(hWnd, Msg, wParam, lParam);
-            }
+        {
+            return BackupSendMessageA(hWnd, Msg, wParam, lParam);
+        }
         }
 
         return Result;
