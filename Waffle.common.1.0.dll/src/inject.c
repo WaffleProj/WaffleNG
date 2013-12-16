@@ -86,21 +86,21 @@ LIBRARY_EXPORT VOID WINAPI WaffleExecute(
 
     for (;;)
     {
-        Sleep(100);
-        SuspendThread(stProcessInfo.hThread);
-        GetThreadContext(stProcessInfo.hThread, &stContext);
-        if ((LPBYTE) stContext.WAFFLE_PORT_PROGRAM_POINTER == lpEntryPoint)
-        {
-            WriteProcessMemory(stProcessInfo.hProcess, lpEntryPoint, BackupEntryPoint, WAFFLE_PORT_ENTRY_POINT_LOOP_SIZE, NULL);
-            FlushInstructionCache(stProcessInfo.hProcess, lpEntryPoint, WAFFLE_PORT_ENTRY_POINT_LOOP_SIZE);
-            break;
-        }
-        else
-        {
-            ResumeThread(stProcessInfo.hThread);
-        }
+    Sleep(100);
+    SuspendThread(stProcessInfo.hThread);
+    GetThreadContext(stProcessInfo.hThread, &stContext);
+    if ((LPBYTE) stContext.WAFFLE_PORT_PROGRAM_POINTER == lpEntryPoint)
+    {
+    WriteProcessMemory(stProcessInfo.hProcess, lpEntryPoint, BackupEntryPoint, WAFFLE_PORT_ENTRY_POINT_LOOP_SIZE, NULL);
+    FlushInstructionCache(stProcessInfo.hProcess, lpEntryPoint, WAFFLE_PORT_ENTRY_POINT_LOOP_SIZE);
+    break;
     }
-#endif
+    else
+    {
+    ResumeThread(stProcessInfo.hThread);
+    }
+    }
+    #endif
     */
 
     lpstProcessSetting->dwThreadId = stProcessInfo.dwThreadId;

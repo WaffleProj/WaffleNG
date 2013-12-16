@@ -76,7 +76,7 @@ LIBRARY_EXPORT VOID WINAPI WaffleGetFileHash(
     DWORD cbHash = WAFFLE_HASH_LENGTH;     //MD5LEN == 16
     if (lpCryptGetHashParam(hHash, HP_HASHVAL, rgbHash, &cbHash, 0))
     {
-        TCHAR rgbDigits [] = TEXT("0123456789ABCDEF");
+        TCHAR rgbDigits[] = TEXT("0123456789ABCDEF");
         DWORD i, n;
         for (i = 0, n = 0; i < cbHash; i++)
         {

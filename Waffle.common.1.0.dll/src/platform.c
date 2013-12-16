@@ -32,16 +32,16 @@ LIBRARY_EXPORT BOOL WINAPI WaffleIsDotNET(
         /*
         if (lpNtHeader->Signature == IMAGE_NT_SIGNATURE)
         {
-            if (lpNtHeader->FileHeader.Characteristics & IMAGE_FILE_DLL)    //DLL File
-            {
-                Machine = 0;
-            }
-            else
-                Machine = lpNtHeader->FileHeader.Machine;
+        if (lpNtHeader->FileHeader.Characteristics & IMAGE_FILE_DLL)    //DLL File
+        {
+        Machine = 0;
+        }
+        else
+        Machine = lpNtHeader->FileHeader.Machine;
         }
         else    //DOS or OS/2 File
         {
-            Machine = 0;
+        Machine = 0;
         }
         */
     }

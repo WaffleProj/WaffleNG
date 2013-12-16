@@ -1,7 +1,16 @@
 ﻿#include <waffle.h>
 #pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 
-VOID WINAPI Main(VOID)
+#if   defined(_M_IA64)
+int CALLBACK WinMain(
+    _In_  HINSTANCE hInstance,
+    _In_  HINSTANCE hPrevInstance,
+    _In_  LPSTR lpCmdLine,
+    _In_  int nCmdShow
+    )
+#else
+int WINAPI Main(VOID)
+#endif
 {
     //Get base directory
     TCHAR szPath[MAX_PATH];
@@ -36,7 +45,7 @@ VOID WINAPI Main(VOID)
         if (!lstrlen(szTarget))
         {
             MessageBox(0, TEXT("FIXME:No program will run"), 0, 0);
-            ExitProcess(0);
+            return 0;
         }
 
         lstrcpy(szComponent, TEXT("Mojibake"));
@@ -70,7 +79,7 @@ VOID WINAPI Main(VOID)
         else
         {
             MessageBox(0, TEXT("FIXME:Unable to allocate memory"), 0, 0);
-            ExitProcess(0);
+            return 0;
         }
     }
     else
@@ -89,36 +98,36 @@ VOID WINAPI Main(VOID)
         switch (MachineType)
         {
         case WAFFLE_PORT_MACHINE_I386:
-            {
-                lstrcat(szLoader, TEXT("\\I386\\Waffle.exe"));
-                break;
-            }
+        {
+            lstrcat(szLoader, TEXT("\\I386\\Waffle.exe"));
+            break;
+        }
         case WAFFLE_PORT_MACHINE_AMD64:
-            {
-                lstrcat(szLoader, TEXT("\\AMD64\\Waffle.exe"));
-                break;
-            }
+        {
+            lstrcat(szLoader, TEXT("\\AMD64\\Waffle.exe"));
+            break;
+        }
         case WAFFLE_PORT_MACHINE_ARMNT:
-            {
-                lstrcat(szLoader, TEXT("\\ARMNT\\Waffle.exe"));
-                break;
-            }
+        {
+            lstrcat(szLoader, TEXT("\\ARMNT\\Waffle.exe"));
+            break;
+        }
         case WAFFLE_PORT_MACHINE_IA64:
-            {
-                lstrcat(szLoader, TEXT("\\ARMNT\\Waffle.exe"));
-                break;
-            }
+        {
+            lstrcat(szLoader, TEXT("\\ARMNT\\Waffle.exe"));
+            break;
+        }
         case 0xFFFF:
-            {
-                MessageBox(0, TEXT("FIXME:Unable to open the target"), 0, 0);
-                ExitProcess(0);
-                break;
-            }
+        {
+            MessageBox(0, TEXT("FIXME:Unable to open the target"), 0, 0);
+            return 0;
+            break;
+        }
         default:
-            {
-                MessageBox(0, TEXT("FIXME:Unsupported file or .net program"), 0, 0);       //Could be .net program
-                ExitProcess(0);
-            }
+        {
+            MessageBox(0, TEXT("FIXME:Unsupported file or .net program"), 0, 0);       //Could be .net program
+            return 0;
+        }
         }
 
         LPTSTR lpszArgument;
@@ -132,7 +141,7 @@ VOID WINAPI Main(VOID)
             else
             {
                 MessageBox(0, TEXT("FIXME:Unable to allocate memory"), 0, 0);
-                ExitProcess(0);
+                return 0;
             }
         }
         else
@@ -145,7 +154,7 @@ VOID WINAPI Main(VOID)
             else
             {
                 MessageBox(0, TEXT("FIXME:Unable to allocate memory"), 0, 0);
-                ExitProcess(0);
+                return 0;
             }
         }
         CreateProcess(szLoader, lpszArgument, NULL, NULL, TRUE, 0, 0, szDirectory, &stStartUp, &stProcessInfo);
@@ -154,6 +163,5 @@ VOID WINAPI Main(VOID)
         GlobalFree(lpszArgument);
     }
 
-    ExitProcess(0);
-    return;
+    return 0;
 }

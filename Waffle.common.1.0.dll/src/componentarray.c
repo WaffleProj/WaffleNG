@@ -60,7 +60,7 @@ LIBRARY_EXPORT VOID WINAPI WaffleAddComponent(
         {
             lpstProcessSetting->lpstComponent[i].dwBehind++;
         }
-        lpstProcessSetting->lpstComponent = (LPWAFFLE_COMPONENT_ARRAY) GlobalReAlloc(lpstProcessSetting->lpstComponent, sizeof(WAFFLE_COMPONENT_ARRAY)*(lpstProcessSetting->lpstComponent[0].dwBehind + 1), GHND);
+        lpstProcessSetting->lpstComponent = (LPWAFFLE_COMPONENT_ARRAY) GlobalReAlloc(lpstProcessSetting->lpstComponent, sizeof(WAFFLE_COMPONENT_ARRAY) * (lpstProcessSetting->lpstComponent[0].dwBehind + 1), GHND);
         if (!lpstProcessSetting->lpstComponent)
         {
             MessageBox(0, TEXT("FIXME:Unable to add elements in component array"), 0, 0);
