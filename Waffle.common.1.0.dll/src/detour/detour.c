@@ -33,6 +33,7 @@ LIBRARY_EXPORT BOOL WINAPI WaffleSetDetour(
     //ARM FIX!
     lpstProcessSetting->lpstLibrary[dwLibrary].lpstFunction[dwFunction].lpSource--;
     lpstProcessSetting->lpstLibrary[dwLibrary].lpstFunction[dwFunction].lpBackup--;
+    lpstProcessSetting->lpstLibrary[dwLibrary].lpstFunction[dwFunction].lpDetour--;
 #endif
     if (!bDetour)
     {

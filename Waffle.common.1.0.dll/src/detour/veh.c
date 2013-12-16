@@ -32,25 +32,26 @@ LIBRARY_EXPORT LONG CALLBACK WaffleExceptionHandler(
                                        }
                                        break;
     }
-    case 0x0EEDFADE:
+    default:
+        //case 0x0EEDFADE:
     {
-                       TCHAR szExceptionRecord[2048];
+               TCHAR szExceptionRecord[2048];
 
-                       wsprintf(szExceptionRecord, TEXT("ExceptionRecord->ExceptionCode = %08x\nExceptionRecord->ExceptionFlags = %08x\nExceptionRecord->ExceptionRecord = %016I64X\nExceptionRecord->ExceptionAddress = %016I64X\nExceptionRecord->NumberParameters = %08x"), ExceptionInfo->ExceptionRecord->ExceptionCode, ExceptionInfo->ExceptionRecord->ExceptionFlags, (UINT64) (SIZE_T) (ExceptionInfo->ExceptionRecord->ExceptionRecord), (UINT64) (SIZE_T) (ExceptionInfo->ExceptionRecord->ExceptionAddress), ExceptionInfo->ExceptionRecord->NumberParameters);
+               wsprintf(szExceptionRecord, TEXT("ExceptionRecord->ExceptionCode = %08x\nExceptionRecord->ExceptionFlags = %08x\nExceptionRecord->ExceptionRecord = %016I64X\nExceptionRecord->ExceptionAddress = %016I64X\nExceptionRecord->NumberParameters = %08x"), ExceptionInfo->ExceptionRecord->ExceptionCode, ExceptionInfo->ExceptionRecord->ExceptionFlags, (UINT64) (SIZE_T) (ExceptionInfo->ExceptionRecord->ExceptionRecord), (UINT64) (SIZE_T) (ExceptionInfo->ExceptionRecord->ExceptionAddress), ExceptionInfo->ExceptionRecord->NumberParameters);
 
-                       TCHAR szBuf[256];
-                       wsprintf(szBuf, TEXT("\nExceptionInfo->ContextRecord->WAFFLE_PORT_STACK_POINTER = %016I64X"), (UINT64) (ExceptionInfo->ContextRecord->WAFFLE_PORT_STACK_POINTER));
-                       lstrcat(szExceptionRecord, szBuf);
+               TCHAR szBuf[256];
+               wsprintf(szBuf, TEXT("\nExceptionInfo->ContextRecord->WAFFLE_PORT_STACK_POINTER = %016I64X"), (UINT64) (ExceptionInfo->ContextRecord->WAFFLE_PORT_STACK_POINTER));
+               lstrcat(szExceptionRecord, szBuf);
 
-                       DWORD i;
-                       for (i = 0; i < ExceptionInfo->ExceptionRecord->NumberParameters; i++)
-                       {
-                           TCHAR szBuf[256];
-                           wsprintf(szBuf, TEXT("\nExceptionRecord->ExceptionInformation[%u] = %016I64X"), i, (UINT64) (ExceptionInfo->ExceptionRecord->ExceptionInformation[i]));
-                           lstrcat(szExceptionRecord, szBuf);
-                       }
-                       MessageBox(0, szExceptionRecord, 0, 0);
-                       break;
+               DWORD i;
+               for (i = 0; i < ExceptionInfo->ExceptionRecord->NumberParameters; i++)
+               {
+                   TCHAR szBuf[256];
+                   wsprintf(szBuf, TEXT("\nExceptionRecord->ExceptionInformation[%u] = %016I64X"), i, (UINT64) (ExceptionInfo->ExceptionRecord->ExceptionInformation[i]));
+                   lstrcat(szExceptionRecord, szBuf);
+               }
+               MessageBox(0, szExceptionRecord, 0, 0);
+               break;
     }
     }
     return EXCEPTION_CONTINUE_SEARCH;

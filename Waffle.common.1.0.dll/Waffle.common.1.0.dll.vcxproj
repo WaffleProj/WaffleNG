@@ -396,7 +396,7 @@
     <None Include="common.def" />
     <CustomBuild Include="src\detour\inline_i386.asm">
       <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">ml /nologo /c /coff /safeseh /Fo "$(ProjectDir)$(IntermediateOutputPath)%(FileName).obj" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">ml /nologo /c /coff /safeseh /Zi /Fo "$(ProjectDir)$(IntermediateOutputPath)%(FileName).obj" "%(FullPath)"</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)$(IntermediateOutputPath)%(FileName).obj</Outputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </Message>
@@ -407,7 +407,7 @@
     </CustomBuild>
     <CustomBuild Include="src\detour\inline_amd64.asm">
       <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ml64 /nologo /c /Fo "$(ProjectDir)$(IntermediateOutputPath)%(FileName).obj" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ml64 /nologo /c /Zi /Fo "$(ProjectDir)$(IntermediateOutputPath)%(FileName).obj" "%(FullPath)"</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)$(IntermediateOutputPath)%(FileName).obj</Outputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
       </Message>
@@ -418,7 +418,7 @@
     </CustomBuild>
     <CustomBuild Include="src\detour\inline_arm.asm">
       <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">armasm -o "$(ProjectDir)$(IntermediateOutputPath)%(FileName).obj" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">armasm -g -o "$(ProjectDir)$(IntermediateOutputPath)%(FileName).obj" "%(FullPath)"</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">$(ProjectDir)$(IntermediateOutputPath)%(FileName).obj</Outputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
       </Message>
@@ -429,7 +429,7 @@
     </CustomBuild>
     <CustomBuild Include="src\detour\inline_ia64.asm">
       <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Itanium'">ias -o "$(ProjectDir)$(IntermediateOutputPath)%(FileName).obj" "%(FullPath)"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Itanium'">ias -d debug -o "$(ProjectDir)$(IntermediateOutputPath)%(FileName).obj" "%(FullPath)"</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Itanium'">$(ProjectDir)$(IntermediateOutputPath)%(FileName).obj</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Itanium'">ias -o "$(ProjectDir)$(IntermediateOutputPath)%(FileName).obj" "%(FullPath)"</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Itanium'">$(ProjectDir)$(IntermediateOutputPath)%(FileName).obj</Outputs>
