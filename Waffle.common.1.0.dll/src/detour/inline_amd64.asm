@@ -16,17 +16,6 @@ WaffleFindDetourAddress	proto	:QWORD,:QWORD
 		option prologue:none
 		option epilogue:none
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-WaffleGetCallersAddress	proc	CallersCaller
-
-		mov	rax,qword ptr [rsp]	;This is Caller
-		xor	rax,rax			;Have no idea how to find caller's caller
-		test	rcx,rcx
-		je	label1
-		mov	qword ptr [rcx],rax
-label1:
-		ret
-WaffleGetCallersAddress	endp
-;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 WaffleInlineHandler	proc
 
 		sub	rsp,20h
@@ -57,9 +46,6 @@ label2:
 		ret
 		db	"Unknown Address",0
 WaffleInlineHandler	endp
-;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-		option prologue:PrologueDef
-		option epilogue:EpilogueDef
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 WaffleInlineDetour	proc	;lpFunction
 			;local	flOldProtect

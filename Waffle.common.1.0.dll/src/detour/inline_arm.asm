@@ -1,15 +1,18 @@
-        area	.text, code
+		extern	VirtualProtect
+		extern	FlushInstructionCache
+		extern	GetCurrentProcess
+
+		extern	WaffleFindDetourAddress
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-WaffleGetCallersAddress	proc
-		export	WaffleGetCallersAddress
-		mov	r0,0
-		bx	lr
-WaffleGetCallersAddress	endp
+		area	.rdata, data, readonly
+;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+		area	.text, code
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 WaffleInlineHandler	proc
 		export	WaffleInlineHandler
-		bkpt	0
-		;dcw	0xDEFE	;__debugbreak
+		dcw	0xDEFE	;__debugbreak
 		mov	r0,0
 		bx	lr
 WaffleInlineHandler	endp

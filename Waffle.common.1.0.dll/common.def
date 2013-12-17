@@ -64,7 +64,6 @@ EXPORTS
     WaffleGetProcAddressA
     WaffleIntBox
     WaffleHexBox
-    WaffleGetCallersAddress
     WaffleGetImageSize
     WaffleAlloc
     WaffleReAlloc

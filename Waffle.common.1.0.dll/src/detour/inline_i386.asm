@@ -19,16 +19,6 @@ WaffleFindDetourAddress	proto	:DWORD,:DWORD
 		option  prologue:none
 		option  epilogue:none
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-WaffleGetCallersAddress	proc	CallersCaller
-
-		mov	eax,dword ptr [ebp+4]
-		mov	ecx,dword ptr [esp+4]
-		.if	ecx	;CallersCaller
-			mov	dword ptr [ecx],eax
-		.endif
-		ret	4	;clean stack
-WaffleGetCallersAddress	endp
-;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 WaffleInlineHandler	proc
 
 		mov	ecx,dword ptr [esp]	;HotpatchReturnAddress
