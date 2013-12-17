@@ -9,7 +9,7 @@ WaffleGetCallersAddress	endp
 WaffleInlineHandler	proc
 		export	WaffleInlineHandler
 		bkpt	0
-		dcw	0xDEFE	;__debugbreak
+		;dcw	0xDEFE	;__debugbreak
 		mov	r0,0
 		bx	lr
 WaffleInlineHandler	endp

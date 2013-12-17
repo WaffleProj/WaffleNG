@@ -29,26 +29,14 @@ LIBRARY_EXPORT BOOL WINAPI WaffleSetDetour(
     }
 
     //MessageBox(0, lpstProcessSetting->lpstLibrary[dwLibrary].lpstFunction[dwFunction].lpszFunction, lpstProcessSetting->lpstLibrary[dwLibrary].lpszLibrary, 0);
-#if   defined(_M_ARM)
-    //ARM FIX!
     if (!bDetour)
     {
-        bDetour = WaffleInlineDetour(lpstProcessSetting->lpstLibrary[dwLibrary].lpstFunction[dwFunction].lpSource - 1);
+        bDetour = WaffleInlineDetour(lpstProcessSetting->lpstLibrary[dwLibrary].lpstFunction[dwFunction].lpSource - sizeof(WAFFLE_PORT_EXCEPTION_INSTRUCTION_DATA) + sizeof(BYTE));
     }
     if (!bDetour)
     {
-        bDetour = WaffleExceptionDetour(lpstProcessSetting->lpstLibrary[dwLibrary].lpstFunction[dwFunction].lpSource - 1);
+        bDetour = WaffleExceptionDetour(lpstProcessSetting->lpstLibrary[dwLibrary].lpstFunction[dwFunction].lpSource - sizeof(WAFFLE_PORT_EXCEPTION_INSTRUCTION_DATA) + sizeof(BYTE));
     }
-#else
-    if (!bDetour)
-    {
-        bDetour = WaffleInlineDetour(lpstProcessSetting->lpstLibrary[dwLibrary].lpstFunction[dwFunction].lpSource);
-    }
-    if (!bDetour)
-    {
-        bDetour = WaffleExceptionDetour(lpstProcessSetting->lpstLibrary[dwLibrary].lpstFunction[dwFunction].lpSource);
-    }
-#endif
     return bDetour;
 }
 

@@ -29,12 +29,23 @@ WaffleGetCallersAddress	endp
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 WaffleInlineHandler	proc
 
-		;int	3
-		mov	rcx,qword ptr [rsp]	;FunctionAddress
+		sub	rsp,20h
+		mov	qword ptr [rsp],rcx
+		mov	qword ptr [rsp+8h],rdx
+		mov	qword ptr [rsp+10h],r8
+		mov	qword ptr [rsp+18h],r9
+
+		mov	rcx,qword ptr [rsp+20h]	;FunctionAddress
 		sub	rcx,6
-		mov	rdx,qword ptr [rsp+08h]	;CallerReturnAddress
+		mov	rdx,qword ptr [rsp+28h]	;CallerReturnAddress
 		sub	rsp,20h
 		call	WaffleFindDetourAddress
+		add	rsp,20h
+		
+		mov	rcx,qword ptr [rsp]
+		mov	rdx,qword ptr [rsp+8h]
+		mov	r8,qword ptr [rsp+10h]
+		mov	r9,qword ptr [rsp+18h]
 		add	rsp,20h
 		
 		test	rax,rax
@@ -53,10 +64,6 @@ WaffleInlineHandler	endp
 WaffleInlineDetour	proc	;lpFunction
 			;local	flOldProtect
 		
-		mov	rax,FALSE
-		ret
-
-		;int	3
 		mov	qword ptr [rsp+8h],rsi
 		mov	qword ptr [rsp+10h],rdi
 		mov	qword ptr [rsp+18h],rbx
