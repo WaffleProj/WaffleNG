@@ -5,9 +5,9 @@ LIBRARY_EXPORT BOOL WINAPI WaffleExceptionDetour(
     )
 {
     DWORD flOldProtect;
-#ifdef WAFFLE_PORT_ADDRESS_CONVERT
-    lpFunction = WAFFLE_PORT_ADDRESS_CONVERT(lpFunction);
-#endif // WAFFLE_PORT_ADDRESS_CONVERT
+#ifdef WAFFLE_PORT_INSTRUCTION_ADDRESS_TO_PHYSICAL_ADDRESS
+    lpFunction = WAFFLE_PORT_INSTRUCTION_ADDRESS_TO_PHYSICAL_ADDRESS(lpFunction);
+#endif // WAFFLE_PORT_INSTRUCTION_ADDRESS_TO_PHYSICAL_ADDRESS
 
     VirtualProtect(lpFunction, sizeof(WAFFLE_PORT_EXCEPTION_INSTRUCTION_DATA), PAGE_EXECUTE_READWRITE, &flOldProtect);
 
@@ -27,7 +27,7 @@ LIBRARY_EXPORT LONG CALLBACK WaffleExceptionHandler(
     case WAFFLE_PORT_EXCEPTION_CODE:
         //if (*(WAFFLE_PORT_EXCEPTION_INSTRUCTION_DATA *) (ExceptionInfo->ExceptionRecord->ExceptionAddress) == (WAFFLE_PORT_EXCEPTION_INSTRUCTION_DATA) WAFFLE_PORT_EXCEPTION_INSTRUCTION)
     {
-        SIZE_T lpCaller = *(SIZE_T *) (ExceptionInfo->ContextRecord->WAFFLE_PORT_STACK_POINTER);
+        SIZE_T lpCaller = *(SIZE_T *) WAFFLE_PORT_EXCEPTION_GET_CALLER(ExceptionInfo);
         SIZE_T lpDetour = WaffleFindDetourAddress(ExceptionInfo->ExceptionRecord->ExceptionAddress, (PVOID) lpCaller);
         if (lpDetour)
         {
