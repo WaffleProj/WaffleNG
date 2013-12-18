@@ -38,10 +38,10 @@ WaffleInlineHandler	proc
 		add	rsp,20h
 		
 		test	rax,rax
-		jz	label2
+		jz	label1
 		mov	qword ptr [rsp],rax
 		ret
-label2:
+label1:
 		int	3
 		ret
 		db	"Unknown Address",0
@@ -56,29 +56,35 @@ WaffleInlineDetour	proc	;lpFunction
 		;mov	qword ptr [rsp+20h],flOldProtect
 
 		.const
-Signature	db	90h,90h,90h,90h,90h,8Bh,0FFh
+Signature:	nop
+		nop
+		nop
+		nop
+		nop
+		mov	edi,edi
+		;db	90h,90h,90h,90h,90h,8Bh,0FFh
 		.code
 		mov	rbx,rcx			;mov	rbx,lpFunction
 		
 		mov	rcx,14			;jmp [rip+0](6 bytes) QWORD (8 bytes)
 		mov	rdi,rbx
-label3:		
+label2:		
 		mov	rsi,offset Signature + 1
 		mov	rax,90h
 		repne	scasb
-		jne	label4			;Jump if there is no NOP in the first 14 bytes
+		jne	label3			;Jump if there is no NOP in the first 14 bytes
 		mov	rax,rdi			;Back up the rdi
 		inc	rax
 		repe	cmpsb
 		mov	rdi,rax
-		jne	label3			;Jump if it doesn't match
+		jne	label2			;Jump if it doesn't match
 
 		mov	rsi,qword ptr [rsp+8h]
 		mov	rdi,qword ptr [rsp+10h]
 		mov	rbx,qword ptr [rsp+18h]
 		mov	rax,FALSE
 		ret
-label4:
+label3:
 		mov	rcx,rbx
 		mov	rdx,14
 		mov	r8,PAGE_EXECUTE_READWRITE
@@ -90,7 +96,10 @@ label4:
 		.const
 ;Spin		db	0EBh,0FEh
 ;CallRip0	db	0FFh,15h,00h,00h,00h,00h
-Patch		db	0EBh,0FEh,00h,00h,00h,00h,0FFh,15h
+Patch:		jmp	$
+		dd	0
+		call	qword ptr $-100h
+		;db	0EBh,0FEh,00h,00h,00h,00h,0FFh,15h
 		.code
 		mov	rsi,offset Patch
 		mov	rdi,rbx

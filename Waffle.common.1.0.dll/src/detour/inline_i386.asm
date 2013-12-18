@@ -41,6 +41,12 @@ WaffleInlineDetour	proc	uses ebx esi edi lpFunction
 
 		.const
 Signature	db	90h,90h,90h,90h,90h,8Bh,0FFh
+		;nop
+		;nop
+		;nop
+		;nop
+		;nop
+		;mov	edi,edi
 		.code
 		mov	esi,offset Signature
 		mov	ebx,lpFunction
@@ -69,6 +75,8 @@ Signature	db	90h,90h,90h,90h,90h,8Bh,0FFh
 
 		.const
 Hotpatch	db	0E8h,0EBh,0F9h
+		;call	dword ptr $-100h
+		;jmp	$-5
 		.code
 		mov	esi,offset Hotpatch
 		mov	edi,ebx
@@ -77,6 +85,7 @@ Hotpatch	db	0E8h,0EBh,0F9h
 		mov	eax,WaffleInlineHandler
 		sub	eax,lpFunction
 		stosd
+		;add	esi,4
 
 		movsw
 
