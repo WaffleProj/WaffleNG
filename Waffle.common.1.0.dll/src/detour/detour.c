@@ -31,11 +31,11 @@ LIBRARY_EXPORT BOOL WINAPI WaffleSetDetour(
     //MessageBox(0, lpstProcessSetting->lpstLibrary[dwLibrary].lpstFunction[dwFunction].lpszFunction, lpstProcessSetting->lpstLibrary[dwLibrary].lpszLibrary, 0);
     if (!bDetour)
     {
-        bDetour = WaffleInlineDetour(lpstProcessSetting->lpstLibrary[dwLibrary].lpstFunction[dwFunction].lpSource - sizeof(WAFFLE_PORT_EXCEPTION_INSTRUCTION_DATA) + sizeof(BYTE));
+        bDetour = WaffleInlineDetour(lpstProcessSetting->lpstLibrary[dwLibrary].lpstFunction[dwFunction].lpSource);
     }
     if (!bDetour)
     {
-        bDetour = WaffleExceptionDetour(lpstProcessSetting->lpstLibrary[dwLibrary].lpstFunction[dwFunction].lpSource - sizeof(WAFFLE_PORT_EXCEPTION_INSTRUCTION_DATA) + sizeof(BYTE));
+        bDetour = WaffleExceptionDetour(lpstProcessSetting->lpstLibrary[dwLibrary].lpstFunction[dwFunction].lpSource);
     }
     return bDetour;
 }

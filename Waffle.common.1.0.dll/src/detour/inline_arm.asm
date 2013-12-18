@@ -34,10 +34,11 @@ WaffleInlineHandler	proc
 		orrne	r0,r0,#1
 		strne	r0,[sp]
 		bne	label1
-		dcw	0xDEFE	;__debugbreak
+		;dcw	0xDEFE	;__debugbreak
+		bkpt	0
 label1
 		ldr	r1,[sp,#4]
-		msr	cpsr,r1
+		msr	cpsr_fc,r1
 		add	sp,sp,#8
 		pop	{r12,lr}
 		pop	{r0-r3}
@@ -47,6 +48,7 @@ WaffleInlineHandler	endp
 WaffleInlineDetour	proc	;lpFunction
 		export	WaffleInlineDetour
 		
+		and	r0,r0,#-2
 		push	{r0,r4,lr}
 		sub	sp,sp,#4
 		

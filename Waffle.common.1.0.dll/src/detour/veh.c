@@ -5,6 +5,10 @@ LIBRARY_EXPORT BOOL WINAPI WaffleExceptionDetour(
     )
 {
     DWORD flOldProtect;
+#ifdef WAFFLE_PORT_ADDRESS_CONVERT
+    lpFunction = WAFFLE_PORT_ADDRESS_CONVERT(lpFunction);
+#endif // WAFFLE_PORT_ADDRESS_CONVERT
+
     VirtualProtect(lpFunction, sizeof(WAFFLE_PORT_EXCEPTION_INSTRUCTION_DATA), PAGE_EXECUTE_READWRITE, &flOldProtect);
 
     WAFFLE_PORT_WRITE_EXCEPTION_INSTRUCTION(lpFunction);
