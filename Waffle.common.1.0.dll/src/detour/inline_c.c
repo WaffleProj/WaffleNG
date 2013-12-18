@@ -125,10 +125,8 @@ LIBRARY_EXPORT NOINLINE LPVOID WINAPI WaffleGetCallersAddress(
 {
 #if     defined(__GNUC__)
     LPVOID ReturnAddress = __builtin_return_address(0); //use 1?
-#endif
-
-#if     defined(_MSC_VER)
-#if     WAFFLE_PORT_MACHINE == WAFFLE_PORT_MACHINE_I386
+#elif   defined(_MSC_VER)
+#if (WAFFLE_PORT_MACHINE == WAFFLE_PORT_MACHINE_I386)
     LPVOID FramePointer = (&CallersCaller)[-2];
     LPVOID ReturnAddress = ((LPVOID *) (FramePointer))[1];
 #else

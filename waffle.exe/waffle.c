@@ -1,7 +1,7 @@
 ﻿#include <waffle.h>
 #pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 
-#if   defined(_M_IA64)
+#ifdef _M_IA64
 int CALLBACK WinMain(
     _In_  HINSTANCE hInstance,
     _In_  HINSTANCE hPrevInstance,
