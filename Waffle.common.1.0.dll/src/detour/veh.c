@@ -38,8 +38,10 @@ LIBRARY_EXPORT LONG CALLBACK WaffleExceptionHandler(
         }
         break;
     }
+    case EXCEPTION_ACCESS_VIOLATION:
+    case 0x0EEDFADE:
+        break;
     default:
-        //case 0x0EEDFADE:
     {
         TCHAR szExceptionRecord[2048];
 

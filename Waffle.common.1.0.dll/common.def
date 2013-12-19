@@ -33,6 +33,7 @@ EXPORTS
 
     WaffleCreateProcessW
     WaffleInjectDllW
+    WaffleExecuteTo
     WaffleExecuteW
 
     WaffleWriteLogFileA

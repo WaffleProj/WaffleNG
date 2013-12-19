@@ -48,7 +48,7 @@ LIBRARY_EXPORT VOID WINAPI WaffleInjectDll(
     LPVOID lpszRemoteDll = VirtualAllocEx(hProcess, NULL, MAX_PATH*sizeof(TCHAR), MEM_COMMIT, PAGE_READWRITE);
     if (lpszRemoteDll)
     {
-        LPTHREAD_START_ROUTINE lpLoadLibrary = (LPTHREAD_START_ROUTINE) WaffleGetProcAddress(GetModuleHandle(TEXT("kernel32.dll")), TEXT("LoadLibraryW"));
+        LPTHREAD_START_ROUTINE lpLoadLibrary = (LPTHREAD_START_ROUTINE)WaffleGetProcAddress(GetModuleHandle(TEXT("kernel32.dll")), TEXT("LoadLibraryW"));
 
         WriteProcessMemory(hProcess, lpszRemoteDll, lpszDllFull, lstrlen(lpszDllFull)*sizeof(TCHAR), NULL);
         HANDLE hThread = CreateRemoteThread(hProcess, NULL, 0, lpLoadLibrary, lpszRemoteDll, 0, NULL);
@@ -57,6 +57,49 @@ LIBRARY_EXPORT VOID WINAPI WaffleInjectDll(
         VirtualFreeEx(hProcess, lpszRemoteDll, 0, MEM_RELEASE);
         CloseHandle(hThread);
     }
+}
+
+LIBRARY_EXPORT VOID WINAPI WaffleExecuteTo(
+    _In_        HANDLE hProcess,
+    _In_        HANDLE hThread,
+    _In_        LPBYTE lpProgramCounter
+    )
+{
+#ifdef WAFFLE_PORT_ENTRY_POINT_LOOP
+    if (!lpProgramCounter)
+    {
+        return;
+    }
+
+    CONTEXT stContext;
+    stContext.ContextFlags = CONTEXT_FULL;
+    DWORD flOldProtect;
+    BYTE OriginalInstruction[WAFFLE_PORT_ENTRY_POINT_LOOP_SIZE];
+
+    VirtualProtectEx(hProcess, lpProgramCounter, WAFFLE_PORT_ENTRY_POINT_LOOP_SIZE, PAGE_EXECUTE_READWRITE, &flOldProtect);
+    ReadProcessMemory(hProcess, lpProgramCounter, OriginalInstruction, WAFFLE_PORT_ENTRY_POINT_LOOP_SIZE, NULL);
+    WriteProcessMemory(hProcess, lpProgramCounter, WAFFLE_PORT_ENTRY_POINT_LOOP, WAFFLE_PORT_ENTRY_POINT_LOOP_SIZE, NULL);
+    FlushInstructionCache(hProcess, lpProgramCounter, WAFFLE_PORT_ENTRY_POINT_LOOP_SIZE);
+    ResumeThread(hThread);
+
+    for (;;)
+    {
+        Sleep(100);
+        SuspendThread(hThread);
+        GetThreadContext(hThread, &stContext);
+        if ((LPBYTE)WAFFLE_PORT_PROGRAM_COUNTER_TO_PHYSICAL_ADDRESS(stContext.WAFFLE_PORT_PROGRAM_POINTER) == lpProgramCounter)
+        {
+            WriteProcessMemory(hProcess, lpProgramCounter, OriginalInstruction, WAFFLE_PORT_ENTRY_POINT_LOOP_SIZE, NULL);
+            FlushInstructionCache(hProcess, lpProgramCounter, WAFFLE_PORT_ENTRY_POINT_LOOP_SIZE);
+            VirtualProtectEx(hProcess, lpProgramCounter, WAFFLE_PORT_ENTRY_POINT_LOOP_SIZE, flOldProtect, &flOldProtect);
+            break;
+        }
+        else
+        {
+            ResumeThread(hThread);
+        }
+    }
+#endif
 }
 
 LIBRARY_EXPORT VOID WINAPI WaffleExecute(
@@ -70,38 +113,10 @@ LIBRARY_EXPORT VOID WINAPI WaffleExecute(
 
     WaffleCreateProcess(lpApplicationName, lpCommandLine, NULL, NULL, TRUE, CREATE_SUSPENDED, 0, lpCurrentDirectory, NULL, &stProcessInfo);
 
-    /*
-#ifdef WAFFLE_PORT_ENTRY_POINT  //the workaround for xp, will cause problem with .net program under win 7
-    CONTEXT stContext;
-    stContext.ContextFlags = CONTEXT_FULL;
-    GetThreadContext(stProcessInfo.hThread, &stContext);
-    LPBYTE lpEntryPoint = (LPBYTE) stContext.WAFFLE_PORT_ENTRY_POINT;
-
-    BYTE BackupEntryPoint[WAFFLE_PORT_ENTRY_POINT_LOOP_SIZE];
-    ReadProcessMemory(stProcessInfo.hProcess, lpEntryPoint, BackupEntryPoint, WAFFLE_PORT_ENTRY_POINT_LOOP_SIZE, NULL);
-    WriteProcessMemory(stProcessInfo.hProcess, lpEntryPoint, WAFFLE_PORT_ENTRY_POINT_LOOP, WAFFLE_PORT_ENTRY_POINT_LOOP_SIZE, NULL);
-    FlushInstructionCache(stProcessInfo.hProcess, lpEntryPoint, WAFFLE_PORT_ENTRY_POINT_LOOP_SIZE);
-
-    ResumeThread(stProcessInfo.hThread);
-
-    for (;;)
-    {
-    Sleep(100);
-    SuspendThread(stProcessInfo.hThread);
-    GetThreadContext(stProcessInfo.hThread, &stContext);
-    if ((LPBYTE) stContext.WAFFLE_PORT_PROGRAM_POINTER == lpEntryPoint)
-    {
-    WriteProcessMemory(stProcessInfo.hProcess, lpEntryPoint, BackupEntryPoint, WAFFLE_PORT_ENTRY_POINT_LOOP_SIZE, NULL);
-    FlushInstructionCache(stProcessInfo.hProcess, lpEntryPoint, WAFFLE_PORT_ENTRY_POINT_LOOP_SIZE);
-    break;
-    }
-    else
-    {
-    ResumeThread(stProcessInfo.hThread);
-    }
-    }
-    #endif
-    */
+#ifdef _M_IX86  //Workaround for XP
+    WaffleExecuteTo(stProcessInfo.hProcess, stProcessInfo.hThread, (LPBYTE)WAFFLE_PORT_PROGRAM_COUNTER_TO_PHYSICAL_ADDRESS(WaffleGetProcAddress(GetModuleHandle(TEXT("ntdll.dll")), TEXT("RtlInitializeExceptionChain"))));
+    WaffleExecuteTo(stProcessInfo.hProcess, stProcessInfo.hThread, (LPBYTE)WAFFLE_PORT_PROGRAM_COUNTER_TO_PHYSICAL_ADDRESS(WaffleGetProcAddress(GetModuleHandle(TEXT("kernel32.dll")), TEXT("BaseThreadInitThunk"))));
+#endif
 
     lpstProcessSetting->dwThreadId = stProcessInfo.dwThreadId;
     lpstProcessSetting->dwProcessId = stProcessInfo.dwProcessId;
