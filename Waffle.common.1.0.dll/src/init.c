@@ -5,7 +5,7 @@ LIBRARY_EXPORT SIZE_T WINAPI WaffleInit(
     _In_    LPVOID lpReserved
     )
 {
-    MessageBox(0, TEXT("WaffleInit"), 0, 0);
+    MessageBox(0, TEXT("Please attach the debugger."), TEXT("WaffleInit"), 0);
     if (IsDebuggerPresent())
     {
         DebugBreak();
