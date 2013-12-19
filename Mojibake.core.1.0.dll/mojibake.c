@@ -7,7 +7,7 @@ LOGFONTA lfGothic;
 TEXTMETRICA tmGothic;
 DWORD dwGothic;
 
-LIBRARY_EXPORT SIZE_T WINAPI ThreadInit(
+LIBRARY_EXPORT SIZE_T WINAPI DetourBaseThreadInitThunk(
     _In_    LPWAFFLE_THREAD_CONTEXT lpstThread
     )
 {
