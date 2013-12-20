@@ -5,12 +5,6 @@ LIBRARY_EXPORT SIZE_T WINAPI WaffleInit(
     _In_    LPVOID lpReserved
     )
 {
-    MessageBox(0, TEXT("Please attach the debugger."), TEXT("WaffleInit"), 0);
-    if (IsDebuggerPresent())
-    {
-        DebugBreak();
-    }
-
     lpstProcessSetting->hGlobalMutex = CreateMutex(NULL, FALSE, NULL);
 
     WaffleAddComponent(TEXT("Waffle.common.1.0.dll"));  //so we can use WaffleAlloc
@@ -35,9 +29,7 @@ LIBRARY_EXPORT SIZE_T WINAPI WaffleInit(
     //return 0; //for attaching debugger
     //MessageBoxA(0, "Attach", 0, 0);
 
-    HANDLE hThread = OpenThread(THREAD_GET_CONTEXT | THREAD_SET_CONTEXT | THREAD_SUSPEND_RESUME, FALSE, lpstProcessSetting->dwThreadId);
-    ResumeThread(hThread);
-    CloseHandle(hThread);
+    WaffleResumeMainThread();
 
     return 0;
 }

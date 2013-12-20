@@ -27,8 +27,7 @@ WaffleInlineHandler	proc
 		.if	eax
 			mov	dword ptr [esp],eax
 		.else
-			inc	dword ptr [esp]
-			inc	dword ptr [esp]
+			add	dword ptr [esp],2
 		.endif
 		ret
 WaffleInlineHandler	endp

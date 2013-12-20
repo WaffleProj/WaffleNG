@@ -11,6 +11,14 @@ BOOL WINAPI DllMain(
 {
     if (fdwReason == DLL_PROCESS_ATTACH)
     {
+#ifdef _DEBUG
+        MessageBox(0, TEXT("Please attach the debugger."), TEXT("WaffleInit"), 0);
+        if (IsDebuggerPresent())
+        {
+            DebugBreak();
+        }
+#endif // _DEBUG
+
         DisableThreadLibraryCalls(hinstDLL);
 
         if (WaffleOpenProcessSetting())
