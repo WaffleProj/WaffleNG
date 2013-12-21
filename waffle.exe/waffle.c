@@ -1,16 +1,7 @@
 ﻿#include <waffle.h>
 #pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 
-#ifdef _M_IA64
-int CALLBACK WinMain(
-    _In_  HINSTANCE hInstance,
-    _In_  HINSTANCE hPrevInstance,
-    _In_  LPSTR lpCmdLine,
-    _In_  int nCmdShow
-    )
-#else
 int WINAPI Main(VOID)
-#endif
 {
     //Get base directory
     TCHAR szPath[MAX_PATH];
