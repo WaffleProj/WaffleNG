@@ -53,10 +53,10 @@
     <OutDir>$(SolutionDir)Component\Waffle\$(PEMachine)\</OutDir>
     <IncludePath>$(SolutionDir)SDK\Include;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)SDK\Lib\$(PEMachine);$(LibraryPath)</LibraryPath>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IntDir>$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
   </PropertyGroup>
@@ -68,7 +68,6 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
-    <IntDir>$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <RunCodeAnalysis>true</RunCodeAnalysis>
