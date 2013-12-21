@@ -24,6 +24,8 @@ int CALLBACK MojibakeEnumFontsProcA(
 {
     RtlMoveMemory(&lfGothic, lplf, sizeof(lfGothic));
     RtlMoveMemory(&tmGothic, lptm, sizeof(tmGothic));
+    tmGothic.tmPitchAndFamily = tmGothic.tmPitchAndFamily | TMPF_TRUETYPE & ~TMPF_FIXED_PITCH;
+    tmGothic.tmCharSet = SHIFTJIS_CHARSET;
     dwGothic = dwType;
     lstrcpyA(lfGothic.lfFaceName, "\x82\x6C\x82\x72\x20\x83\x53\x83\x56\x83\x62\x83\x4E");  //ＭＳ ゴシック
     return 0;
