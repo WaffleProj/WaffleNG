@@ -1,7 +1,7 @@
 ﻿#include "..\common.h"
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 
-LIBRARY_EXPORT LPWAFFLE_PROCESS_SETTING WINAPI WaffleCreateProcessSetting(VOID)
+LIBRARY_EXPORT LPWAFFLE_PROCESS_SETTING WINAPI WaffleCreateProcessSetting(void)
 {
     TCHAR szValueProcessSetting[64];
     wsprintf(szValueProcessSetting, szFmtValueProcessSetting, GetCurrentThreadId(), GetTickCount());
@@ -19,7 +19,7 @@ LIBRARY_EXPORT LPWAFFLE_PROCESS_SETTING WINAPI WaffleCreateProcessSetting(VOID)
     return lpstProcessSetting;
 }
 
-LIBRARY_EXPORT LPWAFFLE_PROCESS_SETTING WINAPI WaffleOpenProcessSetting(VOID)
+LIBRARY_EXPORT LPWAFFLE_PROCESS_SETTING WINAPI WaffleOpenProcessSetting(void)
 {
     if (!lpstProcessSetting)
     {
@@ -34,7 +34,7 @@ LIBRARY_EXPORT LPWAFFLE_PROCESS_SETTING WINAPI WaffleOpenProcessSetting(VOID)
     return lpstProcessSetting;
 }
 
-LIBRARY_EXPORT VOID WINAPI WaffleResumeMainThread(VOID)
+LIBRARY_EXPORT VOID WINAPI WaffleResumeMainThread(void)
 {
     HANDLE hThread = OpenThread(THREAD_SUSPEND_RESUME, FALSE, lpstProcessSetting->dwThreadId);
     ResumeThread(hThread);

@@ -60,7 +60,7 @@ LIBRARY_EXPORT BOOL WINAPI WaffleAddDetour(
     return TRUE;
 }
 
-LIBRARY_EXPORT VOID WINAPI WaffleLoadDetourOption(VOID)
+LIBRARY_EXPORT VOID WINAPI WaffleLoadDetourOption(void)
 {
     LPTSTR lpszSection = WaffleGetOptionSectionNames(TEXT("Detour.ini"));
     if (!lpszSection)

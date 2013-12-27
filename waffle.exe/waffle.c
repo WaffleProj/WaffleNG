@@ -1,7 +1,7 @@
 ﻿#include <waffle.h>
 #pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 
-int WINAPI Main(VOID)
+int WINAPI Main(void)
 {
     //Get base directory
     TCHAR szPath[MAX_PATH];

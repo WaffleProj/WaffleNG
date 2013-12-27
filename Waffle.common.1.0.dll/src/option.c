@@ -18,7 +18,7 @@ LIBRARY_EXPORT VOID WINAPI WaffleCheckOptionEncoding(
                 MessageBox(0, TEXT("FIXME:At least one of your config file is in the multibyte character set. Please use UTF-16."), 0, 0);
             }
             break;
-        case 0:
+        case ERROR_SUCCESS:
             WriteFile(hFile, &wBOM, 2, &dwFile, NULL);
             break;
         }
