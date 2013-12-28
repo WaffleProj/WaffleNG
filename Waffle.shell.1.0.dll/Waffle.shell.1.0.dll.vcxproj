@@ -102,7 +102,7 @@
       <SubSystem>Windows</SubSystem>
       <EntryPointSymbol>DllMain</EntryPointSymbol>
       <ImportLibrary>$(SolutionDir)SDK\Lib\$(PEMachine)\$(TargetName).lib</ImportLibrary>
-      <AdditionalDependencies>Kernel32.lib;User32.lib;Shlwapi.lib;Shell32.lib;Advapi32.lib</AdditionalDependencies>
+      <AdditionalDependencies>Kernel32.lib;User32.lib;Shlwapi.lib;Shell32.lib;Advapi32.lib;Ole32.lib</AdditionalDependencies>
       <ModuleDefinitionFile>shell.def</ModuleDefinitionFile>
       <AdditionalOptions>/ignore:4197 %(AdditionalOptions)</AdditionalOptions>
     </Link>

@@ -38,48 +38,41 @@ HRESULT STDMETHODCALLTYPE IWaffleShellExtInit_Initialize(
     _In_    HKEY hkeyProgID
     )
 {
-    HRESULT hr;
     FORMATETC formatetcIn = { CF_HDROP, NULL, DVASPECT_CONTENT, -1, TYMED_HGLOBAL };
     STGMEDIUM medium;
-    HDROP hDrop;
-    LPTSTR lpszFileName;
 
-    hr = pdtobj->lpVtbl->GetData(pdtobj, &formatetcIn, &medium);
-    if (!SUCCEEDED(hr))
-    {
-        return hr;
-    }
+    pdtobj->lpVtbl->AddRef(pdtobj);
 
-    hDrop = (HDROP)GlobalLock(medium.hGlobal);
-    if (!hDrop)
+    if (SUCCEEDED(pdtobj->lpVtbl->GetData(pdtobj, &formatetcIn, &medium)))
     {
-        return E_OUTOFMEMORY;
-    }
-    
-    if (DragQueryFile(hDrop, (UINT)-1, NULL, 0) == 1)
-    {
-        UINT nSize = 1;
-        UINT nFileName;
-        lpszFileName = GlobalAlloc(GPTR, nSize * sizeof(lpszFileName[0]));
-        do
+        LPTSTR lpszFileName;
+        if (DragQueryFile((HDROP)medium.hGlobal, (UINT)-1, NULL, 0) == 1)
         {
-            nSize *= 2;
-            lpszFileName = GlobalReAlloc(lpszFileName, nSize * sizeof(lpszFileName[0]), GHND);
-            nFileName = DragQueryFile(hDrop, 0, lpszFileName, nSize);
-        } while (nFileName == nSize - 1);
-    }
-    else
-    {
-        lpszFileName = NULL;
+            UINT nSize = 1;
+            UINT nFileName;
+            lpszFileName = GlobalAlloc(GPTR, nSize * sizeof(lpszFileName[0]));
+            do
+            {
+                nSize *= 2;
+                lpszFileName = GlobalReAlloc(lpszFileName, nSize * sizeof(lpszFileName[0]), GHND);
+                nFileName = DragQueryFile((HDROP)medium.hGlobal, 0, lpszFileName, nSize);
+            } while (nFileName == nSize - 1);
+        }
+        else
+        {
+            lpszFileName = NULL;
+        }
+
+        lpszFileName = InterlockedExchangePointer(&((_IWaffleShellExtInit *)this)->lpszFileName, lpszFileName);
+        if (lpszFileName)
+        {
+            GlobalFree(lpszFileName);
+        }
+
+        ReleaseStgMedium(&medium);
     }
 
-    lpszFileName = InterlockedExchangePointer(&((_IWaffleShellExtInit *)this)->lpszFileName, lpszFileName);
-    if (lpszFileName)
-    {
-        GlobalFree(lpszFileName);
-    }
-
-    GlobalUnlock(medium.hGlobal);
+    pdtobj->lpVtbl->Release(pdtobj);
 
     return S_OK;
 }
