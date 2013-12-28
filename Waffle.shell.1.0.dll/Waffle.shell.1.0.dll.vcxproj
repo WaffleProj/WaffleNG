@@ -35,15 +35,19 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="IClassFactory.c" />
-    <ClCompile Include="IWaffleShell.c" />
     <ClCompile Include="shell.c" />
+    <ClCompile Include="src\IClassFactory.c" />
+    <ClCompile Include="src\IContextMenu.c" />
+    <ClCompile Include="src\IShellExtInit.c" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shell.def" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="shell.h" />
+    <ClInclude Include="src\IClassFactory.h" />
+    <ClInclude Include="src\IContextMenu.h" />
+    <ClInclude Include="src\IShellExtInit.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{73D9D6EA-66C0-4637-88BA-519215188450}</ProjectGuid>
@@ -92,13 +96,13 @@
       <CompileAs>CompileAsC</CompileAs>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
-      <DisableSpecificWarnings>4068;4100</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4068;4100;4201</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EntryPointSymbol>DllMain</EntryPointSymbol>
       <ImportLibrary>$(SolutionDir)SDK\Lib\$(PEMachine)\$(TargetName).lib</ImportLibrary>
-      <AdditionalDependencies>Kernel32.lib;User32.lib</AdditionalDependencies>
+      <AdditionalDependencies>Kernel32.lib;User32.lib;Shlwapi.lib;Shell32.lib;Advapi32.lib</AdditionalDependencies>
       <ModuleDefinitionFile>shell.def</ModuleDefinitionFile>
       <AdditionalOptions>/ignore:4197 %(AdditionalOptions)</AdditionalOptions>
     </Link>

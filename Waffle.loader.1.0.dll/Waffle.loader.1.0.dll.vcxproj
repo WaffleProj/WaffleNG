@@ -87,10 +87,11 @@
   <ItemDefinitionGroup>
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
-      <CompileAs>CompileAsCpp</CompileAs>
+      <CompileAs Condition="'$(Platform)'=='Itanium'">CompileAsCpp</CompileAs>
+      <CompileAs Condition="'$(Platform)'!='Itanium'">CompileAsC</CompileAs>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
-      <DisableSpecificWarnings>4068;4100</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4068;4100;4201</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

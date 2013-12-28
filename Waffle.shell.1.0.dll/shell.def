@@ -2,3 +2,5 @@ LIBRARY Waffle.shell.1.0.dll
 EXPORTS
     DllCanUnloadNow     PRIVATE
     DllGetClassObject   PRIVATE
+    DllRegisterServer   PRIVATE
+    DllUnregisterServer PRIVATE

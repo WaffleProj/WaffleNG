@@ -1,8 +1,17 @@
 #include "shell.h"
 
-volatile LONG nIClassFactory = 0;
-volatile LONG nIClassFactoryLock = 0;
-volatile LONG nIWaffleShell = 0;
+VOID PrintGuid(
+    _In_        REFIID riid,
+    _In_opt_    LPCTSTR lpszTitle
+    )
+{
+    TCHAR szBuf[128];
+    wsprintf(szBuf, TEXT("Guid = {%08X-%04X-%04X-%02X%02X-%02X%02X%02X%02X%02X%02X}"),
+        riid->Data1, riid->Data2, riid->Data3,
+        riid->Data4[0], riid->Data4[1], riid->Data4[2], riid->Data4[3],
+        riid->Data4[4], riid->Data4[5], riid->Data4[6], riid->Data4[7]);
+    MessageBox(0, szBuf, lpszTitle, 0);
+}
 
 STDAPI DllGetClassObject(
     _In_    REFCLSID rclsid,
@@ -10,9 +19,9 @@ STDAPI DllGetClassObject(
     _Out_   LPVOID *ppv
     )
 {
-    if (IsEqualCLSID(rclsid, &CLSID_IWaffleShell))
+    if (IsEqualCLSID(rclsid, &CLSID_IWaffleContextMenu))
     {
-        return IClassFactoryObject.lpVtbl->QueryInterface(&IClassFactoryObject, riid, ppv);
+        return IWaffleClassFactoryObject.lpVtbl->QueryInterface((IWaffleClassFactory *)&IWaffleClassFactoryObject, riid, ppv);
     }
     else
     {
@@ -23,7 +32,8 @@ STDAPI DllGetClassObject(
 
 STDAPI DllCanUnloadNow(void)
 {
-    if (!nIClassFactory && !nIClassFactoryLock && !nIWaffleShell)
+    
+    if (!IWaffleClassFactoryObject.nLock && !IWaffleClassFactoryObject.refClassFactory && !IWaffleClassFactoryObject.refContextMenu)
     {
         return S_OK;
     }
@@ -31,6 +41,62 @@ STDAPI DllCanUnloadNow(void)
     {
         return S_FALSE;
     }
+}
+
+STDAPI DllRegisterServer(void)
+{
+    HKEY hKey;
+    HKEY hSubKey;
+    RegCreateKey(HKEY_CLASSES_ROOT, TEXT("*\\shellex\\ContextMenuHandlers\\Waffle"), &hKey);
+    RegSetValue(hKey, NULL, REG_SZ, TEXT("{C3B16F86-68FD-4F32-BF53-975180752E04}"), 0);
+    RegCloseKey(hKey);
+
+    RegCreateKey(HKEY_CLASSES_ROOT, TEXT("CLSID\\{C3B16F86-68FD-4F32-BF53-975180752E04}"), &hKey);
+    RegSetValue(hKey, NULL, REG_SZ, TEXT("Waffle Shell Extension"), 0);
+    RegCreateKey(hKey, TEXT("InprocServer32"), &hSubKey);
+    RegSetValue(hSubKey, NULL, REG_SZ, TEXT("E:\\Project\\WaffleProject\\WaffleNightly\\Component\\Waffle\\AMD64\\Waffle.shell.1.0.dll"), 0);
+    RegSetKeyValue(hSubKey, NULL, TEXT("ThreadingModel"), REG_SZ, TEXT("Both"), 8);
+    RegCloseKey(hSubKey);
+    RegCloseKey(hKey);
+
+    return S_OK;
+}
+
+STDAPI DllUnregisterServer(void)
+{
+    HKEY hKey;
+
+    if (RegOpenKeyEx(HKEY_CLASSES_ROOT, TEXT("*\\shellex\\ContextMenuHandlers"), 0, KEY_WRITE, &hKey) == ERROR_SUCCESS)
+    {
+        RegDeleteKey(hKey, TEXT("Waffle"));
+        RegCloseKey(hKey);
+    }
+    else
+    {
+        return E_UNEXPECTED;
+    }
+
+    if (RegOpenKeyEx(HKEY_CLASSES_ROOT, TEXT("CLSID\\{C3B16F86-68FD-4F32-BF53-975180752E04}"), 0, KEY_WRITE, &hKey) == ERROR_SUCCESS)
+    {
+        RegDeleteKey(hKey, TEXT("InprocServer32"));
+        RegCloseKey(hKey);
+    }
+    else
+    {
+        return E_UNEXPECTED;
+    }
+
+    if (RegOpenKeyEx(HKEY_CLASSES_ROOT, TEXT("CLSID"), 0, KEY_WRITE, &hKey) == ERROR_SUCCESS)
+    {
+        RegDeleteKey(hKey, TEXT("{C3B16F86-68FD-4F32-BF53-975180752E04}"));
+        RegCloseKey(hKey);
+    }
+    else
+    {
+        return E_UNEXPECTED;
+    }
+
+    return S_OK;
 }
 
 BOOL WINAPI DllMain(
