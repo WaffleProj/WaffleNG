@@ -11,7 +11,7 @@ typedef struct
 extern "C" {
 #endif
 
-    VOID WINAPI MojibakeSubclass(VOID);
+    VOID WINAPI MojibakeSubclass(void);
 
 #ifdef __cplusplus
 };

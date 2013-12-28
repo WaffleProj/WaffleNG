@@ -51,7 +51,7 @@ LRESULT CALLBACK MojibakeSubclassComboBox(
     return Result;
 }
 
-VOID WINAPI MojibakeSubclass(VOID)
+VOID WINAPI MojibakeSubclass(void)
 {
     HWND hComboBox = CreateWindowEx(0, TEXT("ComboBox"), TEXT("ComboBox"), 0, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL, NULL, NULL, NULL);
     stSubclass.lpComboBoxA = (WNDPROC) GetClassLongPtrA(hComboBox, GCLP_WNDPROC);
