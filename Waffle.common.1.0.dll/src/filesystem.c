@@ -1,15 +1,26 @@
 ﻿#include "..\common.h"
 
 LIBRARY_EXPORT VOID WINAPI WaffleGetModuleDirectory(
-    _In_opt_    HMODULE hModule,
-    _Out_       LPTSTR lpFilename,
-    _In_        DWORD nSize
+    _In_opt_            HMODULE hModule,
+    _Out_writes_(nSize) LPTSTR lpFilename,
+    _In_                DWORD nSize
     )
 {
-    GetModuleFileName(hModule, lpFilename, nSize);
-    int i;
-    for (i = lstrlen(lpFilename); lpFilename[i] != TEXT('\\'); i--);
-    lpFilename[i] = TEXT('\0');
+    if (!lpFilename)
+    {
+        return;
+    }
+
+    DWORD i = GetModuleFileName(hModule, lpFilename, nSize);
+    if (i)
+    {
+        while ((lpFilename[i--] != TEXT('\\')));
+        lpFilename[i + 1] = TEXT('\0');
+    }
+    else
+    {
+        lpFilename[0] = TEXT('\0');
+    }
 }
 
 LIBRARY_EXPORT VOID WINAPI WaffleDisableWow64FsRedirection(
@@ -17,10 +28,13 @@ LIBRARY_EXPORT VOID WINAPI WaffleDisableWow64FsRedirection(
     )
 {
     HMODULE hKernel32 = GetModuleHandle(TEXT("kernel32.dll"));
-    LPWOW64DISABLEWOW64FSREDIRECTION lpWow64DisableWow64FsRedirection = (LPWOW64DISABLEWOW64FSREDIRECTION) WaffleGetProcAddress(hKernel32, TEXT("Wow64DisableWow64FsRedirection"));
-    if (lpWow64DisableWow64FsRedirection)
+    if (hKernel32)
     {
-        lpWow64DisableWow64FsRedirection(OldValue);
+        LPWOW64DISABLEWOW64FSREDIRECTION lpWow64DisableWow64FsRedirection = (LPWOW64DISABLEWOW64FSREDIRECTION)WaffleGetProcAddress(hKernel32, TEXT("Wow64DisableWow64FsRedirection"));
+        if (lpWow64DisableWow64FsRedirection)
+        {
+            lpWow64DisableWow64FsRedirection(OldValue);
+        }
     }
 }
 
@@ -29,10 +43,12 @@ LIBRARY_EXPORT VOID WINAPI WaffleRevertWow64FsRedirection(
     )
 {
     HMODULE hKernel32 = GetModuleHandle(TEXT("kernel32.dll"));
-
-    LPWOW64REVERTWOW64FSREDIRECTION lpWow64RevertWow64FsRedirection = (LPWOW64REVERTWOW64FSREDIRECTION) WaffleGetProcAddress(hKernel32, TEXT("Wow64RevertWow64FsRedirection"));
-    if (lpWow64RevertWow64FsRedirection)
+    if (hKernel32)
     {
-        lpWow64RevertWow64FsRedirection(OldValue);
+        LPWOW64REVERTWOW64FSREDIRECTION lpWow64RevertWow64FsRedirection = (LPWOW64REVERTWOW64FSREDIRECTION)WaffleGetProcAddress(hKernel32, TEXT("Wow64RevertWow64FsRedirection"));
+        if (lpWow64RevertWow64FsRedirection)
+        {
+            lpWow64RevertWow64FsRedirection(OldValue);
+        }
     }
 }

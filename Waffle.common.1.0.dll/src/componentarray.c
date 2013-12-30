@@ -36,9 +36,9 @@ LIBRARY_EXPORT HMODULE WINAPI WaffleLoadComponent(
         }
 
         hComponent = LoadLibrary(lpszComponent);
-        if (hComponent)
+        if (!hComponent)
         {
-            break;
+            return NULL;
         }
     } while (FALSE);
 

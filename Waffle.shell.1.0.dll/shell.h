@@ -1,7 +1,7 @@
 #ifndef _WAFFLE_SHELL_H_
 #define _WAFFLE_SHELL_H_
 
-#include <windows.h>
+#include <waffle.h>
 #include <Shlwapi.h>
 #include <strsafe.h>
 #include <objbase.h>

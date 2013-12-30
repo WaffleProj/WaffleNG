@@ -13,10 +13,11 @@ VOID PrintGuid(
     MessageBox(0, szBuf, lpszTitle, 0);
 }
 
+_Check_return_
 STDAPI DllGetClassObject(
-    _In_    REFCLSID rclsid,
-    _In_    REFIID riid,
-    _Out_   LPVOID *ppv
+    _In_ REFCLSID rclsid,
+    _In_ REFIID riid,
+    _Outptr_ LPVOID FAR* ppv
     )
 {
     if (IsEqualCLSID(rclsid, &CLSID_IWaffleContextMenu))
@@ -32,7 +33,7 @@ STDAPI DllGetClassObject(
 
 STDAPI DllCanUnloadNow(void)
 {
-    
+
     if (!IWaffleClassFactoryObject.nLock && !IWaffleClassFactoryObject.refClassFactory && !IWaffleClassFactoryObject.refContextMenu)
     {
         return S_OK;
@@ -45,19 +46,26 @@ STDAPI DllCanUnloadNow(void)
 
 STDAPI DllRegisterServer(void)
 {
-    HKEY hKey;
-    HKEY hSubKey;
-    RegCreateKey(HKEY_CLASSES_ROOT, TEXT("*\\shellex\\ContextMenuHandlers\\Waffle"), &hKey);
-    RegSetValue(hKey, NULL, REG_SZ, TEXT("{C3B16F86-68FD-4F32-BF53-975180752E04}"), 0);
-    RegCloseKey(hKey);
-
-    RegCreateKey(HKEY_CLASSES_ROOT, TEXT("CLSID\\{C3B16F86-68FD-4F32-BF53-975180752E04}"), &hKey);
-    RegSetValue(hKey, NULL, REG_SZ, TEXT("Waffle Shell Extension"), 0);
-    RegCreateKey(hKey, TEXT("InprocServer32"), &hSubKey);
-    RegSetValue(hSubKey, NULL, REG_SZ, TEXT("E:\\Project\\WaffleProject\\WaffleNightly\\Component\\Waffle\\AMD64\\Waffle.shell.1.0.dll"), 0);
-    RegSetKeyValue(hSubKey, NULL, TEXT("ThreadingModel"), REG_SZ, TEXT("Both"), 8);
-    RegCloseKey(hSubKey);
-    RegCloseKey(hKey);
+    HKEY hKey = NULL;
+    HKEY hSubKey = NULL;
+    
+    if (RegCreateKey(HKEY_CLASSES_ROOT, TEXT("*\\shellex\\ContextMenuHandlers\\Waffle"), &hKey) == ERROR_SUCCESS)
+    {
+        RegSetValue(hKey, NULL, REG_SZ, TEXT("{C3B16F86-68FD-4F32-BF53-975180752E04}"), 0);
+        RegCloseKey(hKey);
+    }
+    
+    if (RegCreateKey(HKEY_CLASSES_ROOT, TEXT("CLSID\\{C3B16F86-68FD-4F32-BF53-975180752E04}"), &hKey) == ERROR_SUCCESS)
+    {
+        RegSetValue(hKey, NULL, REG_SZ, TEXT("Waffle Shell Extension"), 0);
+        if (RegCreateKey(hKey, TEXT("InprocServer32"), &hSubKey) == ERROR_SUCCESS)
+        {
+            RegSetValue(hSubKey, NULL, REG_SZ, TEXT("E:\\Project\\WaffleProject\\WaffleNightly\\Component\\Waffle\\AMD64\\Waffle.shell.1.0.dll"), 0);
+            RegSetKeyValue(hSubKey, NULL, TEXT("ThreadingModel"), REG_SZ, TEXT("Both"), 8);
+            RegCloseKey(hSubKey);
+        }
+        RegCloseKey(hKey);
+    }
 
     return S_OK;
 }

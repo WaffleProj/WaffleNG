@@ -9,18 +9,15 @@ int WINAPI Main(void)
 
     //Pickup target
     int nArg = WaffleArgc();
-    TCHAR szComponent[MAX_PATH];
-    TCHAR szTarget[MAX_PATH];
-    TCHAR szDirectory[MAX_PATH];
-    RtlZeroMemory(szComponent, sizeof(szComponent));
-    RtlZeroMemory(szTarget, sizeof(szTarget));
-    RtlZeroMemory(szDirectory, sizeof(szDirectory));
+    TCHAR szComponent[MAX_PATH] = {TEXT('\0')};
+    TCHAR szTarget[MAX_PATH] = { TEXT('\0') };
+    TCHAR szDirectory[MAX_PATH] = { TEXT('\0') };
     if (nArg >= 3)
     {
         //1.文件名 2.插件名 3.目标
-        WaffleArgv(2, szComponent, sizeof(szComponent));
+        WaffleArgv(2, szComponent, sizeof(szComponent) / sizeof(szComponent[0]));
 
-        WaffleArgv(3, szTarget, sizeof(szTarget));
+        WaffleArgv(3, szTarget, sizeof(szTarget) / sizeof(szTarget[0]));
     }
     else
     {
@@ -29,17 +26,17 @@ int WINAPI Main(void)
 
         stOpenFile.lStructSize = sizeof(stOpenFile);
         stOpenFile.lpstrFile = szTarget;
-        stOpenFile.nMaxFile = sizeof(szTarget) / sizeof(TCHAR);
+        stOpenFile.nMaxFile = sizeof(szTarget) / sizeof(szTarget[0]);
         stOpenFile.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
-        GetOpenFileName(&stOpenFile);
-
-        if (!lstrlen(szTarget))
+        if (GetOpenFileName(&stOpenFile) && lstrlen(szTarget))
+        {
+            lstrcpy(szComponent, TEXT("Mojibake"));
+        }
+        else
         {
             MessageBox(0, TEXT("FIXME:No program will run"), 0, 0);
             return 0;
         }
-
-        lstrcpy(szComponent, TEXT("Mojibake"));
     }
 
     {

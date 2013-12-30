@@ -16,6 +16,11 @@ LIBRARY_EXPORT WORD WINAPI WaffleGetMachineType(
 
     //Mapping it
     HANDLE hMapFile = CreateFileMapping(hFile, NULL, PAGE_READONLY, 0, 0, NULL);
+    if (!hMapFile)
+    {
+        CloseHandle(hFile);
+        return 0xFFFF;
+    }
     LPVOID lpFile = MapViewOfFile(hMapFile, FILE_MAP_READ, 0, 0, 0);
     if (!lpFile)
     {

@@ -51,11 +51,16 @@ LIBRARY_EXPORT VOID WINAPI WaffleInjectDll(
         LPTHREAD_START_ROUTINE lpLoadLibrary = (LPTHREAD_START_ROUTINE)WaffleGetProcAddress(GetModuleHandle(TEXT("kernel32.dll")), TEXT("LoadLibraryW"));
 
         WriteProcessMemory(hProcess, lpszRemoteDll, lpszDllFull, lstrlen(lpszDllFull)*sizeof(TCHAR), NULL);
-        HANDLE hThread = CreateRemoteThread(hProcess, NULL, 0, lpLoadLibrary, lpszRemoteDll, 0, NULL);
-        WaitForSingleObject(hThread, INFINITE);
+        HANDLE hRemoteThread = CreateRemoteThread(hProcess, NULL, 0, lpLoadLibrary, lpszRemoteDll, 0, NULL);
+        if (!hRemoteThread)
+        {
+            VirtualFreeEx(hProcess, lpszRemoteDll, 0, MEM_RELEASE);
+            return;
+        }
 
+        WaitForSingleObject(hRemoteThread, INFINITE);
         VirtualFreeEx(hProcess, lpszRemoteDll, 0, MEM_RELEASE);
-        CloseHandle(hThread);
+        CloseHandle(hRemoteThread);
     }
 }
 
@@ -76,8 +81,15 @@ LIBRARY_EXPORT VOID WINAPI WaffleExecuteTo(
     DWORD flOldProtect;
     BYTE OriginalInstruction[WAFFLE_PORT_ENTRY_POINT_LOOP_SIZE];
 
-    VirtualProtectEx(hProcess, lpProgramCounter, WAFFLE_PORT_ENTRY_POINT_LOOP_SIZE, PAGE_EXECUTE_READWRITE, &flOldProtect);
-    ReadProcessMemory(hProcess, lpProgramCounter, OriginalInstruction, WAFFLE_PORT_ENTRY_POINT_LOOP_SIZE, NULL);
+    if (!VirtualProtectEx(hProcess, lpProgramCounter, WAFFLE_PORT_ENTRY_POINT_LOOP_SIZE, PAGE_EXECUTE_READWRITE, &flOldProtect))
+    {
+        return;
+    }
+    if (!ReadProcessMemory(hProcess, lpProgramCounter, OriginalInstruction, WAFFLE_PORT_ENTRY_POINT_LOOP_SIZE, NULL))
+    {
+        VirtualProtectEx(hProcess, lpProgramCounter, WAFFLE_PORT_ENTRY_POINT_LOOP_SIZE, flOldProtect, &flOldProtect);
+        return;
+    }
     WriteProcessMemory(hProcess, lpProgramCounter, WAFFLE_PORT_ENTRY_POINT_LOOP, WAFFLE_PORT_ENTRY_POINT_LOOP_SIZE, NULL);
     FlushInstructionCache(hProcess, lpProgramCounter, WAFFLE_PORT_ENTRY_POINT_LOOP_SIZE);
     ResumeThread(hThread);
@@ -103,8 +115,8 @@ LIBRARY_EXPORT VOID WINAPI WaffleExecuteTo(
 }
 
 LIBRARY_EXPORT VOID WINAPI WaffleExecute(
-    _Out_opt_   LPWAFFLE_PROCESS_SETTING lpstProcessSetting,
-    _In_opt_    LPCTSTR lpApplicationName,
+    _Out_       LPWAFFLE_PROCESS_SETTING lpstPS,
+    _In_        LPCTSTR lpApplicationName,
     _Inout_opt_ LPTSTR lpCommandLine,
     _In_opt_    LPCTSTR lpCurrentDirectory
     )
@@ -118,14 +130,14 @@ LIBRARY_EXPORT VOID WINAPI WaffleExecute(
     WaffleExecuteTo(stProcessInfo.hProcess, stProcessInfo.hThread, (LPBYTE)WAFFLE_PORT_PROGRAM_COUNTER_TO_PHYSICAL_ADDRESS(WaffleGetProcAddress(GetModuleHandle(TEXT("kernel32.dll")), TEXT("BaseThreadInitThunk"))));
 #endif
 
-    lpstProcessSetting->dwThreadId = stProcessInfo.dwThreadId;
-    lpstProcessSetting->dwProcessId = stProcessInfo.dwProcessId;
-    WaffleGetFileHash(lpApplicationName, lpstProcessSetting->szProcessHash);
+    lpstPS->dwThreadId = stProcessInfo.dwThreadId;
+    lpstPS->dwProcessId = stProcessInfo.dwProcessId;
+    WaffleGetFileHash(lpApplicationName, lpstPS->szProcessHash);
 
     TCHAR szInjectDll[MAX_PATH];
-    wsprintf(szInjectDll, TEXT("%s\\Waffle\\%s\\Waffle.common.1.0.dll"), lpstProcessSetting->szComponentDirectory, WAFFLE_PORT_MACHINE_STRING);
+    wsprintf(szInjectDll, TEXT("%s\\Waffle\\%s\\Waffle.common.1.0.dll"), lpstPS->szComponentDirectory, WAFFLE_PORT_MACHINE_STRING);
     WaffleInjectDll(stProcessInfo.hProcess, stProcessInfo.hThread, szInjectDll);
-    wsprintf(szInjectDll, TEXT("%s\\Waffle\\%s\\Waffle.loader.1.0.dll"), lpstProcessSetting->szComponentDirectory, WAFFLE_PORT_MACHINE_STRING);
+    wsprintf(szInjectDll, TEXT("%s\\Waffle\\%s\\Waffle.loader.1.0.dll"), lpstPS->szComponentDirectory, WAFFLE_PORT_MACHINE_STRING);
     WaffleInjectDll(stProcessInfo.hProcess, stProcessInfo.hThread, szInjectDll);
 
     CloseHandle(stProcessInfo.hThread);

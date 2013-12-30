@@ -12,10 +12,15 @@ LIBRARY_EXPORT VOID WINAPI WaffleCheckOptionEncoding(
         switch (GetLastError())
         {
         case ERROR_ALREADY_EXISTS:
-            ReadFile(hFile, &wBOM, 2, &dwFile, NULL);
+            if (!ReadFile(hFile, &wBOM, 2, &dwFile, NULL))
+            {
+                MessageBox(0, TEXT("FIXME:Unable to read the option file."), 0, 0);
+                break;
+            }
             if (wBOM != 0xFEFF && wBOM != 0xFFFE)
             {
                 MessageBox(0, TEXT("FIXME:At least one of your config file is in the multibyte character set. Please use UTF-16."), 0, 0);
+                break;
             }
             break;
         case ERROR_SUCCESS:
@@ -28,7 +33,7 @@ LIBRARY_EXPORT VOID WINAPI WaffleCheckOptionEncoding(
 
 LIBRARY_EXPORT VOID WINAPI WaffleGetOptionString(
     _In_        LPCTSTR lpszKeyName,
-    _Inout_     LPTSTR lpszValue,
+    _Out_       LPTSTR lpszValue,
     _In_        DWORD nSize,
     _In_opt_    LPTSTR lpszDefaultValue
     )

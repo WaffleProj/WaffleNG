@@ -31,13 +31,12 @@ end:
 }
 
 LIBRARY_EXPORT SIZE_T WINAPI WaffleArgv(
-    _In_    int intPosition,
-    _In_    LPTSTR lpString,
-    _In_    int intSize     //好像没用到intSize判断缓冲区?
+    _In_                int intPosition,
+    _Out_writes_(nSize) LPTSTR lpString,
+    _In_                int nSize
     )
 {
     int intArg = 0;
-    BOOL FLAG;
     int i = -1, j = -1;
     LPTSTR szCommandLine = GetCommandLine();
 loop:
@@ -48,10 +47,6 @@ loop:
         goto loop;
 
     intArg++;
-    if (intArg == intPosition)
-        FLAG = TRUE;
-    else
-        FLAG = FALSE;
 argloop:
     if (szCommandLine[i] == TEXT('\0'))
         goto end;
@@ -62,10 +57,18 @@ argloop:
         i++;
         goto deliloop;
     }
-    if ((intSize > 2) && (FLAG))
+    if (intArg == intPosition)
     {
-        j++;
-        lpString[j] = szCommandLine[i];
+        if (nSize > 1)
+        {
+            j++;
+            lpString[j] = szCommandLine[i];
+            nSize--;
+        }
+        else
+        {
+            goto end;
+        }
     }
     i++;
     goto argloop;
@@ -77,17 +80,25 @@ deliloop:
         i++;
         goto argloop;
     }
-    if ((intSize > 2) && (FLAG))
+    if (intArg == intPosition)
     {
-        j++;
-        lpString[j] = szCommandLine[i];
+        if (nSize > 1)
+        {
+            j++;
+            lpString[j] = szCommandLine[i];
+            nSize--;
+        }
+        else
+        {
+            goto end;
+        }
     }
     i++;
     goto deliloop;
 end:
     j++;
     lpString[j] = TEXT('\0');
-    return j;   //返回复制的字符数(不含末尾0)
+    return j + 1;
 }
 
 LIBRARY_EXPORT LPCTSTR WINAPI WaffleArgp(

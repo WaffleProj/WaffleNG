@@ -6,15 +6,23 @@ LIBRARY_EXPORT VOID WINAPI WaffleGetFileHash(
     _Out_   LPTSTR lpszResult
     )
 {
+    if (!lpszResult)
+    {
+        return;
+    }
+    lpszResult[0] = 0;
+
     HMODULE hModule = LoadLibrary(TEXT("advapi32.dll"));
+    if (!hModule)
+    {
+        return;
+    }
     LPCRYPTACQUIRECONTEXTW lpCryptAcquireContextW = (LPCRYPTACQUIRECONTEXTW) WaffleGetProcAddress(hModule, TEXT("CryptAcquireContextW"));
     LPCRYPTCREATEHASH lpCryptCreateHash = (LPCRYPTCREATEHASH) WaffleGetProcAddress(hModule, TEXT("CryptCreateHash"));
     LPCRYPTDESTROYHASH lpCryptDestroyHash = (LPCRYPTDESTROYHASH) WaffleGetProcAddress(hModule, TEXT("CryptDestroyHash"));
     LPCRYPTRELEASECONTEXT lpCryptReleaseContext = (LPCRYPTRELEASECONTEXT) WaffleGetProcAddress(hModule, TEXT("CryptReleaseContext"));
     LPCRYPTHASHDATA lpCryptHashData = (LPCRYPTHASHDATA) WaffleGetProcAddress(hModule, TEXT("CryptHashData"));
     LPCRYPTGETHASHPARAM lpCryptGetHashParam = (LPCRYPTGETHASHPARAM) WaffleGetProcAddress(hModule, TEXT("CryptGetHashParam"));
-
-    lpszResult[0] = 0;
 
     PVOID OldValue = 0;
     WaffleDisableWow64FsRedirection(&OldValue);

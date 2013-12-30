@@ -77,6 +77,10 @@ LIBRARY_EXPORT LPVOID WINAPI WaffleGetBackupAddress(
     )
 {
     HMODULE hModule = GetModuleHandle(lpszLibrary);
+    if (!hModule)
+    {
+        return NULL;
+    }
     LPBYTE lpFunction = WaffleGetProcAddress(hModule, lpszFunction);
 
     int i;

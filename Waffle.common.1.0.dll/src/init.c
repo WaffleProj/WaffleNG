@@ -10,7 +10,11 @@ LIBRARY_EXPORT SIZE_T WINAPI WaffleInit(
     WaffleAddComponent(TEXT("Waffle.common.1.0.dll"));  //so we can use WaffleAlloc
 
     TCHAR szExecutable[MAX_PATH];
-    GetModuleFileName(NULL, szExecutable, sizeof(szExecutable) / sizeof(szExecutable[0]));
+    if (!GetModuleFileName(NULL, szExecutable, sizeof(szExecutable) / sizeof(szExecutable[0])))
+    {
+        MessageBox(0, TEXT("Unable to locate Waffle directory."), TEXT("Waffle"), 0);
+        ExitProcess(0);
+    }
     WaffleSetOptionString(TEXT("ProgramName"), szExecutable, FALSE);
 
     WaffleLoadDetourOption();

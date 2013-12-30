@@ -81,7 +81,7 @@ LIBRARY_EXPORT int WINAPI WafflelstrcmpiW(
     }
     else
     {
-        return (int) (lpString1 - lpString2);
+        return (int)(lpString1 - lpString2);
     }
 }
 
@@ -98,7 +98,7 @@ LIBRARY_EXPORT int WINAPI WafflelstrcmpiA(
     }
     else
     {
-        return (int) (lpString1 - lpString2);
+        return (int)(lpString1 - lpString2);
     }
 }
 
@@ -115,7 +115,7 @@ LIBRARY_EXPORT int WINAPI WafflelstrcmpW(
     }
     else
     {
-        return (int) (lpString1 - lpString2);
+        return (int)(lpString1 - lpString2);
     }
 }
 
@@ -132,7 +132,7 @@ LIBRARY_EXPORT int WINAPI WafflelstrcmpA(
     }
     else
     {
-        return (int) (lpString1 - lpString2);
+        return (int)(lpString1 - lpString2);
     }
 }
 LIBRARY_EXPORT int WINAPI WaffleStrToIntW(
@@ -257,8 +257,15 @@ LIBRARY_EXPORT VOID WINAPI WaffleCreateRWLock(
 {
     if (!lpstRWLock->hReader)
     {
-        InitializeCriticalSectionAndSpinCount(&lpstRWLock->csRead, 5120);
-        InitializeCriticalSectionAndSpinCount(&lpstRWLock->csWrite, 3072);
+        if (!InitializeCriticalSectionAndSpinCount(&lpstRWLock->csRead, 5120))
+        {
+            return;
+        }
+        if (!InitializeCriticalSectionAndSpinCount(&lpstRWLock->csWrite, 3072))
+        {
+            DeleteCriticalSection(&lpstRWLock->csRead);
+            return;
+        }
         lpstRWLock->hReader = CreateEvent(NULL, TRUE, FALSE, NULL);
         lpstRWLock->dwReader = 0;
     }
@@ -278,6 +285,7 @@ LIBRARY_EXPORT VOID WINAPI WaffleReleaseRWLock(
     }
 }
 
+_When_(!lpstRWLock->dwReader, _Acquires_lock_(lpstRWLock->csWrite))
 LIBRARY_EXPORT VOID WINAPI WaffleEnterWriterLock(
     LPWAFFLE_RWLOCK lpstRWLock
     )
@@ -291,6 +299,7 @@ LIBRARY_EXPORT VOID WINAPI WaffleEnterWriterLock(
     LeaveCriticalSection(&lpstRWLock->csRead);
 }
 
+_When_(TRUE, _Releases_lock_(lpstRWLock->csWrite))
 LIBRARY_EXPORT VOID WINAPI WaffleLeaveWriterLock(
     LPWAFFLE_RWLOCK lpstRWLock
     )
@@ -327,21 +336,27 @@ LIBRARY_EXPORT VOID WINAPI WaffleLeaveReaderLock(
 }
 
 LIBRARY_EXPORT LPBYTE WINAPI WaffleGetProcAddressW(
-    _In_    HMODULE hModule,
-    _In_    LPCWSTR lpszFuncName
+    _In_opt_    HMODULE hModule,
+    _In_        LPCWSTR lpszFuncName
     )
 {
+    LPBYTE lpFunction = NULL;
     DWORD nSize = WideCharToMultiByte(CP_ACP, 0, lpszFuncName, -1, NULL, 0, NULL, NULL);
-    LPSTR lpszFunction = (LPSTR) WaffleAlloc(nSize*sizeof(CHAR));
-    WideCharToMultiByte(CP_ACP, 0, lpszFuncName, -1, lpszFunction, nSize, NULL, NULL);
-    LPBYTE lpFunction = WaffleGetProcAddressA(hModule, lpszFunction);
-    WaffleFree(lpszFunction);
+    LPSTR lpszFunction = (LPSTR)WaffleAlloc(nSize*sizeof(CHAR));
+    if (lpszFunction)
+    {
+        if (WideCharToMultiByte(CP_ACP, 0, lpszFuncName, -1, lpszFunction, nSize, NULL, NULL))
+        {
+            lpFunction = WaffleGetProcAddressA(hModule, lpszFunction);
+        }
+        WaffleFree(lpszFunction);
+    }
     return lpFunction;
 }
 
 LIBRARY_EXPORT LPBYTE WINAPI WaffleGetProcAddressA(
-    _In_    HMODULE hModule,
-    _In_    LPCSTR lpszFuncName
+    _In_opt_    HMODULE hModule,
+    _In_        LPCSTR lpszFuncName
     )
 {
     LPBYTE lpAddress = NULL;
@@ -354,19 +369,19 @@ LIBRARY_EXPORT LPBYTE WINAPI WaffleGetProcAddressA(
 
     SIZE_T lpExportTableBegin = 0;
     SIZE_T lpExportTableEnd = 0;
-    if (((PIMAGE_DOS_HEADER) hModule)->e_magic == IMAGE_DOS_SIGNATURE)
+    if (((PIMAGE_DOS_HEADER)hModule)->e_magic == IMAGE_DOS_SIGNATURE)
     {
         PIMAGE_DATA_DIRECTORY lpDataDirectory;
-        WORD Magic = ((PIMAGE_NT_HEADERS) ((SIZE_T) hModule + ((PIMAGE_DOS_HEADER) hModule)->e_lfanew))->OptionalHeader.Magic;
+        WORD Magic = ((PIMAGE_NT_HEADERS)((SIZE_T)hModule + ((PIMAGE_DOS_HEADER)hModule)->e_lfanew))->OptionalHeader.Magic;
         if (Magic == IMAGE_NT_OPTIONAL_HDR32_MAGIC)
         {
-            PIMAGE_NT_HEADERS lpNtHeader = (PIMAGE_NT_HEADERS) ((SIZE_T) hModule + ((PIMAGE_DOS_HEADER) hModule)->e_lfanew);
+            PIMAGE_NT_HEADERS lpNtHeader = (PIMAGE_NT_HEADERS)((SIZE_T)hModule + ((PIMAGE_DOS_HEADER)hModule)->e_lfanew);
             PIMAGE_OPTIONAL_HEADER lpOptionalHeader = &(lpNtHeader->OptionalHeader);
             lpDataDirectory = &lpOptionalHeader->DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT];
         }
         else if (Magic == IMAGE_NT_OPTIONAL_HDR64_MAGIC)
         {
-            PIMAGE_NT_HEADERS64 lpNtHeader = (PIMAGE_NT_HEADERS64) ((SIZE_T) hModule + ((PIMAGE_DOS_HEADER) hModule)->e_lfanew);
+            PIMAGE_NT_HEADERS64 lpNtHeader = (PIMAGE_NT_HEADERS64)((SIZE_T)hModule + ((PIMAGE_DOS_HEADER)hModule)->e_lfanew);
             PIMAGE_OPTIONAL_HEADER64 lpOptionalHeader = &(lpNtHeader->OptionalHeader);
             lpDataDirectory = &lpOptionalHeader->DataDirectory[IMAGE_DIRECTORY_ENTRY_EXPORT];
         }
@@ -375,17 +390,17 @@ LIBRARY_EXPORT LPBYTE WINAPI WaffleGetProcAddressA(
             return NULL;
         }
 
-        lpExportTableBegin = (SIZE_T) hModule + lpDataDirectory->VirtualAddress;
-        PIMAGE_EXPORT_DIRECTORY lpExportTable = (PIMAGE_EXPORT_DIRECTORY) lpExportTableBegin;
-        lpExportTableEnd = (SIZE_T) lpExportTable + lpDataDirectory->Size;
+        lpExportTableBegin = (SIZE_T)hModule + lpDataDirectory->VirtualAddress;
+        PIMAGE_EXPORT_DIRECTORY lpExportTable = (PIMAGE_EXPORT_DIRECTORY)lpExportTableBegin;
+        lpExportTableEnd = (SIZE_T)lpExportTable + lpDataDirectory->Size;
 
         DWORD nName = lpExportTable->NumberOfNames;
         DWORD nFunction = lpExportTable->NumberOfFunctions;
-        DWORD *lpName = (DWORD *) ((SIZE_T) hModule + lpExportTable->AddressOfNames);
-        WORD *lpOrdinal = (WORD *) ((SIZE_T) hModule + lpExportTable->AddressOfNameOrdinals);
-        DWORD *lpFunction = (DWORD *) ((SIZE_T) hModule + lpExportTable->AddressOfFunctions);
+        DWORD *lpName = (DWORD *)((SIZE_T)hModule + lpExportTable->AddressOfNames);
+        WORD *lpOrdinal = (WORD *)((SIZE_T)hModule + lpExportTable->AddressOfNameOrdinals);
+        DWORD *lpFunction = (DWORD *)((SIZE_T)hModule + lpExportTable->AddressOfFunctions);
 
-        if ((SIZE_T) lpszFuncName > 0xFFFF)
+        if ((SIZE_T)lpszFuncName > 0xFFFF)
         {
             int Direction = 1;
             DWORD Begin = 0;
@@ -398,7 +413,7 @@ LIBRARY_EXPORT LPBYTE WINAPI WaffleGetProcAddressA(
                     return NULL;
                 }
                 i = (Begin + End) / 2;
-                Direction = WafflelstrcmpA(lpszFuncName, (LPSTR) ((SIZE_T) hModule + lpName[i]));
+                Direction = WafflelstrcmpA(lpszFuncName, (LPSTR)((SIZE_T)hModule + lpName[i]));
                 if (Direction > 0)
                 {
                     Begin = i + 1;
@@ -408,22 +423,22 @@ LIBRARY_EXPORT LPBYTE WINAPI WaffleGetProcAddressA(
                     End = i - 1;
                 }
             }
-            lpAddress = (LPBYTE) ((SIZE_T) hModule + lpFunction[lpOrdinal[i]]);
+            lpAddress = (LPBYTE)((SIZE_T)hModule + lpFunction[lpOrdinal[i]]);
         }
         else
         {
-            if ((SIZE_T) lpszFuncName <= nFunction)
+            if ((SIZE_T)lpszFuncName <= nFunction)
             {
-                lpAddress = (LPBYTE) ((SIZE_T) hModule + lpFunction[(SIZE_T) lpszFuncName - lpExportTable->Base]);
+                lpAddress = (LPBYTE)((SIZE_T)hModule + lpFunction[(SIZE_T)lpszFuncName - lpExportTable->Base]);
             }
         }
     }
 
     if (lpAddress) //check if this address is pointing to another library
     {
-        if (lpExportTableBegin < (SIZE_T) lpAddress && (SIZE_T) lpAddress < lpExportTableEnd)
+        if (lpExportTableBegin < (SIZE_T)lpAddress && (SIZE_T)lpAddress < lpExportTableEnd)
         {
-            LPCSTR lpszExport = (LPCSTR) lpAddress;
+            LPCSTR lpszExport = (LPCSTR)lpAddress;
             CHAR szLibrary[1024];   //H·A·R·D·C·O·D·E·D～
             int i;
             for (i = 0; lpszExport[i] != '.'; szLibrary[i] = lpszExport[i], i++);       //maybe the name of this library contains dot?
@@ -465,18 +480,18 @@ LIBRARY_EXPORT DWORD WINAPI WaffleGetImageSize(
         return 0;
     }
 
-    if (((PIMAGE_DOS_HEADER) hModule)->e_magic == IMAGE_DOS_SIGNATURE)
+    if (((PIMAGE_DOS_HEADER)hModule)->e_magic == IMAGE_DOS_SIGNATURE)
     {
-        WORD Magic = ((PIMAGE_NT_HEADERS) ((SIZE_T) hModule + ((PIMAGE_DOS_HEADER) hModule)->e_lfanew))->OptionalHeader.Magic;
+        WORD Magic = ((PIMAGE_NT_HEADERS)((SIZE_T)hModule + ((PIMAGE_DOS_HEADER)hModule)->e_lfanew))->OptionalHeader.Magic;
         if (Magic == IMAGE_NT_OPTIONAL_HDR32_MAGIC)
         {
-            PIMAGE_NT_HEADERS lpNtHeader = (PIMAGE_NT_HEADERS) ((SIZE_T) hModule + ((PIMAGE_DOS_HEADER) hModule)->e_lfanew);
+            PIMAGE_NT_HEADERS lpNtHeader = (PIMAGE_NT_HEADERS)((SIZE_T)hModule + ((PIMAGE_DOS_HEADER)hModule)->e_lfanew);
             PIMAGE_OPTIONAL_HEADER lpOptionalHeader = &(lpNtHeader->OptionalHeader);
             return lpOptionalHeader->SizeOfImage;
         }
         else if (Magic == IMAGE_NT_OPTIONAL_HDR64_MAGIC)
         {
-            PIMAGE_NT_HEADERS64 lpNtHeader = (PIMAGE_NT_HEADERS64) ((SIZE_T) hModule + ((PIMAGE_DOS_HEADER) hModule)->e_lfanew);
+            PIMAGE_NT_HEADERS64 lpNtHeader = (PIMAGE_NT_HEADERS64)((SIZE_T)hModule + ((PIMAGE_DOS_HEADER)hModule)->e_lfanew);
             PIMAGE_OPTIONAL_HEADER64 lpOptionalHeader = &(lpNtHeader->OptionalHeader);
             return lpOptionalHeader->SizeOfImage;
         }
@@ -494,7 +509,7 @@ LIBRARY_EXPORT LPVOID WINAPI WaffleAlloc(
 {
     if (!lpstProcessSetting)
     {
-        return (LPVOID) GlobalAlloc(GPTR, dwBytes);
+        return (LPVOID)GlobalAlloc(GPTR, dwBytes);
     }
 
     int i = WaffleFindComponent(WAFFLE_PORT_RETURN_ADDRESS);
@@ -515,11 +530,11 @@ LIBRARY_EXPORT LPVOID WINAPI WaffleAlloc(
             ReleaseMutex(lpstProcessSetting->hGlobalMutex);
         }
 
-        return (LPVOID) HeapAlloc(lpstProcessSetting->lpstComponent[i].hHeap, HEAP_ZERO_MEMORY, dwBytes);
+        return (LPVOID)HeapAlloc(lpstProcessSetting->lpstComponent[i].hHeap, HEAP_ZERO_MEMORY, dwBytes);
     }
     else
     {
-        return (LPVOID) GlobalAlloc(GPTR, dwBytes);
+        return (LPVOID)GlobalAlloc(GPTR, dwBytes);
     }
 }
 
@@ -530,28 +545,30 @@ LIBRARY_EXPORT LPVOID WINAPI WaffleReAlloc(
 {
     if (!lpstProcessSetting)
     {
-        return (LPVOID) GlobalReAlloc(lpMemory, dwBytes, GHND);
+        return (LPVOID)GlobalReAlloc(lpMemory, dwBytes, GHND);
     }
 
     int i = WaffleFindComponent(WAFFLE_PORT_RETURN_ADDRESS);
 
     if (i >= 0)
     {
-        return (LPVOID) HeapReAlloc(lpstProcessSetting->lpstComponent[i].hHeap, HEAP_ZERO_MEMORY, lpMemory, dwBytes);
+        return (LPVOID)HeapReAlloc(lpstProcessSetting->lpstComponent[i].hHeap, HEAP_ZERO_MEMORY, lpMemory, dwBytes);
     }
     else
     {
-        return (LPVOID) GlobalReAlloc(lpMemory, dwBytes, GHND);
+        return (LPVOID)GlobalReAlloc(lpMemory, dwBytes, GHND);
     }
 }
 
+_Ret_maybenull_
+_Success_(return == 0)
 LIBRARY_EXPORT LPVOID WINAPI WaffleFree(
-    _In_    LPVOID lpMemory
+    _Frees_ptr_opt_ LPVOID lpMemory
     )
 {
     if (!lpstProcessSetting)
     {
-        return (LPVOID) GlobalFree(lpMemory);
+        return (LPVOID)GlobalFree(lpMemory);
     }
 
     int i = WaffleFindComponent(WAFFLE_PORT_RETURN_ADDRESS);
@@ -569,6 +586,6 @@ LIBRARY_EXPORT LPVOID WINAPI WaffleFree(
     }
     else
     {
-        return (LPVOID) GlobalFree(lpMemory);
+        return (LPVOID)GlobalFree(lpMemory);
     }
 }

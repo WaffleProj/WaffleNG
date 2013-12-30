@@ -21,19 +21,28 @@ LIBRARY_EXPORT VOID WINAPI WaffleWriteLogFileW(
         WaitForSingleObject(lpstProcessSetting->hGlobalMutex, INFINITE);
         if (!hLogFile)  //make sure we need to do so
         {
-            InitializeCriticalSection(&csLogFile);
             TCHAR szLogFile[MAX_PATH];
-            GetModuleFileName(NULL, szLogFile, sizeof(szLogFile) / sizeof(szLogFile[0]));
-            lstrcat(szLogFile, TEXT(".log"));
-            hLogFile = CreateFile(szLogFile, GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_WRITE_THROUGH, NULL);
-            if (!hLogFile)
+            if (GetModuleFileName(NULL, szLogFile, sizeof(szLogFile) / sizeof(szLogFile[0])))
             {
-                MessageBox(0, TEXT("FIXME:Unable to create the log file"), 0, 0);
-                DeleteCriticalSection(&csLogFile);
+                InitializeCriticalSection(&csLogFile);
+                lstrcat(szLogFile, TEXT(".log"));
+                hLogFile = CreateFile(szLogFile, GENERIC_WRITE, FILE_SHARE_READ, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_WRITE_THROUGH, NULL);
+                if (hLogFile == INVALID_HANDLE_VALUE)
+                {
+                    MessageBox(0, TEXT("FIXME:Unable to create the log file"), 0, 0);
+                    DeleteCriticalSection(&csLogFile);
+                    ReleaseMutex(lpstProcessSetting->hGlobalMutex);
+                    return;
+                }
+                DWORD dwNumberOfBytesWritten;
+                WriteFile(hLogFile, "\xFF\xFE", 2, &dwNumberOfBytesWritten, NULL);
+            }
+            else
+            {
+                MessageBox(0, TEXT("FIXME:Unable to get the executable path"), 0, 0);
+                ReleaseMutex(lpstProcessSetting->hGlobalMutex);
                 return;
             }
-            DWORD dwNumberOfBytesWritten;
-            WriteFile(hLogFile, "\xFF\xFE", 2, &dwNumberOfBytesWritten, NULL);
         }
         ReleaseMutex(lpstProcessSetting->hGlobalMutex);
     }
