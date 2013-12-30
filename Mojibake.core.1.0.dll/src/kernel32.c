@@ -3,6 +3,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+    _Success_(return)
     LIBRARY_EXPORT BOOL WINAPI DetourCreateProcessW(
         _In_opt_    LPCWSTR lpApplicationName,
         _Inout_opt_ LPWSTR lpCommandLine,
@@ -13,13 +14,13 @@ extern "C" {
         _In_opt_    LPVOID lpEnvironment,
         _In_opt_    LPCWSTR lpCurrentDirectory,
         _In_opt_    LPSTARTUPINFOW lpStartupInfo,
-        _Out_opt_   LPPROCESS_INFORMATION lpProcessInformation
+        _Out_       LPPROCESS_INFORMATION lpProcessInformation
         )
     {
         static LPCREATEPROCESSW BackupCreateProcessW;
         if (!BackupCreateProcessW)
         {
-            BackupCreateProcessW = (LPCREATEPROCESSW) WaffleGetBackupAddress(TEXT("kernel32.dll"), TEXT("CreateProcessW"));
+            BackupCreateProcessW = (LPCREATEPROCESSW)WaffleGetBackupAddress(TEXT("kernel32.dll"), TEXT("CreateProcessW"));
         }
 
         TCHAR szMessage[1024];
@@ -35,6 +36,7 @@ extern "C" {
         }
     }
 
+    _Success_(return)
     LIBRARY_EXPORT BOOL WINAPI DetourCreateProcessA(
         _In_opt_    LPCSTR lpApplicationName,
         _Inout_opt_ LPSTR lpCommandLine,
@@ -45,7 +47,7 @@ extern "C" {
         _In_opt_    LPVOID lpEnvironment,
         _In_opt_    LPCSTR lpCurrentDirectory,
         _In_opt_    LPSTARTUPINFOA lpStartupInfo,
-        _Out_opt_   LPPROCESS_INFORMATION lpProcessInformation
+        _Out_       LPPROCESS_INFORMATION lpProcessInformation
         )
     {
         LPWSTR lpuszApplicationName = NULL;
@@ -99,20 +101,26 @@ extern "C" {
 
     LIBRARY_EXPORT DWORD WINAPI DetourGetCurrentDirectoryA(
         _In_    DWORD nBufferLength,
-        _Out_   LPSTR lpBuffer
+        _Out_writes_to_opt_(nBufferLength, return +1)   LPSTR lpBuffer
         )
     {
         DWORD Result = 0;
         if (lpBuffer)
         {
-            LPWSTR lpuBuffer = (LPWSTR) WaffleAlloc(nBufferLength*sizeof(WCHAR));
-            GetCurrentDirectory(nBufferLength, lpuBuffer);
+            LPWSTR lpuBuffer = (LPWSTR)WaffleAlloc((nBufferLength + 1)*sizeof(lpuBuffer[0]));
+            if (lpuBuffer)
+            {
+                Result = GetCurrentDirectory(nBufferLength, lpuBuffer);
 
-            DWORD LastError = GetLastError();
-            WideCharToMultiByte(stNewEnvir.AnsiCodePage, 0, lpuBuffer, -1, lpBuffer, nBufferLength - 1, NULL, NULL);
-            Result = lstrlenA(lpBuffer);
-            MojibakeFree(lpuBuffer);
-            SetLastError(LastError);
+                DWORD LastError = GetLastError();
+                WideCharToMultiByte(stNewEnvir.AnsiCodePage, 0, lpuBuffer, -1, lpBuffer, nBufferLength - 1, NULL, NULL);
+                MojibakeFree(lpuBuffer);
+                SetLastError(LastError);
+            }
+            else
+            {
+                lpBuffer[0] = TEXT('\0');
+            }
         }
         return Result;
     }
@@ -238,7 +246,7 @@ extern "C" {
         )
     {
         LPWSTR lpuszFileName = AnsiToUnicode(lpFileName);
-        LPWSTR lpuBuffer = (LPWSTR) WaffleAlloc(sizeof(WCHAR) * nBufferLength);
+        LPWSTR lpuBuffer = (LPWSTR)WaffleAlloc(sizeof(WCHAR)* nBufferLength);
         LPWSTR lpuFilePart = NULL;
 
         LPWSTR *lplpuFilePart = NULL;
@@ -250,7 +258,7 @@ extern "C" {
         GetFullPathName(lpuszFileName, nBufferLength, lpuBuffer, lplpuFilePart);
 
         DWORD LastError = GetLastError();
-        WideCharToMultiByte(stNewEnvir.AnsiCodePage, 0, lpuBuffer, -1, lpBuffer, nBufferLength, NULL, NULL);
+        WideCharToMultiByte(stNewEnvir.AnsiCodePage, 0, lpuBuffer, -1, lpBuffer, nBufferLength - 1, NULL, NULL);
         MojibakeFree(lpuszFileName);
         MojibakeFree(lpuBuffer);
         int Result = lstrlenA(lpBuffer);        //This is not the correct method to get the return value, but it should work in the most of cases.
@@ -278,12 +286,12 @@ extern "C" {
         _In_        DWORD nSize
         )
     {
-        LPWSTR lpuszFilename = (LPWSTR) WaffleAlloc(sizeof(WCHAR) * nSize);
+        LPWSTR lpuszFilename = (LPWSTR)WaffleAlloc(sizeof(WCHAR)* nSize);
 
         GetModuleFileName(hModule, lpuszFilename, nSize);
 
         DWORD LastError = GetLastError();
-        WideCharToMultiByte(stNewEnvir.AnsiCodePage, 0, lpuszFilename, -1, lpFilename, nSize, NULL, NULL);
+        WideCharToMultiByte(stNewEnvir.AnsiCodePage, 0, lpuszFilename, -1, lpFilename, nSize - 1, NULL, NULL);
         MojibakeFree(lpuszFilename);
         int Result = lstrlenA(lpFilename);
         SetLastError(LastError);
@@ -338,9 +346,9 @@ extern "C" {
         if (!lpszCommandLineA)
         {
             LPWSTR lpszCommandLineW = GetCommandLine();
-            int intSize = 4 * lstrlenW(lpszCommandLineW);
-            lpszCommandLineA = (LPSTR) WaffleAlloc(intSize);
-            WideCharToMultiByte(stNewEnvir.AnsiCodePage, 0, lpszCommandLineW, -1, lpszCommandLineA, intSize, NULL, NULL);
+            int nSize = 4 * (lstrlenW(lpszCommandLineW) + 1);
+            lpszCommandLineA = (LPSTR)WaffleAlloc(nSize);
+            WideCharToMultiByte(stNewEnvir.AnsiCodePage, 0, lpszCommandLineW, -1, lpszCommandLineA, nSize, NULL, NULL);
         }
         return lpszCommandLineA;
     }
@@ -363,7 +371,7 @@ extern "C" {
         static LPGETCPINFO BackupGetCPInfo;
         if (!BackupGetCPInfo)
         {
-            BackupGetCPInfo = (LPGETCPINFO) WaffleGetBackupAddress(TEXT("kernel32.dll"), TEXT("GetCPInfo"));
+            BackupGetCPInfo = (LPGETCPINFO)WaffleGetBackupAddress(TEXT("kernel32.dll"), TEXT("GetCPInfo"));
         }
 
         switch (CodePage)
@@ -416,7 +424,7 @@ extern "C" {
         static LPMULTIBYTETOWIDECHAR BackupMultiByteToWideChar;
         if (!BackupMultiByteToWideChar)
         {
-            BackupMultiByteToWideChar = (LPMULTIBYTETOWIDECHAR) WaffleGetBackupAddress(TEXT("kernel32.dll"), TEXT("MultiByteToWideChar"));
+            BackupMultiByteToWideChar = (LPMULTIBYTETOWIDECHAR)WaffleGetBackupAddress(TEXT("kernel32.dll"), TEXT("MultiByteToWideChar"));
         }
 
         switch (CodePage)
@@ -446,7 +454,7 @@ extern "C" {
         static LPWIDECHARTOMULTIBYTE BackupWideCharToMultiByte;
         if (!BackupWideCharToMultiByte)
         {
-            BackupWideCharToMultiByte = (LPWIDECHARTOMULTIBYTE) WaffleGetBackupAddress(TEXT("kernel32.dll"), TEXT("WideCharToMultiByte"));
+            BackupWideCharToMultiByte = (LPWIDECHARTOMULTIBYTE)WaffleGetBackupAddress(TEXT("kernel32.dll"), TEXT("WideCharToMultiByte"));
         }
 
         switch (CodePage)
@@ -498,7 +506,7 @@ extern "C" {
         static LPISDBCSLEADBYTEEX BackupIsDBCSLeadByteEx;
         if (!BackupIsDBCSLeadByteEx)
         {
-            BackupIsDBCSLeadByteEx = (LPISDBCSLEADBYTEEX) WaffleGetBackupAddress(TEXT("kernel32.dll"), TEXT("IsDBCSLeadByteEx"));
+            BackupIsDBCSLeadByteEx = (LPISDBCSLEADBYTEEX)WaffleGetBackupAddress(TEXT("kernel32.dll"), TEXT("IsDBCSLeadByteEx"));
         }
 
         switch (CodePage)
@@ -531,7 +539,7 @@ extern "C" {
         static LPGETPRIVATEPROFILEINTA BackupGetPrivateProfileIntA;
         if (!BackupGetPrivateProfileIntA)
         {
-            BackupGetPrivateProfileIntA = (LPGETPRIVATEPROFILEINTA) WaffleGetBackupAddress(TEXT("kernel32.dll"), TEXT("GetPrivateProfileIntA"));
+            BackupGetPrivateProfileIntA = (LPGETPRIVATEPROFILEINTA)WaffleGetBackupAddress(TEXT("kernel32.dll"), TEXT("GetPrivateProfileIntA"));
         }
 
         LPSTR lpszFileName = MBCSToMBCS(stNewEnvir.AnsiCodePage, stOldEnvir.AnsiCodePage, lpFileName);
@@ -554,7 +562,7 @@ extern "C" {
         static LPGETPRIVATEPROFILESTRINGA BackupGetPrivateProfileStringA;
         if (!BackupGetPrivateProfileStringA)
         {
-            BackupGetPrivateProfileStringA = (LPGETPRIVATEPROFILESTRINGA) WaffleGetBackupAddress(TEXT("kernel32.dll"), TEXT("GetPrivateProfileStringA"));
+            BackupGetPrivateProfileStringA = (LPGETPRIVATEPROFILESTRINGA)WaffleGetBackupAddress(TEXT("kernel32.dll"), TEXT("GetPrivateProfileStringA"));
         }
 
         LPSTR lpszFileName = MBCSToMBCS(stNewEnvir.AnsiCodePage, stOldEnvir.AnsiCodePage, lpFileName);
@@ -575,23 +583,41 @@ extern "C" {
         )
     {
         LPWSTR lpuszValueName = AnsiToUnicode(lpValueName);
-        DWORD cbData = *lpcbData;
-        *lpcbData = *lpcbData  * sizeof(WCHAR);
-        LPBYTE lpuData = (LPBYTE) WaffleAlloc(cbData * sizeof(WCHAR));    //lpcbData might be NULL
-        LPBYTE lpcData = (LPBYTE) WaffleAlloc(cbData * sizeof(CHAR));    //lpcbData might be NULL
+        DWORD cbData = 0;
+        LPBYTE lpuData = NULL;
+        LPBYTE lpcData = NULL;
+        if (lpcbData)
+        {
+            cbData = *lpcbData;
+            *lpcbData = *lpcbData  * sizeof(WCHAR);
+            lpuData = (LPBYTE)WaffleAlloc((cbData + 1) * sizeof(lpuData[0]));
+            if (!lpuData)
+            {
+                return ERROR_NOT_ENOUGH_MEMORY;
+            }
+            lpcData = (LPBYTE)WaffleAlloc((cbData + 1) * sizeof(lpcData[0]));
+            if (!lpcData)
+            {
+                MojibakeFree(lpuData);
+                return ERROR_NOT_ENOUGH_MEMORY;
+            }
+        }
 
         LONG Result = RegQueryValueEx(hKey, lpuszValueName, lpReserved, lpType, lpuData, lpcbData);
 
         DWORD LastError = GetLastError();
-        *lpcbData = WideCharToMultiByte(stNewEnvir.AnsiCodePage, 0, (LPWSTR) lpuData, -1, (LPSTR) lpcData, cbData * sizeof(CHAR), NULL, NULL);
-        int i;
-        for (i = cbData; i >= 0; i--)
+        if (lpcbData)
         {
-            lpData[i] = lpcData[i];
+            *lpcbData = WideCharToMultiByte(stNewEnvir.AnsiCodePage, 0, (LPWSTR)lpuData, -1, (LPSTR)lpcData, cbData * sizeof(CHAR), NULL, NULL);
+        }
+        if (lpData)
+        {
+            RtlMoveMemory(lpData, lpcData, cbData*sizeof(lpData[0]));
         }
 
         MojibakeFree(lpuszValueName);
         MojibakeFree(lpuData);
+        MojibakeFree(lpcData);
         SetLastError(LastError);
         if (Result != ERROR_SUCCESS)
         {

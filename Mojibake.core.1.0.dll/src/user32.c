@@ -206,6 +206,7 @@ extern "C" {
         return DetourCreateWindowExA(0, lpClassName, lpWindowName, dwStyle, x, y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam);
     }
 
+    /*
     LIBRARY_EXPORT HWND WINAPI DetourCreateDialogA(
         _In_opt_    HINSTANCE hInstance,
         _In_        LPCSTR lpTemplate,
@@ -213,6 +214,11 @@ extern "C" {
         _In_opt_    DLGPROC lpDialogFunc
         )
     {
+        if (!lpTemplate)
+        {
+            return NULL;
+        }
+
         LPWSTR lpuTemplate = (LPWSTR) lpTemplate;
         if ((SIZE_T) lpTemplate > 0xFFFF)
         {
@@ -226,7 +232,8 @@ extern "C" {
         }
         return Result;
     }
-
+    */
+    /*
     LIBRARY_EXPORT HWND WINAPI DetourCreateDialogIndirectA(
         _In_opt_    HINSTANCE hInstance,
         _In_        LPCDLGTEMPLATE lpTemplate,
@@ -236,6 +243,7 @@ extern "C" {
     {
         return CreateDialogIndirect(hInstance, lpTemplate, hWndParent, lpDialogFunc);
     }
+    */
 
     LIBRARY_EXPORT HWND WINAPI DetourCreateDialogIndirectParamA(
         _In_opt_    HINSTANCE hInstance,
@@ -261,6 +269,10 @@ extern "C" {
         {
             lpuTemplateName = AnsiToUnicode(lpTemplateName);
         }
+        if (!lpuTemplateName)
+        {
+            return NULL;
+        }
         HWND Result = CreateDialogParam(hInstance, lpuTemplateName, hWndParent, lpDialogFunc, dwInitParam);
 
         if ((SIZE_T) lpTemplateName > 0xFFFF)
@@ -270,6 +282,7 @@ extern "C" {
         return Result;
     }
 
+    /*
     LIBRARY_EXPORT LRESULT WINAPI DetourDialogBoxA(
         _In_opt_    HINSTANCE hInstance,
         _In_        LPCSTR lpTemplate,
@@ -277,6 +290,11 @@ extern "C" {
         _In_opt_    DLGPROC lpDialogFunc
         )
     {
+        if (!lpTemplate)
+        {
+            return NULL;
+        }
+
         LPWSTR lpuTemplate = (LPWSTR) lpTemplate;
         if ((SIZE_T) lpTemplate > 0xFFFF)
         {
@@ -290,7 +308,9 @@ extern "C" {
         }
         return Result;
     }
+    */
 
+    /*
     LIBRARY_EXPORT INT_PTR WINAPI DetourDialogBoxIndirectA(
         _In_opt_    HINSTANCE hInstance,
         _In_        LPCDLGTEMPLATE lpTemplate,
@@ -300,6 +320,7 @@ extern "C" {
     {
         return DialogBoxIndirect(hInstance, lpTemplate, hWndParent, lpDialogFunc);
     }
+    */
 
     LIBRARY_EXPORT INT_PTR WINAPI DetourDialogBoxIndirectParamA(
         _In_opt_    HINSTANCE hInstance,
@@ -325,6 +346,12 @@ extern "C" {
         {
             lpuTemplateName = AnsiToUnicode(lpTemplateName);
         }
+        if (!lpuTemplateName)
+        {
+            SetLastError(ERROR_INVALID_PARAMETER);
+            return -1;
+        }
+
         LRESULT Result = DialogBoxParam(hInstance, lpuTemplateName, hWndParent, lpDialogFunc, dwInitParam);
 
         if ((SIZE_T) lpTemplateName > 0xFFFF)
@@ -354,7 +381,7 @@ extern "C" {
     LIBRARY_EXPORT BOOL WINAPI DetourSetDlgItemTextA(
         _In_    HWND hDlg,
         _In_    int nIDDlgItem,
-        _Out_   LPSTR lpString
+        _In_    LPSTR lpString
         )
     {
         LPWSTR lpuszString = AnsiToUnicode(lpString);
@@ -373,6 +400,10 @@ extern "C" {
         if ((SIZE_T) lpMenuName > 0xFFFF)
         {
             lpuMenuName = AnsiToUnicode(lpMenuName);
+        }
+        if (!lpuMenuName)
+        {
+            return NULL;
         }
 
         HMENU Result = LoadMenu(hInstance, lpuMenuName);

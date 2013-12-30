@@ -1,8 +1,8 @@
 ﻿#include "..\mojibake.h"
 
 LPWSTR WINAPI MBCSToUnicode(
-    _In_    UINT AnsiCodePage,
-    _In_    LPCSTR lpszText
+    _In_        UINT AnsiCodePage,
+    _In_opt_    LPCSTR lpszText
     )
 {
     if (lpszText)
@@ -27,9 +27,9 @@ LPWSTR WINAPI MBCSToUnicode(
 }
 
 LPSTR WINAPI MBCSToMBCS(
-    _In_    UINT FromCodePage,
-    _In_    UINT ToCodePage,
-    _In_    LPCSTR lpszText
+    _In_        UINT FromCodePage,
+    _In_        UINT ToCodePage,
+    _In_opt_    LPCSTR lpszText
     )
 {
     if (lpszText)
@@ -49,7 +49,7 @@ LPSTR WINAPI MBCSToMBCS(
 }
 
 LPWSTR WINAPI AnsiToUnicode(
-    _In_    LPCSTR lpszText
+    _In_opt_    LPCSTR lpszText
     )
 {
     if (lpszText)
@@ -74,7 +74,7 @@ LPWSTR WINAPI AnsiToUnicode(
 }
 
 LPSTR WINAPI ProgramCPToWindowsCP(
-    _In_    LPCSTR lpszText
+    _In_opt_    LPCSTR lpszText
     )
 {
     if (lpszText)
@@ -93,15 +93,17 @@ LPSTR WINAPI ProgramCPToWindowsCP(
     }
 }
 
-VOID WINAPI MojibakeFree(
-    _In_    LPVOID lpMem
+_Ret_maybenull_
+_Success_(return == 0)
+LPVOID WINAPI MojibakeFree(
+    _In_opt_    LPVOID lpMem
     )
 {
     if (lpMem)
     {
         DWORD LastError = GetLastError();
-        WaffleFree(lpMem);
+        lpMem = WaffleFree(lpMem);
         SetLastError(LastError);
     }
-    return;
+    return lpMem;
 }

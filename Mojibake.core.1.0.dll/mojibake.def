@@ -40,12 +40,8 @@ EXPORTS
     DetourCreateWindowExA
     DetourDefWindowProcA
     DetourDefDlgProcA
-    DetourCreateDialogA
-    DetourCreateDialogIndirectA
     DetourCreateDialogIndirectParamA
     DetourCreateDialogParamA
-    DetourDialogBoxA
-    DetourDialogBoxIndirectA
     DetourDialogBoxIndirectParamA
     DetourDialogBoxParamA
     DetourGetDlgItemTextA
