@@ -41,7 +41,6 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <Import Project="$(SolutionDir)\Microsoft.Cpp.props" />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
-  
   <PropertyGroup>
     <TargetName>Waffle</TargetName>
     <OutDir>$(SolutionDir)Component\Waffle\$(PEMachine)\</OutDir>
@@ -52,7 +51,6 @@
     <RunCodeAnalysis Condition="'$(Configuration)'=='Debug'And'$(Platform)'!= 'Itanium'">true</RunCodeAnalysis>
     <CodeAnalysisRuleSet Condition="'$(Configuration)'=='Debug'And'$(Platform)'!= 'Itanium'">AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
-  
   <ItemDefinitionGroup>
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
@@ -60,7 +58,7 @@
       <CompileAs Condition="'$(Platform)'!='Itanium'">CompileAsC</CompileAs>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
-      <DisableSpecificWarnings>4068;4100;4201</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4055;4068;4100;4127;4201</DisableSpecificWarnings>
       <BufferSecurityCheck Condition="'$(Configuration)'=='Release'">false</BufferSecurityCheck>
     </ClCompile>
     <Link>

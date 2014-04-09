@@ -22,7 +22,7 @@ LIBRARY_EXPORT VOID WINAPI WaffleWriteLogFileW(
         if (!hLogFile)  //make sure we need to do so
         {
             TCHAR szLogFile[MAX_PATH];
-            if (GetModuleFileName(NULL, szLogFile, sizeof(szLogFile) / sizeof(szLogFile[0])))
+            if (GetModuleFileName(NULL, szLogFile, lengthof(szLogFile)))
             {
                 InitializeCriticalSection(&csLogFile);
                 lstrcat(szLogFile, TEXT(".log"));

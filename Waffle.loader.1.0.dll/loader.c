@@ -1,4 +1,4 @@
-﻿#include "loader.h"
+﻿#include <waffle.h>
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
 BOOL WINAPI DllMain(
@@ -11,25 +11,22 @@ BOOL WINAPI DllMain(
     {
         DisableThreadLibraryCalls(hinstDLL);
 
-        if (WaffleOpenProcessSetting())
-        {
 #ifdef _DEBUG
-            MessageBox(0, TEXT("Please attach the debugger."), TEXT("WaffleInit"), 0);
-            if (IsDebuggerPresent())
-            {
-                DebugBreak();
-            }
+        MessageBox(0, TEXT("Please attach the debugger."), TEXT("Waffle.loader.dll"), 0);
+        if (IsDebuggerPresent())
+        {
+            DebugBreak();
+        }
 #endif // _DEBUG
-            HANDLE hThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE) WaffleInit, 0, 0, NULL);
-            if (hThread)
-            {
-                CloseHandle(hThread);
-            }
-            else
-            {
-                MessageBox(0, TEXT("FIXME:WaffleInit failed"), 0, 0);
-                ExitProcess(0);
-            }
+        HANDLE hThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE) WaffleInit, 0, 0, NULL);
+        if (hThread)
+        {
+            CloseHandle(hThread);
+        }
+        else
+        {
+            MessageBox(0, TEXT("FIXME:Unable to create WaffleInit thread"), 0, 0);
+            ExitProcess(0);
         }
     }
     return TRUE;

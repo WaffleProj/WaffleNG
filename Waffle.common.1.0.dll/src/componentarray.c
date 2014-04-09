@@ -42,7 +42,7 @@ LIBRARY_EXPORT HMODULE WINAPI WaffleLoadComponent(
         }
     } while (FALSE);
 
-    LPCOMPONENTINIT ComponentInit = (LPCOMPONENTINIT)WaffleGetProcAddress(hComponent, TEXT("ComponentInit"));
+    LPCOMPONENTINIT ComponentInit = (LPCOMPONENTINIT) WaffleGetProcAddress(hComponent, TEXT("ComponentInit"));
     if (!ComponentInit)
     {
         FreeLibrary(hComponent);
@@ -66,16 +66,17 @@ LIBRARY_EXPORT VOID WINAPI WaffleAddComponent(
     if (stNewComponent.hSource)
     {
         stNewComponent.lpszComponent = lpszComponent;
-        stNewComponent.hSourceEnd = (SIZE_T)stNewComponent.hSource + WaffleGetImageSize(stNewComponent.hSource);
+        stNewComponent.hSourceEnd = (SIZE_T) stNewComponent.hSource + WaffleGetImageSize(stNewComponent.hSource);
     }
     else
     {
+        MessageBox(0, TEXT("FIXME:Unable to find the component"), 0, 0);
         return;
     }
 
     if (!lpstProcessSetting->lpstComponent)
     {
-        lpstProcessSetting->lpstComponent = (LPWAFFLE_COMPONENT_ARRAY)GlobalAlloc(GPTR, sizeof(WAFFLE_COMPONENT_ARRAY));
+        lpstProcessSetting->lpstComponent = (LPWAFFLE_COMPONENT_ARRAY) GlobalAlloc(GPTR, sizeof(WAFFLE_COMPONENT_ARRAY));
         if (!lpstProcessSetting->lpstComponent)
         {
             MessageBox(0, TEXT("FIXME:Unable to allocate memory to create component array"), 0, 0);
@@ -89,7 +90,7 @@ LIBRARY_EXPORT VOID WINAPI WaffleAddComponent(
         {
             lpstProcessSetting->lpstComponent[i].dwBehind++;
         }
-        lpstProcessSetting->lpstComponent = (LPWAFFLE_COMPONENT_ARRAY)GlobalReAlloc(lpstProcessSetting->lpstComponent, sizeof(WAFFLE_COMPONENT_ARRAY)* (lpstProcessSetting->lpstComponent[0].dwBehind + 1), GHND);
+        lpstProcessSetting->lpstComponent = (LPWAFFLE_COMPONENT_ARRAY) GlobalReAlloc(lpstProcessSetting->lpstComponent, sizeof(WAFFLE_COMPONENT_ARRAY) * (lpstProcessSetting->lpstComponent[0].dwBehind + 1), GHND);
         if (!lpstProcessSetting->lpstComponent)
         {
             MessageBox(0, TEXT("FIXME:Unable to add elements in component array"), 0, 0);
@@ -107,7 +108,7 @@ LIBRARY_EXPORT int WINAPI WaffleFindComponent(
     int i;
     for (i = lpstProcessSetting->lpstComponent[0].dwBehind; i >= 0; i--)
     {
-        if (((SIZE_T)lpMemory >= (SIZE_T)lpstProcessSetting->lpstComponent[i].hSource) && ((SIZE_T)lpMemory <= lpstProcessSetting->lpstComponent[i].hSourceEnd))
+        if (((SIZE_T) lpMemory >= (SIZE_T) lpstProcessSetting->lpstComponent[i].hSource) && ((SIZE_T) lpMemory <= lpstProcessSetting->lpstComponent[i].hSourceEnd))
         {
             return i;
         }

@@ -48,36 +48,13 @@ HRESULT STDMETHODCALLTYPE IWaffleShellExtInit_Initialize(
         LPTSTR lpszFileName;
         if (DragQueryFile((HDROP)medium.hGlobal, (UINT)-1, NULL, 0) == 1)
         {
-            UINT nSize = 1;
-            UINT nFileName;
-            lpszFileName = GlobalAlloc(GPTR, nSize * sizeof(lpszFileName[0]));
+            UINT cch = DragQueryFile((HDROP) medium.hGlobal, 0, NULL, 0) + 1;
+            lpszFileName = GlobalAlloc(GPTR, cch * sizeof(lpszFileName[0]));
             if (lpszFileName)
             {
-                LPTSTR hMem;
-                do
-                {
-                    nSize *= 2;
-                    hMem = GlobalReAlloc(lpszFileName, nSize * sizeof(lpszFileName[0]), GHND);
-                    if (!hMem)
-                    {
-                        GlobalFree(lpszFileName);
-                        lpszFileName = NULL;
-                        break;
-                    }
-                    else
-                    {
-                        lpszFileName = hMem;
-                    }
-
-                    nFileName = DragQueryFile((HDROP)medium.hGlobal, 0, lpszFileName, nSize);
-                    if (!nFileName)
-                    {
-                        GlobalFree(lpszFileName);
-                        lpszFileName = NULL;
-                        break;
-                    }
-                } while (nFileName == nSize - 1);
+                DragQueryFile((HDROP) medium.hGlobal, 0, lpszFileName, cch);
             }
+            DragFinish((HDROP) medium.hGlobal);
         }
         else
         {

@@ -11,21 +11,21 @@ LIBRARY_EXPORT VOID WINAPI WaffleCheckOptionEncoding(
         WORD wBOM = 0xFEFF;
         switch (GetLastError())
         {
-        case ERROR_ALREADY_EXISTS:
-            if (!ReadFile(hFile, &wBOM, 2, &dwFile, NULL))
-            {
-                MessageBox(0, TEXT("FIXME:Unable to read the option file."), 0, 0);
+            case ERROR_ALREADY_EXISTS:
+                if (!ReadFile(hFile, &wBOM, 2, &dwFile, NULL))
+                {
+                    MessageBox(0, TEXT("FIXME:Unable to read the option file."), 0, 0);
+                    break;
+                }
+                if (wBOM != 0xFEFF && wBOM != 0xFFFE)
+                {
+                    MessageBox(0, TEXT("FIXME:At least one of your config file is in the multibyte character set. Please use UTF-16."), 0, 0);
+                    break;
+                }
                 break;
-            }
-            if (wBOM != 0xFEFF && wBOM != 0xFFFE)
-            {
-                MessageBox(0, TEXT("FIXME:At least one of your config file is in the multibyte character set. Please use UTF-16."), 0, 0);
+            case ERROR_SUCCESS:
+                WriteFile(hFile, &wBOM, 2, &dwFile, NULL);
                 break;
-            }
-            break;
-        case ERROR_SUCCESS:
-            WriteFile(hFile, &wBOM, 2, &dwFile, NULL);
-            break;
         }
         CloseHandle(hFile);
     }
@@ -95,7 +95,7 @@ LIBRARY_EXPORT int WINAPI WaffleGetOptionInt(
     )
 {
     TCHAR szValue[256];
-    WaffleGetOptionString(lpszKeyName, szValue, sizeof(szValue) / sizeof(szValue[0]), NULL);
+    WaffleGetOptionString(lpszKeyName, szValue, lengthof(szValue), NULL);
     return WaffleStrToInt(szValue, nDefaultValue);
 }
 

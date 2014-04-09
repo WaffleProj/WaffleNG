@@ -12,6 +12,11 @@ BOOL WINAPI DllMain(
     if (fdwReason == DLL_PROCESS_ATTACH)
     {
         DisableThreadLibraryCalls(hinstDLL);
+
+        if (!WaffleOpenProcessSetting())
+        {
+            WaffleCreateProcessSetting();
+        }
     }
     return TRUE;
 }

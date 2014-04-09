@@ -48,7 +48,7 @@ LIBRARY_EXPORT VOID WINAPI WaffleInjectDll(
     LPVOID lpszRemoteDll = VirtualAllocEx(hProcess, NULL, MAX_PATH*sizeof(TCHAR), MEM_COMMIT, PAGE_READWRITE);
     if (lpszRemoteDll)
     {
-        LPTHREAD_START_ROUTINE lpLoadLibrary = (LPTHREAD_START_ROUTINE)WaffleGetProcAddress(GetModuleHandle(TEXT("kernel32.dll")), TEXT("LoadLibraryW"));
+        LPTHREAD_START_ROUTINE lpLoadLibrary = (LPTHREAD_START_ROUTINE) WaffleGetProcAddress(GetModuleHandle(TEXT("kernel32.dll")), TEXT("LoadLibraryW"));
 
         WriteProcessMemory(hProcess, lpszRemoteDll, lpszDllFull, lstrlen(lpszDllFull)*sizeof(TCHAR), NULL);
         HANDLE hRemoteThread = CreateRemoteThread(hProcess, NULL, 0, lpLoadLibrary, lpszRemoteDll, 0, NULL);
@@ -99,7 +99,7 @@ LIBRARY_EXPORT VOID WINAPI WaffleExecuteTo(
         Sleep(100);
         SuspendThread(hThread);
         GetThreadContext(hThread, &stContext);
-        if ((LPBYTE)WAFFLE_PORT_PROGRAM_COUNTER_TO_PHYSICAL_ADDRESS(stContext.WAFFLE_PORT_PROGRAM_POINTER) == lpProgramCounter)
+        if ((LPBYTE) WAFFLE_PORT_PROGRAM_COUNTER_TO_PHYSICAL_ADDRESS(stContext.WAFFLE_PORT_PROGRAM_POINTER) == lpProgramCounter)
         {
             WriteProcessMemory(hProcess, lpProgramCounter, OriginalInstruction, WAFFLE_PORT_ENTRY_POINT_LOOP_SIZE, NULL);
             FlushInstructionCache(hProcess, lpProgramCounter, WAFFLE_PORT_ENTRY_POINT_LOOP_SIZE);
@@ -126,8 +126,8 @@ LIBRARY_EXPORT VOID WINAPI WaffleExecute(
     WaffleCreateProcess(lpApplicationName, lpCommandLine, NULL, NULL, TRUE, CREATE_SUSPENDED, 0, lpCurrentDirectory, NULL, &stProcessInfo);
 
 #ifdef _M_IX86  //Workaround for XP
-    WaffleExecuteTo(stProcessInfo.hProcess, stProcessInfo.hThread, (LPBYTE)WAFFLE_PORT_PROGRAM_COUNTER_TO_PHYSICAL_ADDRESS(WaffleGetProcAddress(GetModuleHandle(TEXT("ntdll.dll")), TEXT("RtlInitializeExceptionChain"))));
-    WaffleExecuteTo(stProcessInfo.hProcess, stProcessInfo.hThread, (LPBYTE)WAFFLE_PORT_PROGRAM_COUNTER_TO_PHYSICAL_ADDRESS(WaffleGetProcAddress(GetModuleHandle(TEXT("kernel32.dll")), TEXT("BaseThreadInitThunk"))));
+    WaffleExecuteTo(stProcessInfo.hProcess, stProcessInfo.hThread, (LPBYTE) WAFFLE_PORT_PROGRAM_COUNTER_TO_PHYSICAL_ADDRESS(WaffleGetProcAddress(GetModuleHandle(TEXT("ntdll.dll")), TEXT("RtlInitializeExceptionChain"))));
+    WaffleExecuteTo(stProcessInfo.hProcess, stProcessInfo.hThread, (LPBYTE) WAFFLE_PORT_PROGRAM_COUNTER_TO_PHYSICAL_ADDRESS(WaffleGetProcAddress(GetModuleHandle(TEXT("kernel32.dll")), TEXT("BaseThreadInitThunk"))));
 #endif
 
     lpstPS->dwThreadId = stProcessInfo.dwThreadId;

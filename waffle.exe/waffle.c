@@ -3,21 +3,29 @@
 
 int WINAPI Main(void)
 {
+#ifdef _DEBUG
+    MessageBox(0, TEXT("Please attach the debugger."), TEXT("Waffle.exe"), 0);
+    if (IsDebuggerPresent())
+    {
+        DebugBreak();
+    }
+#endif // _DEBUG
+
     //Get base directory
     TCHAR szPath[MAX_PATH];
-    WaffleGetModuleDirectory(NULL, szPath, sizeof(szPath) / sizeof(szPath[0]));
+    WaffleGetModuleDirectory(NULL, szPath, lengthof(szPath));
 
     //Pickup target
     int nArg = WaffleArgc();
-    TCHAR szComponent[MAX_PATH] = {TEXT('\0')};
+    TCHAR szComponent[MAX_PATH] = { TEXT('\0') };
     TCHAR szTarget[MAX_PATH] = { TEXT('\0') };
     TCHAR szDirectory[MAX_PATH] = { TEXT('\0') };
     if (nArg >= 3)
     {
         //1.文件名 2.插件名 3.目标
-        WaffleArgv(2, szComponent, sizeof(szComponent) / sizeof(szComponent[0]));
+        WaffleArgv(2, szComponent, lengthof(szComponent));
 
-        WaffleArgv(3, szTarget, sizeof(szTarget) / sizeof(szTarget[0]));
+        WaffleArgv(3, szTarget, lengthof(szTarget));
     }
     else
     {
@@ -26,11 +34,17 @@ int WINAPI Main(void)
 
         stOpenFile.lStructSize = sizeof(stOpenFile);
         stOpenFile.lpstrFile = szTarget;
-        stOpenFile.nMaxFile = sizeof(szTarget) / sizeof(szTarget[0]);
+        stOpenFile.nMaxFile = lengthof(szTarget);
         stOpenFile.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
         if (GetOpenFileName(&stOpenFile) && lstrlen(szTarget))
         {
-            lstrcpy(szComponent, TEXT("Mojibake"));
+            WaffleGetOptionString(TEXT("DefaultPlugin"), szComponent, lengthof(szComponent), TEXT(""));
+            MessageBox(0, szComponent, 0, 0);
+            if (!lstrcmpi(szComponent, TEXT("")))
+            {
+                MessageBox(0, TEXT("FIXME:DefaultPlugin is empty"), 0, 0);
+                return 0;
+            }
         }
         else
         {
@@ -49,7 +63,7 @@ int WINAPI Main(void)
     WORD MachineType = WaffleGetMachineType(szTarget);
     if (MachineType == WAFFLE_PORT_MACHINE)
     {
-        LPWAFFLE_PROCESS_SETTING lpstProcessSetting = WaffleCreateProcessSetting();
+        LPWAFFLE_PROCESS_SETTING lpstProcessSetting = WaffleShareProcessSetting();
         lstrcpy(lpstProcessSetting->szComponent, szComponent);
 
         lstrcpy(lpstProcessSetting->szComponentDirectory, szPath);
@@ -85,37 +99,37 @@ int WINAPI Main(void)
 
         switch (MachineType)
         {
-        case WAFFLE_PORT_MACHINE_I386:
-        {
-            lstrcat(szLoader, TEXT("\\I386\\Waffle.exe"));
-            break;
-        }
-        case WAFFLE_PORT_MACHINE_AMD64:
-        {
-            lstrcat(szLoader, TEXT("\\AMD64\\Waffle.exe"));
-            break;
-        }
-        case WAFFLE_PORT_MACHINE_ARMNT:
-        {
-            lstrcat(szLoader, TEXT("\\ARMNT\\Waffle.exe"));
-            break;
-        }
-        case WAFFLE_PORT_MACHINE_IA64:
-        {
-            lstrcat(szLoader, TEXT("\\ARMNT\\Waffle.exe"));
-            break;
-        }
-        case 0xFFFF:
-        {
-            MessageBox(0, TEXT("FIXME:Unable to open the target"), 0, 0);
-            return 0;
-            break;
-        }
-        default:
-        {
-            MessageBox(0, TEXT("FIXME:Unsupported file or .net program"), 0, 0);       //Could be .net program
-            return 0;
-        }
+            case WAFFLE_PORT_MACHINE_I386:
+            {
+                lstrcat(szLoader, TEXT("\\I386\\Waffle.exe"));
+                break;
+            }
+            case WAFFLE_PORT_MACHINE_AMD64:
+            {
+                lstrcat(szLoader, TEXT("\\AMD64\\Waffle.exe"));
+                break;
+            }
+            case WAFFLE_PORT_MACHINE_ARMNT:
+            {
+                lstrcat(szLoader, TEXT("\\ARMNT\\Waffle.exe"));
+                break;
+            }
+            case WAFFLE_PORT_MACHINE_IA64:
+            {
+                lstrcat(szLoader, TEXT("\\ARMNT\\Waffle.exe"));
+                break;
+            }
+            case 0xFFFF:
+            {
+                MessageBox(0, TEXT("FIXME:Unable to open the target"), 0, 0);
+                return 0;
+                break;
+            }
+            default:
+            {
+                MessageBox(0, TEXT("FIXME:Unsupported file or .net program"), 0, 0);       //Could be .net program
+                return 0;
+            }
         }
 
         LPTSTR lpszArgument;

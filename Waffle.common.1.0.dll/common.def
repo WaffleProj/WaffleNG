@@ -79,4 +79,6 @@ EXPORTS
 
     WaffleOpenProcessSettingW
     WaffleCreateProcessSettingW
+    WaffleShareProcessSettingW
+    WaffleInitProcessSettingW
     WaffleResumeMainThread
