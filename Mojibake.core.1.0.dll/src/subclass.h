@@ -7,14 +7,6 @@ typedef struct
     WNDPROC lpComboBoxW;
 } SUBCLASS_PROC, *LPSUBCLASS_PROC;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-    VOID WINAPI MojibakeSubclass(void);
-
-#ifdef __cplusplus
-};
-#endif
+VOID WINAPI MojibakeSubclass(void);
 
 #endif /* __SUBCLASS_H_ */
