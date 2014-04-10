@@ -38,17 +38,17 @@ int WINAPI Main(void)
         stOpenFile.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
         if (GetOpenFileName(&stOpenFile) && lstrlen(szTarget))
         {
-            WaffleGetOptionString(TEXT("DefaultPlugin"), szComponent, lengthof(szComponent), TEXT(""));
+            WaffleGetOptionString(NULL, NULL, TEXT("DefaultPlugin"), szComponent, lengthof(szComponent), NULL);
             if (!lstrcmpi(szComponent, TEXT("")))
             {
                 MessageBox(0, TEXT("FIXME:DefaultPlugin is empty"), 0, 0);
-                return 0;
+                ExitProcess(0);
             }
         }
         else
         {
             MessageBox(0, TEXT("FIXME:No program will run"), 0, 0);
-            return 0;
+            ExitProcess(0);
         }
     }
 
@@ -80,7 +80,7 @@ int WINAPI Main(void)
         else
         {
             MessageBox(0, TEXT("FIXME:Unable to allocate memory"), 0, 0);
-            return 0;
+            ExitProcess(0);
         }
     }
     else
@@ -121,13 +121,13 @@ int WINAPI Main(void)
             case 0xFFFF:
             {
                 MessageBox(0, TEXT("FIXME:Unable to open the target"), 0, 0);
-                return 0;
+                ExitProcess(0);
                 break;
             }
             default:
             {
                 MessageBox(0, TEXT("FIXME:Unsupported file or .net program"), 0, 0);       //Could be .net program
-                return 0;
+                ExitProcess(0);
             }
         }
 
@@ -142,7 +142,7 @@ int WINAPI Main(void)
             else
             {
                 MessageBox(0, TEXT("FIXME:Unable to allocate memory"), 0, 0);
-                return 0;
+                ExitProcess(0);
             }
         }
         else
@@ -155,7 +155,7 @@ int WINAPI Main(void)
             else
             {
                 MessageBox(0, TEXT("FIXME:Unable to allocate memory"), 0, 0);
-                return 0;
+                ExitProcess(0);
             }
         }
         CreateProcess(szLoader, lpszArgument, NULL, NULL, TRUE, 0, 0, szDirectory, &stStartUp, &stProcessInfo);
@@ -164,5 +164,5 @@ int WINAPI Main(void)
         GlobalFree(lpszArgument);
     }
 
-    return 0;
+    ExitProcess(0);
 }

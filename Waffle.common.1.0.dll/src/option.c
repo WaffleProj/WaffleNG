@@ -32,12 +32,18 @@ LIBRARY_EXPORT VOID WINAPI WaffleCheckOptionEncoding(
 }
 
 LIBRARY_EXPORT VOID WINAPI WaffleGetOptionString(
+    _In_opt_    LPCTSTR lpszFileName,
+    _In_opt_    LPCTSTR lpszSectionName,
     _In_        LPCTSTR lpszKeyName,
     _Out_       LPTSTR lpszValue,
     _In_        DWORD nSize,
-    _In_opt_    LPTSTR lpszDefaultValue
+    _In_opt_    LPCTSTR lpszDefaultValue
     )
 {
+    if (!lpszSectionName)
+    {
+        lpszSectionName = TEXT("Default");
+    }
     if (!lpszDefaultValue)
     {
         lpszDefaultValue = TEXT("");
@@ -45,69 +51,101 @@ LIBRARY_EXPORT VOID WINAPI WaffleGetOptionString(
     TCHAR szConfigPath[MAX_PATH];
     wsprintf(szConfigPath, TEXT("%s\\%s\\Config"), lpstProcessSetting->szComponentDirectory, lpstProcessSetting->szComponent);
 
-    //1.Check Hash.ini
-    TCHAR szProcessHash[MAX_PATH];
-    wsprintf(szProcessHash, TEXT("%s\\Hash.ini"), szConfigPath);
-    WaffleCheckOptionEncoding(szProcessHash);
-    GetPrivateProfileString(lpstProcessSetting->szProcessHash, lpszKeyName, lpszDefaultValue, lpszValue, nSize, szProcessHash);
-    if (Wafflelstrcmp(lpszValue, lpszDefaultValue))
+    if (lpszFileName)
     {
-        return;
+        TCHAR szFileName[MAX_PATH];
+        wsprintf(szFileName, TEXT("%s\\%s"), szConfigPath, lpszFileName);
+        WaffleCheckOptionEncoding(szFileName);
+        GetPrivateProfileString(lpszSectionName, lpszKeyName, lpszDefaultValue, lpszValue, nSize, szFileName);
+    }
+    else
+    {
+        //1.Check Hash.ini
+        TCHAR szProcessHash[MAX_PATH];
+        wsprintf(szProcessHash, TEXT("%s\\Hash.ini"), szConfigPath);
+        WaffleCheckOptionEncoding(szProcessHash);
+        GetPrivateProfileString(lpstProcessSetting->szProcessHash, lpszKeyName, lpszDefaultValue, lpszValue, nSize, szProcessHash);
+        if (Wafflelstrcmp(lpszValue, lpszDefaultValue))
+        {
+            return;
+        }
+
+        //2.Check Option.ini
+        TCHAR szOption[MAX_PATH];
+        wsprintf(szOption, TEXT("%s\\Option.ini"), szConfigPath);
+        WaffleCheckOptionEncoding(szOption);
+        GetPrivateProfileString(lpszSectionName, lpszKeyName, lpszDefaultValue, lpszValue, nSize, szOption);
     }
 
-    //2.Check Option.ini
-    TCHAR szOption[MAX_PATH];
-    wsprintf(szOption, TEXT("%s\\Option.ini"), szConfigPath);
-    WaffleCheckOptionEncoding(szOption);
-    GetPrivateProfileString(TEXT("Default"), lpszKeyName, lpszDefaultValue, lpszValue, nSize, szOption);
     return;
 }
 
 LIBRARY_EXPORT VOID WINAPI WaffleSetOptionString(
-    _In_    LPCTSTR lpszKeyName,
-    _In_    LPCTSTR lpszValue,
-    _In_    BOOL bGlobal
+    _In_opt_    LPCTSTR lpszFileName,
+    _In_opt_    LPCTSTR lpszSectionName,
+    _In_        LPCTSTR lpszKeyName,
+    _In_        LPCTSTR lpszValue,
+    _In_        BOOL bGlobal
     )
 {
+    if (!lpszSectionName)
+    {
+        lpszSectionName = TEXT("Default");
+    }
     TCHAR szConfigPath[MAX_PATH];
     wsprintf(szConfigPath, TEXT("%s\\%s\\Config"), lpstProcessSetting->szComponentDirectory, lpstProcessSetting->szComponent);
 
-    TCHAR szOption[MAX_PATH];
-    if (bGlobal)
+    if (lpszFileName)
     {
-        wsprintf(szOption, TEXT("%s\\Option.ini"), szConfigPath);
-        WaffleCheckOptionEncoding(szOption);
-        WritePrivateProfileString(TEXT("Default"), lpszKeyName, lpszValue, szOption);
+        TCHAR szFileName[MAX_PATH];
+        wsprintf(szFileName, TEXT("%s\\%s"), szConfigPath, lpszFileName);
+        WaffleCheckOptionEncoding(szFileName);
+        WritePrivateProfileString(lpszSectionName, lpszKeyName, lpszValue, szFileName);
     }
     else
     {
-        wsprintf(szOption, TEXT("%s\\Hash.ini"), szConfigPath);
-        WaffleCheckOptionEncoding(szOption);
-        WritePrivateProfileString(lpstProcessSetting->szProcessHash, lpszKeyName, lpszValue, szOption);
+        if (bGlobal)
+        {
+            TCHAR szOption[MAX_PATH];
+            wsprintf(szOption, TEXT("%s\\Option.ini"), szConfigPath);
+            WaffleCheckOptionEncoding(szOption);
+            WritePrivateProfileString(lpszSectionName, lpszKeyName, lpszValue, szOption);
+        }
+        else
+        {
+            TCHAR szProcessHash[MAX_PATH];
+            wsprintf(szProcessHash, TEXT("%s\\Hash.ini"), szConfigPath);
+            WaffleCheckOptionEncoding(szProcessHash);
+            WritePrivateProfileString(lpstProcessSetting->szProcessHash, lpszKeyName, lpszValue, szProcessHash);
+        }
     }
 
     return;
 }
 
 LIBRARY_EXPORT int WINAPI WaffleGetOptionInt(
+    _In_opt_    LPCTSTR lpszFileName,
+    _In_opt_    LPCTSTR lpszSectionName,
     _In_        LPCTSTR lpszKeyName,
     _In_opt_    int nDefaultValue
     )
 {
     TCHAR szValue[256];
-    WaffleGetOptionString(lpszKeyName, szValue, lengthof(szValue), NULL);
+    WaffleGetOptionString(lpszFileName, lpszSectionName, lpszKeyName, szValue, lengthof(szValue), NULL);
     return WaffleStrToInt(szValue, nDefaultValue);
 }
 
 LIBRARY_EXPORT VOID WINAPI WaffleSetOptionInt(
-    _In_    LPCTSTR lpszKeyName,
-    _In_    int nValue,
-    _In_    BOOL bGlobal
+    _In_opt_    LPCTSTR lpszFileName,
+    _In_opt_    LPCTSTR lpszSectionName,
+    _In_        LPCTSTR lpszKeyName,
+    _In_        int nValue,
+    _In_        BOOL bGlobal
     )
 {
     TCHAR szValue[256];
     wsprintf(szValue, TEXT("%i"), nValue);
-    WaffleSetOptionString(lpszKeyName, szValue, bGlobal);
+    WaffleSetOptionString(lpszFileName, lpszSectionName, lpszKeyName, szValue, bGlobal);
     return;
 }
 

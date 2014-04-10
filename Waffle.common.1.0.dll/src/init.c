@@ -11,7 +11,7 @@ LIBRARY_EXPORT SIZE_T WINAPI WaffleInit(
         MessageBox(0, TEXT("Unable to locate executable file directory."), TEXT("Waffle"), 0);
         ExitProcess(0);
     }
-    WaffleSetOptionString(TEXT("ProgramName"), szExecutable, FALSE);
+    WaffleSetOptionString(NULL, NULL, TEXT("ProgramName"), szExecutable, FALSE);
 
     WaffleLoadDetourOption();
 
