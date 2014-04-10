@@ -39,7 +39,6 @@ int WINAPI Main(void)
         if (GetOpenFileName(&stOpenFile) && lstrlen(szTarget))
         {
             WaffleGetOptionString(TEXT("DefaultPlugin"), szComponent, lengthof(szComponent), TEXT(""));
-            MessageBox(0, szComponent, 0, 0);
             if (!lstrcmpi(szComponent, TEXT("")))
             {
                 MessageBox(0, TEXT("FIXME:DefaultPlugin is empty"), 0, 0);
