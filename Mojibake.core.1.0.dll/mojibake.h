@@ -15,11 +15,13 @@ typedef struct
     BYTE    DefaultCharSet;
 } ENVIRONMENT_SETTING, *LPENVIRONMENT_SETTING;
 
+typedef struct
+{
+    FONTENUMPROCA   lpFontFunc;
+    LPARAM          lpData;
+} ENUM_FONTS_FILTER_DATA, *LPENUM_FONTS_FILTER_DATA;
+
 extern ENVIRONMENT_SETTING  stOldEnvir;
 extern ENVIRONMENT_SETTING  stNewEnvir;
-
-extern LOGFONTA lfGothic;
-extern TEXTMETRICA tmGothic;
-extern DWORD dwGothic;
 
 #endif /* __MOJIBAKE_MAIN_MOJIBAKE_H_ */

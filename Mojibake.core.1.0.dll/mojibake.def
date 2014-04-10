@@ -61,6 +61,8 @@ EXPORTS
     DetourExitWindowsEx
 
     DetourEnumFontsA
+    DetourEnumFontFamiliesA
+    DetourEnumFontFamiliesExA
     DetourCreateFontA
     DetourCreateFontW
     DetourCreateFontIndirectA

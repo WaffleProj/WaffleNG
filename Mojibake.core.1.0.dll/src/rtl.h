@@ -16,6 +16,10 @@ LPWSTR WINAPI AnsiToUnicode(
     _In_opt_    LPCSTR lpszText
     );
 
+LPSTR WINAPI UnicodeToAnsi(
+    _In_opt_    LPCWSTR lpuszText
+    );
+
 LPSTR WINAPI ProgramCPToWindowsCP(
     _In_opt_    LPCSTR lpszText
     );

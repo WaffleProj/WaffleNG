@@ -11,7 +11,7 @@ LPWSTR WINAPI MBCSToUnicode(
         if (intText)
         {
             intText++;
-            LPWSTR lpuszText = (LPWSTR) WaffleAlloc(2 * intText);
+            LPWSTR lpuszText = (LPWSTR) WaffleAlloc(4 * intText);
             MultiByteToWideChar(AnsiCodePage, 0, lpszText, -1, lpuszText, intText);
             return lpuszText;
         }
@@ -35,10 +35,10 @@ LPSTR WINAPI MBCSToMBCS(
     if (lpszText)
     {
         int intText = lstrlenA(lpszText) + 1;
-        LPWSTR lpuszText = (LPWSTR) WaffleAlloc(2 * intText);
-        LPSTR lpszNewText = (LPSTR) WaffleAlloc(2 * intText);
+        LPWSTR lpuszText = (LPWSTR) WaffleAlloc(4 * intText);
+        LPSTR lpszNewText = (LPSTR) WaffleAlloc(4 * intText);
         MultiByteToWideChar(FromCodePage, 0, lpszText, -1, lpuszText, intText);
-        WideCharToMultiByte(ToCodePage, 0, lpuszText, -1, lpszNewText, intText, NULL, FALSE);
+        WideCharToMultiByte(ToCodePage, 0, lpuszText, -1, lpszNewText, 4 * intText, NULL, FALSE);
         MojibakeFree(lpuszText);
         return lpszNewText;
     }
@@ -58,9 +58,34 @@ LPWSTR WINAPI AnsiToUnicode(
         if (intText)
         {
             intText++;
-            LPWSTR lpuszText = (LPWSTR) WaffleAlloc(2 * intText);
+            LPWSTR lpuszText = (LPWSTR) WaffleAlloc(4 * intText);
             MultiByteToWideChar(stNewEnvir.AnsiCodePage, 0, lpszText, -1, lpuszText, intText);
             return lpuszText;
+        }
+        else
+        {
+            return NULL;
+        }
+    }
+    else
+    {
+        return NULL;
+    }
+}
+
+LPSTR WINAPI UnicodeToAnsi(
+    _In_opt_    LPCWSTR lpuszText
+    )
+{
+    if (lpuszText)
+    {
+        int intText = lstrlenW(lpuszText);
+        if (intText)
+        {
+            intText++;
+            LPSTR lpszText = (LPSTR) WaffleAlloc(4 * intText);
+            WideCharToMultiByte(stNewEnvir.AnsiCodePage, 0, lpuszText, -1, lpszText, 4 * intText, NULL, FALSE);
+            return lpszText;
         }
         else
         {
@@ -80,10 +105,10 @@ LPSTR WINAPI ProgramCPToWindowsCP(
     if (lpszText)
     {
         int intText = lstrlenA(lpszText) + 1;
-        LPWSTR lpuszText = (LPWSTR) WaffleAlloc(2 * intText);
-        LPSTR lpszNewText = (LPSTR) WaffleAlloc(2 * intText);
+        LPWSTR lpuszText = (LPWSTR) WaffleAlloc(4 * intText);
+        LPSTR lpszNewText = (LPSTR) WaffleAlloc(4 * intText);
         MultiByteToWideChar(stNewEnvir.AnsiCodePage, 0, lpszText, -1, lpuszText, intText);
-        WideCharToMultiByte(stOldEnvir.AnsiCodePage, 0, lpuszText, -1, lpszNewText, intText, NULL, FALSE);
+        WideCharToMultiByte(stOldEnvir.AnsiCodePage, 0, lpuszText, -1, lpszNewText, 4 * intText, NULL, FALSE);
         MojibakeFree(lpuszText);
         return lpszNewText;
     }
@@ -96,8 +121,8 @@ LPSTR WINAPI ProgramCPToWindowsCP(
 _Ret_maybenull_
 _Success_(return == 0)
 LPVOID WINAPI MojibakeFree(
-    _In_opt_    LPVOID lpMem
-    )
+_In_opt_    LPVOID lpMem
+)
 {
     if (lpMem)
     {
