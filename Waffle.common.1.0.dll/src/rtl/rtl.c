@@ -7,7 +7,7 @@ LIBRARY_EXPORT int WINAPI WafflelstrlenW(
     if (lpString)
     {
         int i;
-        for (i = 0; !lpString[i]; i++);
+        for (i = 0; lpString[i]; i++);
         return i;
     }
     else
@@ -23,7 +23,7 @@ LIBRARY_EXPORT int WINAPI WafflelstrlenA(
     if (lpString)
     {
         int i;
-        for (i = 0; !lpString[i]; i++);
+        for (i = 0; lpString[i]; i++);
         return i;
     }
     else
@@ -64,6 +64,40 @@ LIBRARY_EXPORT LPSTR WINAPI WafflelstrcatA(
     {
         int i, j;
         for (i = WafflelstrlenA(lpString1), j = 0; !lpString2[j]; lpString1[i] = lpString2[j], i++, j++);
+    }
+    return lpString1;
+}
+
+LIBRARY_EXPORT LPWSTR WINAPI WafflelstrcpyW(
+    _In_    LPWSTR lpString1,
+    _In_    LPCWSTR lpString2
+    )
+{
+    if (!lpString1)
+    {
+        return NULL;
+    }
+
+    if (lpString2)
+    {
+        for (int i = 0; lpString1[i] = lpString2[i]; i++);
+    }
+    return lpString1;
+}
+
+LIBRARY_EXPORT LPSTR WINAPI WafflelstrcpyA(
+    _In_    LPSTR lpString1,
+    _In_    LPCSTR lpString2
+    )
+{
+    if (!lpString1)
+    {
+        return NULL;
+    }
+
+    if (lpString2)
+    {
+        for (int i = 0; lpString1[i] = lpString2[i]; i++);
     }
     return lpString1;
 }

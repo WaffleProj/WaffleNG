@@ -54,6 +54,8 @@ EXPORTS
     WafflelstrlenA
     WafflelstrcatW
     WafflelstrcatA
+    WafflelstrcpyW
+    WafflelstrcpyA
     WafflelstrcmpiW
     WafflelstrcmpiA
     WafflelstrcmpW
