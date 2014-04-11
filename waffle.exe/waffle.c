@@ -13,13 +13,17 @@ int WINAPI Main(void)
 
     //Get base directory
     TCHAR szPath[MAX_PATH];
+    szPath[0] = TEXT('\0');
     WaffleGetModuleDirectory(NULL, szPath, lengthof(szPath));
 
     //Pickup target
+    TCHAR szComponent[MAX_PATH];
+    szComponent[0] = TEXT('\0');
+    TCHAR szTarget[MAX_PATH];
+    szTarget[0] = TEXT('\0');
+    TCHAR szDirectory[MAX_PATH];
+    szDirectory[0] = TEXT('\0');
     int nArg = WaffleArgc();
-    TCHAR szComponent[MAX_PATH] = { TEXT('\0') };
-    TCHAR szTarget[MAX_PATH] = { TEXT('\0') };
-    TCHAR szDirectory[MAX_PATH] = { TEXT('\0') };
     if (nArg >= 3)
     {
         //1.File name 2. Component name 3. Target
@@ -53,6 +57,7 @@ int WINAPI Main(void)
         stOpenFile.lpstrFile = szTarget;
         stOpenFile.nMaxFile = lengthof(szTarget);
         stOpenFile.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+        // GetOpenFileName will create a bunch of worker threads, so return 0 won't close our process
         if (GetOpenFileName(&stOpenFile) && lstrlen(szTarget))
         {
             // Pick up settings
