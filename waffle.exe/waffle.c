@@ -22,8 +22,17 @@ int WINAPI Main(void)
     TCHAR szDirectory[MAX_PATH] = { TEXT('\0') };
     if (nArg >= 3)
     {
-        //1.文件名 2.插件名 3.目标
+        //1.File name 2. Component name 3. Target
         WaffleArgv(2, szComponent, lengthof(szComponent));
+        if (!Wafflelstrcmpi(szComponent, TEXT("default")))
+        {
+            WaffleGetOptionString(NULL, NULL, TEXT("DefaultPlugin"), szComponent, lengthof(szComponent), NULL);
+            if (!Wafflelstrcmpi(szComponent, TEXT("")))
+            {
+                MessageBox(0, TEXT("FIXME:DefaultPlugin is empty"), 0, 0);
+                ExitProcess(0);
+            }
+        }
 
         WaffleArgv(3, szTarget, lengthof(szTarget));
     }
@@ -39,7 +48,7 @@ int WINAPI Main(void)
         if (GetOpenFileName(&stOpenFile) && lstrlen(szTarget))
         {
             WaffleGetOptionString(NULL, NULL, TEXT("DefaultPlugin"), szComponent, lengthof(szComponent), NULL);
-            if (!lstrcmpi(szComponent, TEXT("")))
+            if (!Wafflelstrcmpi(szComponent, TEXT("")))
             {
                 MessageBox(0, TEXT("FIXME:DefaultPlugin is empty"), 0, 0);
                 ExitProcess(0);
