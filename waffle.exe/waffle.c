@@ -23,8 +23,14 @@ int WINAPI Main(void)
     if (nArg >= 3)
     {
         //1.File name 2. Component name 3. Target
+        WaffleArgv(3, szTarget, lengthof(szTarget));
+
+        // Pick up settings
+        LPWAFFLE_PROCESS_SETTING lpstProcessSetting = WaffleOpenProcessSetting();
+        WaffleGetFileHash(szTarget, lpstProcessSetting->szProcessHash);
+
         WaffleArgv(2, szComponent, lengthof(szComponent));
-        if (!Wafflelstrcmpi(szComponent, TEXT("default")))
+        if (!Wafflelstrcmpi(szComponent, TEXT("Default")))
         {
             WaffleGetOptionString(NULL, NULL, TEXT("DefaultPlugin"), szComponent, lengthof(szComponent), NULL);
             if (!Wafflelstrcmpi(szComponent, TEXT("")))
@@ -34,7 +40,9 @@ int WINAPI Main(void)
             }
         }
 
-        WaffleArgv(3, szTarget, lengthof(szTarget));
+        // Save settings
+        WaffleSetOptionString(NULL, NULL, TEXT("ProgramName"), szTarget, FALSE);
+        WaffleSetOptionString(NULL, NULL, TEXT("DefaultPlugin"), szComponent, FALSE);
     }
     else
     {
@@ -47,12 +55,20 @@ int WINAPI Main(void)
         stOpenFile.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
         if (GetOpenFileName(&stOpenFile) && lstrlen(szTarget))
         {
+            // Pick up settings
+            LPWAFFLE_PROCESS_SETTING lpstProcessSetting = WaffleOpenProcessSetting();
+            WaffleGetFileHash(szTarget, lpstProcessSetting->szProcessHash);
+
             WaffleGetOptionString(NULL, NULL, TEXT("DefaultPlugin"), szComponent, lengthof(szComponent), NULL);
             if (!Wafflelstrcmpi(szComponent, TEXT("")))
             {
                 MessageBox(0, TEXT("FIXME:DefaultPlugin is empty"), 0, 0);
                 ExitProcess(0);
             }
+
+            // Save settings
+            WaffleSetOptionString(NULL, NULL, TEXT("ProgramName"), szTarget, FALSE);
+            WaffleSetOptionString(NULL, NULL, TEXT("DefaultPlugin"), szComponent, FALSE);
         }
         else
         {
