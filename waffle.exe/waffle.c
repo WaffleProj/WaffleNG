@@ -1,4 +1,5 @@
 ﻿#include <waffle.h>
+#include "resource.h"
 #pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 
 #define DEBUG_PRINTF(fmt, ...) \
@@ -7,6 +8,44 @@
     wsprintf(szMessage, TEXT("[%s@%s] ") ## TEXT(fmt), TEXT(__FILE__), TEXT(__TIMESTAMP__), __VA_ARGS__); \
     MessageBox(0, szMessage, TEXT("Waffle"), 0); \
     }
+
+int CALLBACK PropSheetProc(
+    _In_        HWND hwndDlg,
+    _In_        UINT uMsg,
+    _In_opt_    LPARAM lParam
+    )
+{
+    switch (uMsg)
+    {
+        case PSCB_BUTTONPRESSED:
+        {
+            switch (lParam)
+            {
+                case PSBTN_OK:
+                case PSBTN_CANCEL:
+                case PSBTN_APPLYNOW:
+                case PSBTN_FINISH:
+                    break;
+            }
+            break;
+        }
+        case PSCB_INITIALIZED:
+        case PSCB_PRECREATE:
+            break;
+    }
+
+    return 0;
+}
+
+INT_PTR CALLBACK DialogProc(
+    _In_    HWND hwndDlg,
+    _In_    UINT uMsg,
+    _In_    WPARAM wParam,
+    _In_    LPARAM lParam
+    )
+{
+    return FALSE;
+}
 
 int WINAPI Main(void)
 {
@@ -85,19 +124,6 @@ int WINAPI Main(void)
                     Wafflelstrcpy(szCommand, TEXT("redirect"));
                 }
             }
-            else if (!Wafflelstrcmpi(szCommand, TEXT("redirect")))
-            {
-                // Internal command
-                // 3. Plugin 4. Target
-                WaffleArgv(3, szComponent, lengthof(szComponent));
-                WaffleArgv(4, szTarget, lengthof(szTarget));
-
-                if (WaffleGetMachineType(szTarget) == WAFFLE_PORT_MACHINE)
-                {
-                    // Users love to mess up stuff...
-                    Wafflelstrcpy(szCommand, TEXT("open"));
-                }
-            }
             else if (!Wafflelstrcmpi(szCommand, TEXT("option")))
             {
                 // 3. Target
@@ -105,6 +131,11 @@ int WINAPI Main(void)
                 WaffleArgv(3, szTarget, lengthof(szTarget));
             }
             else if (!Wafflelstrcmpi(szCommand, TEXT("help")))
+            {
+                MessageBox(0, TEXT("You really need help?"), TEXT("Waffle"), 0);
+                ExitProcess(0);
+            }
+            else
             {
                 MessageBox(0, TEXT("Waffle help\n1. open\nWaffle.vbs open [plugin/default] [target]\n2. option\nWaffle.vbs option [target]\n3. help\nWaffle.vbs help"), TEXT("Waffle"), 0);
                 ExitProcess(0);
@@ -152,8 +183,8 @@ int WINAPI Main(void)
         // Create shared process setting
         LPWAFFLE_PROCESS_SETTING lpstProcessSetting = WaffleShareProcessSetting();
 
-        lstrcpy(lpstProcessSetting->szComponent, szComponent);
-        lstrcpy(lpstProcessSetting->szComponentDirectory, szPath);
+        Wafflelstrcpy(lpstProcessSetting->szComponent, szComponent);
+        Wafflelstrcpy(lpstProcessSetting->szComponentDirectory, szPath);
         int i = lstrlen(lpstProcessSetting->szComponentDirectory);
         for (i--; lpstProcessSetting->szComponentDirectory[i] != TEXT('\\'); i--); lpstProcessSetting->szComponentDirectory[i] = TEXT('\0');
         for (i--; lpstProcessSetting->szComponentDirectory[i] != TEXT('\\'); i--); lpstProcessSetting->szComponentDirectory[i] = TEXT('\0');
@@ -174,7 +205,7 @@ int WINAPI Main(void)
     else if (!Wafflelstrcmpi(szCommand, TEXT("redirect")))
     {
         TCHAR szLoader[MAX_PATH];
-        lstrcpy(szLoader, szPath);
+        Wafflelstrcpy(szLoader, szPath);
         int i = lstrlen(szLoader);
         for (i--; szLoader[i] != TEXT('\\'); i--); szLoader[i] = TEXT('\0');
 
@@ -209,8 +240,8 @@ int WINAPI Main(void)
             }
             default:
             {
-                DEBUG_PRINTF("Unsupported file.")
-                    ExitProcess(0);
+                DEBUG_PRINTF("Unsupported file.");
+                ExitProcess(0);
                 break;
             }
         }
@@ -239,8 +270,30 @@ int WINAPI Main(void)
     }
     else if (!Wafflelstrcmpi(szCommand, TEXT("option")))
     {
-        DEBUG_PRINTF("Unimplemented.");
-        ExitProcess(0);
+        PROPSHEETPAGE stPage[1];
+        PROPSHEETHEADER stHeader;
+
+        stPage[0].dwSize = sizeof(stPage);
+        stPage[0].dwFlags = PSP_DEFAULT;
+        stPage[0].hInstance = GetModuleHandle(NULL);
+        stPage[0].pszTemplate = MAKEINTRESOURCE(IDD_PLUGIN);
+        stPage[0].pfnDlgProc = DialogProc;
+        stPage[0].lParam = 0;
+
+        stHeader.dwSize = sizeof(stHeader);
+        stHeader.dwFlags = PSH_PROPSHEETPAGE | PSH_NOAPPLYNOW | PSH_NOCONTEXTHELP | PSH_USECALLBACK;
+        stHeader.hwndParent = NULL;
+        stHeader.pszCaption = TEXT("Waffle Option");
+        stHeader.nPages = 1;
+        stHeader.nStartPage = 0;
+        stHeader.ppsp = (LPCPROPSHEETPAGE) &stPage[0];
+        stHeader.pfnCallback = (PFNPROPSHEETCALLBACK) PropSheetProc;
+
+        if (PropertySheet(&stHeader) == -1)
+        {
+            DEBUG_PRINTF("Unable to show option.");
+            ExitProcess(0);
+        }
     }
 
     ExitProcess(0);

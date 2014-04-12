@@ -113,10 +113,14 @@ LIBRARY_EXPORT VOID WINAPI WaffleSetOptionString(
         }
         else
         {
-            TCHAR szProcessHash[MAX_PATH];
-            wsprintf(szProcessHash, TEXT("%s\\Hash.ini"), szConfigPath);
-            WaffleCheckOptionEncoding(szProcessHash);
-            WritePrivateProfileString(lpstProcessSetting->szProcessHash, lpszKeyName, lpszValue, szProcessHash);
+            if (Wafflelstrcmpi(lpstProcessSetting->szProcessHash, TEXT("")))
+            {
+                // Don't save if the target has no hash
+                TCHAR szProcessHash[MAX_PATH];
+                wsprintf(szProcessHash, TEXT("%s\\Hash.ini"), szConfigPath);
+                WaffleCheckOptionEncoding(szProcessHash);
+                WritePrivateProfileString(lpstProcessSetting->szProcessHash, lpszKeyName, lpszValue, szProcessHash);
+            }
         }
     }
 
