@@ -1,6 +1,13 @@
 ﻿#include <waffle.h>
 #pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 
+#define DEBUG_PRINTF(fmt, ...) \
+    { \
+    TCHAR szMessage[256]; \
+    wsprintf(szMessage, TEXT("[%s@%s] ") ## TEXT(fmt), TEXT(__FILE__), TEXT(__TIMESTAMP__), __VA_ARGS__); \
+    MessageBox(0, szMessage, TEXT("Waffle"), 0); \
+    }
+
 int WINAPI Main(void)
 {
 #ifdef _DEBUG
@@ -11,121 +18,167 @@ int WINAPI Main(void)
     }
 #endif // _DEBUG
 
-    //Get base directory
+    // The path of Waffle
     TCHAR szPath[MAX_PATH];
     szPath[0] = TEXT('\0');
-    WaffleGetModuleDirectory(NULL, szPath, lengthof(szPath));
-
-    //Pickup target
+    // The command we are going to perform
+    TCHAR szCommand[MAX_PATH];
+    szCommand[0] = TEXT('\0');
+    // The name of the plugin
     TCHAR szComponent[MAX_PATH];
     szComponent[0] = TEXT('\0');
+    // The file we are going to deal with
     TCHAR szTarget[MAX_PATH];
     szTarget[0] = TEXT('\0');
+    // The folder that contains the target
     TCHAR szDirectory[MAX_PATH];
     szDirectory[0] = TEXT('\0');
-    int nArg = WaffleArgc();
-    if (nArg >= 3)
-    {
-        //1.File name 2. Component name 3. Target
-        WaffleArgv(3, szTarget, lengthof(szTarget));
 
-        // Pick up settings
+    WaffleGetModuleDirectory(NULL, szPath, lengthof(szPath));
+
+    // The number of command line arguments
+    int nArg = WaffleArgc();
+    switch (nArg)
+    {
+        case 0:
+        {
+            // Won't happen, error
+            DEBUG_PRINTF("Cannot get the command line.");
+            ExitProcess(0);
+            break;
+        }
+        case 1:
+        {
+            // Execute with no command line, assume using default plugin to open
+            Wafflelstrcpy(szCommand, TEXT("open"));
+            Wafflelstrcpy(szComponent, TEXT("default"));
+
+            OPENFILENAME stOpenFile;
+            RtlZeroMemory(&stOpenFile, sizeof(stOpenFile));
+
+            stOpenFile.lStructSize = sizeof(stOpenFile);
+            stOpenFile.lpstrFile = szTarget;
+            stOpenFile.nMaxFile = lengthof(szTarget);
+            stOpenFile.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+
+            // GetOpenFileName will create a bunch of worker threads, so return 0 won't close our process
+            if (!GetOpenFileName(&stOpenFile) || !lstrlen(szTarget))
+            {
+                ExitProcess(0);
+            }
+            break;
+        }
+        default:
+        {
+            // 1.Path 2. Command
+            WaffleArgv(2, szCommand, lengthof(szCommand));
+
+            if (!Wafflelstrcmpi(szCommand, TEXT("open")))
+            {
+                // 3. Plugin 4. Target
+                WaffleArgv(3, szComponent, lengthof(szComponent));
+                WaffleArgv(4, szTarget, lengthof(szTarget));
+
+                if (WaffleGetMachineType(szTarget) != WAFFLE_PORT_MACHINE)
+                {
+                    // We need to call another version of Waffle
+                    Wafflelstrcpy(szCommand, TEXT("redirect"));
+                }
+            }
+            else if (!Wafflelstrcmpi(szCommand, TEXT("redirect")))
+            {
+                // Internal command
+                // 3. Plugin 4. Target
+                WaffleArgv(3, szComponent, lengthof(szComponent));
+                WaffleArgv(4, szTarget, lengthof(szTarget));
+
+                if (WaffleGetMachineType(szTarget) == WAFFLE_PORT_MACHINE)
+                {
+                    // Users love to mess up stuff...
+                    Wafflelstrcpy(szCommand, TEXT("open"));
+                }
+            }
+            else if (!Wafflelstrcmpi(szCommand, TEXT("option")))
+            {
+                // 3. Target
+                Wafflelstrcpy(szComponent, TEXT(""));
+                WaffleArgv(3, szTarget, lengthof(szTarget));
+            }
+            else if (!Wafflelstrcmpi(szCommand, TEXT("help")))
+            {
+                MessageBox(0, TEXT("Waffle help\n1. open\nWaffle.vbs open [plugin/default] [target]\n2. option\nWaffle.vbs option [target]\n3. help\nWaffle.vbs help"), TEXT("Waffle"), 0);
+                ExitProcess(0);
+            }
+            break;
+        }
+    }
+
+    // We should always have a target
+    if (Wafflelstrcmpi(szTarget, TEXT("")))
+    {
         LPWAFFLE_PROCESS_SETTING lpstProcessSetting = WaffleOpenProcessSetting();
         WaffleGetFileHash(szTarget, lpstProcessSetting->szProcessHash);
 
-        WaffleArgv(2, szComponent, lengthof(szComponent));
-        if (!Wafflelstrcmpi(szComponent, TEXT("Default")))
-        {
-            WaffleGetOptionString(NULL, NULL, TEXT("DefaultPlugin"), szComponent, lengthof(szComponent), NULL);
-            if (!Wafflelstrcmpi(szComponent, TEXT("")))
-            {
-                MessageBox(0, TEXT("FIXME:DefaultPlugin is empty"), 0, 0);
-                ExitProcess(0);
-            }
-        }
-
-        // Save settings
-        WaffleSetOptionString(NULL, NULL, TEXT("ProgramName"), szTarget, FALSE);
-        WaffleSetOptionString(NULL, NULL, TEXT("DefaultPlugin"), szComponent, FALSE);
-    }
-    else
-    {
-        OPENFILENAME stOpenFile;
-        RtlZeroMemory(&stOpenFile, sizeof(stOpenFile));
-
-        stOpenFile.lStructSize = sizeof(stOpenFile);
-        stOpenFile.lpstrFile = szTarget;
-        stOpenFile.nMaxFile = lengthof(szTarget);
-        stOpenFile.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
-        // GetOpenFileName will create a bunch of worker threads, so return 0 won't close our process
-        if (GetOpenFileName(&stOpenFile) && lstrlen(szTarget))
-        {
-            // Pick up settings
-            LPWAFFLE_PROCESS_SETTING lpstProcessSetting = WaffleOpenProcessSetting();
-            WaffleGetFileHash(szTarget, lpstProcessSetting->szProcessHash);
-
-            WaffleGetOptionString(NULL, NULL, TEXT("DefaultPlugin"), szComponent, lengthof(szComponent), NULL);
-            if (!Wafflelstrcmpi(szComponent, TEXT("")))
-            {
-                MessageBox(0, TEXT("FIXME:DefaultPlugin is empty"), 0, 0);
-                ExitProcess(0);
-            }
-
-            // Save settings
-            WaffleSetOptionString(NULL, NULL, TEXT("ProgramName"), szTarget, FALSE);
-            WaffleSetOptionString(NULL, NULL, TEXT("DefaultPlugin"), szComponent, FALSE);
-        }
-        else
-        {
-            MessageBox(0, TEXT("FIXME:No program will run"), 0, 0);
-            ExitProcess(0);
-        }
-    }
-
-    {
         lstrcpy(szDirectory, szTarget);
         int i = lstrlen(szTarget);
         for (; szDirectory[i] != TEXT('\\'); i--);
         szDirectory[i] = TEXT('\0');
+
+        // Once we have the hash, we can save the name
+        WaffleSetOptionString(NULL, NULL, TEXT("ProgramName"), szTarget, FALSE);
+    }
+    else
+    {
+        DEBUG_PRINTF("Please enter a target.");
+        ExitProcess(0);
     }
 
-    WORD MachineType = WaffleGetMachineType(szTarget);
-    if (MachineType == WAFFLE_PORT_MACHINE)
+    // If szComponent == "default", read from the config file
+    if (!Wafflelstrcmpi(szComponent, TEXT("default")))
     {
-        LPWAFFLE_PROCESS_SETTING lpstProcessSetting = WaffleShareProcessSetting();
-        lstrcpy(lpstProcessSetting->szComponent, szComponent);
+        WaffleGetOptionString(NULL, NULL, TEXT("DefaultPlugin"), szComponent, lengthof(szComponent), NULL);
+        if (!Wafflelstrcmpi(szComponent, TEXT("")))
+        {
+            DEBUG_PRINTF("DefaultPlugin has no value.");
+            ExitProcess(0);
+        }
 
+        // Write back to hash.ini
+        WaffleSetOptionString(NULL, NULL, TEXT("DefaultPlugin"), szComponent, FALSE);
+    }
+
+    if (!Wafflelstrcmpi(szCommand, TEXT("open")))
+    {
+        // Create shared process setting
+        LPWAFFLE_PROCESS_SETTING lpstProcessSetting = WaffleShareProcessSetting();
+
+        lstrcpy(lpstProcessSetting->szComponent, szComponent);
         lstrcpy(lpstProcessSetting->szComponentDirectory, szPath);
         int i = lstrlen(lpstProcessSetting->szComponentDirectory);
         for (i--; lpstProcessSetting->szComponentDirectory[i] != TEXT('\\'); i--); lpstProcessSetting->szComponentDirectory[i] = TEXT('\0');
         for (i--; lpstProcessSetting->szComponentDirectory[i] != TEXT('\\'); i--); lpstProcessSetting->szComponentDirectory[i] = TEXT('\0');
 
-        LPTSTR lpszArgument = (LPTSTR) GlobalAlloc(GPTR, (lstrlen(szTarget) + lstrlen(WaffleArgp(4)) + 3 + 1) * sizeof(TCHAR));
+        LPTSTR lpszArgument = (LPTSTR) GlobalAlloc(GPTR, (lstrlen(szTarget) + lstrlen(WaffleArgp(5)) + 3 + 1) * sizeof(TCHAR));
         if (lpszArgument)
         {
-            wsprintf(lpszArgument, TEXT("\"%s\" %s"), szTarget, WaffleArgp(4));
+            wsprintf(lpszArgument, TEXT("\"%s\" %s"), szTarget, WaffleArgp(5));
             WaffleExecute(lpstProcessSetting, szTarget, lpszArgument, szDirectory);
             GlobalFree(lpszArgument);
         }
         else
         {
-            MessageBox(0, TEXT("FIXME:Unable to allocate memory"), 0, 0);
+            DEBUG_PRINTF("Out of memory.");
             ExitProcess(0);
         }
     }
-    else
+    else if (!Wafflelstrcmpi(szCommand, TEXT("redirect")))
     {
         TCHAR szLoader[MAX_PATH];
         lstrcpy(szLoader, szPath);
         int i = lstrlen(szLoader);
         for (i--; szLoader[i] != TEXT('\\'); i--); szLoader[i] = TEXT('\0');
 
-        STARTUPINFO stStartUp;
-        PROCESS_INFORMATION stProcessInfo;
-
-        stStartUp.cb = sizeof(stStartUp);
-        GetStartupInfo(&stStartUp);
-
+        WORD MachineType = WaffleGetMachineType(szTarget);
         switch (MachineType)
         {
             case WAFFLE_PORT_MACHINE_I386:
@@ -145,53 +198,49 @@ int WINAPI Main(void)
             }
             case WAFFLE_PORT_MACHINE_IA64:
             {
-                lstrcat(szLoader, TEXT("\\ARMNT\\Waffle.exe"));
+                lstrcat(szLoader, TEXT("\\IA64\\Waffle.exe"));
                 break;
             }
             case 0xFFFF:
             {
-                MessageBox(0, TEXT("FIXME:Unable to open the target"), 0, 0);
+                DEBUG_PRINTF("Unable to open the target.");
                 ExitProcess(0);
                 break;
             }
             default:
             {
-                MessageBox(0, TEXT("FIXME:Unsupported file or .net program"), 0, 0);       //Could be .net program
-                ExitProcess(0);
+                DEBUG_PRINTF("Unsupported file.")
+                    ExitProcess(0);
+                break;
             }
         }
 
-        LPTSTR lpszArgument;
-        if (nArg >= 3)
+        LPTSTR lpszArgument = (LPTSTR) GlobalAlloc(GPTR, (lstrlen(szLoader) + lstrlen(WaffleArgp(3)) + 3 + 5 + 1) * sizeof(TCHAR));
+        if (lpszArgument)
         {
-            lpszArgument = (LPTSTR) GlobalAlloc(GPTR, (lstrlen(szLoader) + lstrlen(WaffleArgp(2)) + 3 + 1) * sizeof(TCHAR));
-            if (lpszArgument)
-            {
-                wsprintf(lpszArgument, TEXT("\"%s\" %s"), szLoader, WaffleArgp(2));
-            }
-            else
-            {
-                MessageBox(0, TEXT("FIXME:Unable to allocate memory"), 0, 0);
-                ExitProcess(0);
-            }
+            wsprintf(lpszArgument, TEXT("\"%s\" open %s"), szLoader, WaffleArgp(3));
         }
         else
         {
-            lpszArgument = (LPTSTR) GlobalAlloc(GPTR, (lstrlen(szLoader) + lstrlen(szComponent) + lstrlen(szTarget) + 6 + 1) * sizeof(TCHAR));
-            if (lpszArgument)
-            {
-                wsprintf(lpszArgument, TEXT("\"%s\" %s \"%s\""), szLoader, szComponent, szTarget);
-            }
-            else
-            {
-                MessageBox(0, TEXT("FIXME:Unable to allocate memory"), 0, 0);
-                ExitProcess(0);
-            }
+            DEBUG_PRINTF("Out of memory.");
+            ExitProcess(0);
         }
+
+        STARTUPINFO stStartUp;
+        PROCESS_INFORMATION stProcessInfo;
+
+        stStartUp.cb = sizeof(stStartUp);
+        GetStartupInfo(&stStartUp);
+
         CreateProcess(szLoader, lpszArgument, NULL, NULL, TRUE, 0, 0, szDirectory, &stStartUp, &stProcessInfo);
         CloseHandle(stProcessInfo.hThread);
         CloseHandle(stProcessInfo.hProcess);
         GlobalFree(lpszArgument);
+    }
+    else if (!Wafflelstrcmpi(szCommand, TEXT("option")))
+    {
+        DEBUG_PRINTF("Unimplemented.");
+        ExitProcess(0);
     }
 
     ExitProcess(0);
