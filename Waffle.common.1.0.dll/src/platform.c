@@ -11,7 +11,7 @@ LIBRARY_EXPORT WORD WINAPI WaffleGetMachineType(
 
     if (hFile == INVALID_HANDLE_VALUE)
     {
-        return 0xFFFF;
+        return WAFFLE_PORT_MACHINE_ERROR;
     }
 
     //Mapping it
@@ -19,14 +19,14 @@ LIBRARY_EXPORT WORD WINAPI WaffleGetMachineType(
     if (!hMapFile)
     {
         CloseHandle(hFile);
-        return 0xFFFF;
+        return WAFFLE_PORT_MACHINE_ERROR;
     }
     LPVOID lpFile = MapViewOfFile(hMapFile, FILE_MAP_READ, 0, 0, 0);
     if (!lpFile)
     {
         CloseHandle(hMapFile);
         CloseHandle(hFile);
-        return 0xFFFF;
+        return WAFFLE_PORT_MACHINE_ERROR;
     }
 
     //Get the machine type
@@ -38,19 +38,21 @@ LIBRARY_EXPORT WORD WINAPI WaffleGetMachineType(
         {
             if (lpNtHeader->FileHeader.Characteristics & IMAGE_FILE_DLL)    //DLL File
             {
-                Machine = 0;
+                Machine = WAFFLE_PORT_MACHINE_UNKNOWN;
             }
             else
+            {
                 Machine = lpNtHeader->FileHeader.Machine;
+            }
         }
         else    //DOS or OS/2 File
         {
-            Machine = 0;
+            Machine = WAFFLE_PORT_MACHINE_UNKNOWN;
         }
     }
     else    //Unknown File Type
     {
-        Machine = 0;
+        Machine = WAFFLE_PORT_MACHINE_UNKNOWN;
     }
 
     //Clean up
@@ -58,5 +60,5 @@ LIBRARY_EXPORT WORD WINAPI WaffleGetMachineType(
     CloseHandle(hMapFile);
     CloseHandle(hFile);         //Has to close this handle for CreateProcess
 
-    return  Machine;
+    return Machine;
 }

@@ -1,26 +1,31 @@
 ﻿#include "..\common.h"
 
-LIBRARY_EXPORT int WINAPI WaffleArgc(void)
+LIBRARY_EXPORT int WINAPI WaffleArgc(
+    _In_opt_    LPCTSTR lpCmdLine
+    )
 {
     int intArg = 0;
     int i = -1;
-    LPTSTR szCommandLine = GetCommandLine();
+    if (!lpCmdLine)
+    {
+        lpCmdLine = GetCommandLine();
+    }
 loop:
     i++;
-    if (szCommandLine[i] == TEXT('\0'))
+    if (lpCmdLine[i] == TEXT('\0'))
         goto end;
-    else if ((szCommandLine[i] == TEXT(' ')) || (szCommandLine[i] == TEXT('\t')))
+    else if ((lpCmdLine[i] == TEXT(' ')) || (lpCmdLine[i] == TEXT('\t')))
         goto loop;
 
     intArg++;
 argloop:
-    if (szCommandLine[i] == TEXT('\0'))
+    if (lpCmdLine[i] == TEXT('\0'))
         goto end;
-    else if ((szCommandLine[i] == TEXT(' ')) || (szCommandLine[i] == TEXT('\t')))
+    else if ((lpCmdLine[i] == TEXT(' ')) || (lpCmdLine[i] == TEXT('\t')))
         goto loop;
-    else if (szCommandLine[i] == TEXT('\"'))
+    else if (lpCmdLine[i] == TEXT('\"'))
     {
-        for (i++; szCommandLine[i] != TEXT('\"'); i++);
+        for (i++; lpCmdLine[i] != TEXT('\"'); i++);
         i++;
         goto argloop;
     }
@@ -31,6 +36,7 @@ end:
 }
 
 LIBRARY_EXPORT SIZE_T WINAPI WaffleArgv(
+    _In_opt_            LPCTSTR lpCmdLine,
     _In_                int intPosition,
     _Out_writes_(nSize) LPTSTR lpString,
     _In_                int nSize
@@ -38,21 +44,24 @@ LIBRARY_EXPORT SIZE_T WINAPI WaffleArgv(
 {
     int intArg = 0;
     int i = -1, j = -1;
-    LPTSTR szCommandLine = GetCommandLine();
+    if (!lpCmdLine)
+    {
+        lpCmdLine = GetCommandLine();
+    }
 loop:
     i++;
-    if (szCommandLine[i] == TEXT('\0'))
+    if (lpCmdLine[i] == TEXT('\0'))
         goto end;
-    else if ((szCommandLine[i] == TEXT(' ')) || (szCommandLine[i] == TEXT('\t')))
+    else if ((lpCmdLine[i] == TEXT(' ')) || (lpCmdLine[i] == TEXT('\t')))
         goto loop;
 
     intArg++;
 argloop:
-    if (szCommandLine[i] == TEXT('\0'))
+    if (lpCmdLine[i] == TEXT('\0'))
         goto end;
-    else if ((szCommandLine[i] == TEXT(' ')) || (szCommandLine[i] == TEXT('\t')))
+    else if ((lpCmdLine[i] == TEXT(' ')) || (lpCmdLine[i] == TEXT('\t')))
         goto loop;
-    else if (szCommandLine[i] == TEXT('\"'))
+    else if (lpCmdLine[i] == TEXT('\"'))
     {
         i++;
         goto deliloop;
@@ -62,7 +71,7 @@ argloop:
         if (nSize > 1)
         {
             j++;
-            lpString[j] = szCommandLine[i];
+            lpString[j] = lpCmdLine[i];
             nSize--;
         }
         else
@@ -73,9 +82,9 @@ argloop:
     i++;
     goto argloop;
 deliloop:
-    if (szCommandLine[i] == TEXT('\0'))
+    if (lpCmdLine[i] == TEXT('\0'))
         goto end;
-    else if (szCommandLine[i] == TEXT('\"'))
+    else if (lpCmdLine[i] == TEXT('\"'))
     {
         i++;
         goto argloop;
@@ -85,7 +94,7 @@ deliloop:
         if (nSize > 1)
         {
             j++;
-            lpString[j] = szCommandLine[i];
+            lpString[j] = lpCmdLine[i];
             nSize--;
         }
         else
@@ -102,31 +111,35 @@ end:
 }
 
 LIBRARY_EXPORT LPCTSTR WINAPI WaffleArgp(
-    _In_    int intPosition
+    _In_opt_    LPCTSTR lpCmdLine,
+    _In_        int intPosition
     )
 {
     int intArg = 0;
     int i = -1;
-    LPTSTR szCommandLine = GetCommandLine();
+    if (!lpCmdLine)
+    {
+        lpCmdLine = GetCommandLine();
+    }
 loop:
     i++;
-    if (szCommandLine[i] == TEXT('\0'))
+    if (lpCmdLine[i] == TEXT('\0'))
         return NULL;
-    else if ((szCommandLine[i] == TEXT(' ')) || (szCommandLine[i] == TEXT('\t')))
+    else if ((lpCmdLine[i] == TEXT(' ')) || (lpCmdLine[i] == TEXT('\t')))
         goto loop;
 
     intArg++;
     if (intArg == intPosition)
-        return &szCommandLine[i];
+        return &lpCmdLine[i];
 
 argloop:
-    if (szCommandLine[i] == TEXT('\0'))
+    if (lpCmdLine[i] == TEXT('\0'))
         return NULL;
-    else if ((szCommandLine[i] == TEXT(' ')) || (szCommandLine[i] == TEXT('\t')))
+    else if ((lpCmdLine[i] == TEXT(' ')) || (lpCmdLine[i] == TEXT('\t')))
         goto loop;
-    else if (szCommandLine[i] == TEXT('\"'))
+    else if (lpCmdLine[i] == TEXT('\"'))
     {
-        for (i++; szCommandLine[i] != TEXT('\"'); i++);
+        for (i++; lpCmdLine[i] != TEXT('\"'); i++);
         i++;
         goto argloop;
     }

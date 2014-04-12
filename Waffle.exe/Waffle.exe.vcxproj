@@ -88,7 +88,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <EntryPointSymbol>Main</EntryPointSymbol>
-      <AdditionalDependencies>Waffle.common.1.0.lib;Kernel32.lib;User32.lib;Comdlg32.lib;Comctl32.lib</AdditionalDependencies>
+      <AdditionalDependencies>Waffle.common.1.0.lib;Kernel32.lib;User32.lib;Comdlg32.lib;Comctl32.lib;Advapi32.lib</AdditionalDependencies>
       <AdditionalOptions>/ignore:4197 %(AdditionalOptions)</AdditionalOptions>
       <GenerateDebugInformation Condition="'$(Configuration)'=='Debug'">true</GenerateDebugInformation>
     </Link>
