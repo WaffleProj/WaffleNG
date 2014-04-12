@@ -69,6 +69,10 @@
       <MinimalRebuild>false</MinimalRebuild>
       <DisableSpecificWarnings>4055;4068;4100;4127;4201</DisableSpecificWarnings>
       <BufferSecurityCheck Condition="'$(Configuration)'=='Release'">false</BufferSecurityCheck>
+      <RuntimeLibrary Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">MultiThreadedDebug</RuntimeLibrary>
+      <RuntimeLibrary Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">MultiThreadedDebug</RuntimeLibrary>
+      <RuntimeLibrary Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">MultiThreadedDebug</RuntimeLibrary>
+      <RuntimeLibrary Condition="'$(Configuration)|$(Platform)'=='Debug|Itanium'">MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

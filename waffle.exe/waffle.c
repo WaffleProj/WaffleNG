@@ -171,27 +171,34 @@ int WINAPI Main(void)
         wsprintf(szRegExplorer, TEXT("Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\%s"), szExtName);
 
         // Try to get Progid first
-        HKEY hRegUserChoice = NULL;
-        if (RegOpenKey(HKEY_CURRENT_USER, szRegExplorer, &hRegUserChoice) == ERROR_SUCCESS)
+        HKEY hRegExplorer = NULL;
+        if (RegOpenKey(HKEY_CURRENT_USER, szRegExplorer, &hRegExplorer) == ERROR_SUCCESS)
         {
             TCHAR szProgid[128];
             LONG lProgid;
             DWORD dwProgid;
             do
             {
-                // First place, the default action
+                // First place, the default action, require extra privilege on Windows 8
                 szProgid[0] = TEXT('\0');
                 lProgid = sizeof(szProgid);
-                if (RegQueryValue(hRegUserChoice, TEXT("UserChoice\\Progid"), szProgid, &lProgid) == ERROR_SUCCESS)
+                HKEY hRegUserChoice = NULL;
+                if (RegOpenKeyEx(hRegExplorer, TEXT("UserChoice\\Progid"), 0, KEY_QUERY_VALUE, &hRegUserChoice) == ERROR_SUCCESS)
                 {
-                    break;
+                    LONG Return = RegQueryValue(hRegUserChoice, NULL, szProgid, &lProgid);
+
+                    RegCloseKey(hRegUserChoice);
+                    if (Return == ERROR_SUCCESS)
+                    {
+                        break;
+                    }
                 }
 
                 // Second place, local setting
                 szProgid[0] = TEXT('\0');
                 dwProgid = lengthof(szProgid);
                 HKEY hRegOpenWithProgids = NULL;
-                if (RegOpenKey(hRegUserChoice, TEXT("OpenWithProgids"), &hRegOpenWithProgids) == ERROR_SUCCESS)
+                if (RegOpenKey(hRegExplorer, TEXT("OpenWithProgids"), &hRegOpenWithProgids) == ERROR_SUCCESS)
                 {
                     LONG Return = RegEnumValue(hRegOpenWithProgids, 0, szProgid, &dwProgid, NULL, NULL, NULL, NULL);
 
@@ -215,7 +222,7 @@ int WINAPI Main(void)
                 }
             } while (FALSE);
 
-            RegCloseKey(hRegUserChoice);
+            RegCloseKey(hRegExplorer);
 
             // Read operation
             TCHAR szShellOpen[512];
@@ -285,7 +292,7 @@ int WINAPI Main(void)
             for (i = 0, j = 0; lpszCmdLine[j] = szShellOpen[i]; i++, j++)
             {
                 if (szShellOpen[i] == TEXT('%'))
-                { 
+                {
                     switch (szShellOpen[++i])
                     {
                         case TEXT('0'):
