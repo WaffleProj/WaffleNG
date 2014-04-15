@@ -1,5 +1,70 @@
 ﻿#include "..\..\common.h"
 
+LIBRARY_EXPORT BOOL WINAPI WaffleJumpDetection(
+    _In_    LPBYTE lpSource
+    )
+{
+#if (WAFFLE_PORT_MACHINE == WAFFLE_PORT_MACHINE_AMD64) || (WAFFLE_PORT_MACHINE == WAFFLE_PORT_MACHINE_I386)
+    if ((lpSource[0] & 0xF0) == 0x70)
+    {
+        return TRUE;
+    }
+    switch (lpSource[0])
+    {
+        case 0x0F:
+        {
+            switch (lpSource[1])
+            {
+                case 0x83:
+                case 0x87:
+                {
+                    return TRUE;
+                    break;
+                }
+            }
+            break;
+        }
+        case 0xE3:
+        case 0xE9:
+        case 0xEB:
+        case 0xEA:
+        case 0xFF:
+        {
+            return TRUE;
+            break;
+        }
+        default:
+        {
+            switch (lpSource[1])
+            {
+                case 0xFF:
+                {
+                    return TRUE;
+                    break;
+                }
+            }
+            break;
+        }
+    }
+#elif (WAFFLE_PORT_MACHINE == WAFFLE_PORT_MACHINE_ARMNT)
+    WORD WordInst = ((LPWORD) lpSource)[0];
+    DWORD DwordInst = ((LPDWORD) lpSource)[0];
+    if ((WordInst & 0xF000) == 0xD000)
+    {
+        return TRUE;
+    }
+    else if ((WordInst & 0xF800) == 0xE000)
+    {
+        return TRUE;
+    }
+    else if ((DwordInst & 0xF800C000) == 0xF0008000)
+    {
+        return TRUE;
+    }
+#endif
+    return FALSE;
+}
+
 LIBRARY_EXPORT BOOL WINAPI WaffleSetDetour(
     _In_    DWORD dwLibrary,
     _In_    DWORD dwFunction
@@ -31,7 +96,10 @@ LIBRARY_EXPORT BOOL WINAPI WaffleSetDetour(
     //MessageBox(0, lpstProcessSetting->lpstLibrary[dwLibrary].lpstFunction[dwFunction].lpszFunction, lpstProcessSetting->lpstLibrary[dwLibrary].lpszLibrary, 0);
     if (!bDetour)
     {
-        bDetour = WaffleInlineDetour(lpstProcessSetting->lpstLibrary[dwLibrary].lpstFunction[dwFunction].lpSource);
+        if (!WaffleJumpDetection(lpstProcessSetting->lpstLibrary[dwLibrary].lpstFunction[dwFunction].lpSource))
+        {
+            bDetour = WaffleInlineDetour(lpstProcessSetting->lpstLibrary[dwLibrary].lpstFunction[dwFunction].lpSource);
+        }
     }
     if (!bDetour)
     {
