@@ -46,7 +46,7 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <PropertyGroup>
     <TargetName>Mojibake.core.1.0</TargetName>
-    <OutDir>$(SolutionDir)Component\Mojibake\$(PEMachine)\</OutDir>
+    <OutDir>$(SolutionDir)WaffleNightly\Component\Mojibake\$(PEMachine)\</OutDir>
     <IncludePath>$(SolutionDir)SDK\Include;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)SDK\Lib\$(PEMachine);$(LibraryPath)</LibraryPath>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
