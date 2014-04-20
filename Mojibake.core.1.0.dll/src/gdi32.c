@@ -17,9 +17,9 @@ int CALLBACK EnumFontsFilterA(
     TEXTMETRICA stTextMetric;
     RtlMoveMemory(&stTextMetric, lptm, sizeof(*lptm));
 
-    // Get the current locale
-    TCHAR szThreadLocale[16];
-    wsprintf(szThreadLocale, TEXT("%i"), stNewEnvir.ThreadLocale);
+    // Get the current language id
+    TCHAR szLanguageID[16];
+    wsprintf(szLanguageID, TEXT("%i"), LANGIDFROMLCID(stNewEnvir.ThreadLocale));
 
     // Get the localized font name from ttf file
     LPWSTR lpuszFaceName = MBCSToUnicode(stOldEnvir.AnsiCodePage, lplf->lfFaceName);
@@ -85,7 +85,7 @@ int CALLBACK EnumFontsFilterA(
     if (Remap == TRUE)
     {
         TCHAR szFaceName[64];
-        WaffleGetOptionString(TEXT("FontRemap.ini"), lpuszFaceName, szThreadLocale, szFaceName, lengthof(szFaceName), lpuszFaceName);
+        WaffleGetOptionString(TEXT("FontRemap.ini"), lpuszFaceName, szLanguageID, szFaceName, lengthof(szFaceName), lpuszFaceName);
         LPSTR lpszFaceName = UnicodeToAnsi(szFaceName);
         if (lpszFaceName)
         {

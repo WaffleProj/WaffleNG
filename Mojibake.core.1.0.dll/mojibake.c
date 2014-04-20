@@ -18,24 +18,16 @@ LIBRARY_EXPORT SIZE_T WINAPI ComponentInit(
 {
     //Read config files
     stOldEnvir.AnsiCodePage = GetACP();
-    stNewEnvir.AnsiCodePage = WaffleGetOptionInt(NULL, NULL, TEXT("AnsiCodePage"), stOldEnvir.AnsiCodePage);
+    stNewEnvir.AnsiCodePage = WaffleGetOptionInt(NULL, NULL, TEXT("AnsiCodePage"), 932);
 
     stOldEnvir.OemCodePage = GetOEMCP();
-    stNewEnvir.OemCodePage = WaffleGetOptionInt(NULL, NULL, TEXT("OemCodePage"), stOldEnvir.OemCodePage);
-
-    LPWORD lpNlsAnsiCodePage = (LPWORD) WaffleGetProcAddress(GetModuleHandle(TEXT("ntdll.dll")), TEXT("NlsAnsiCodePage"));
-    if (lpNlsAnsiCodePage)
-    {
-        stOldEnvir.NlsAnsiCodePage = *lpNlsAnsiCodePage;
-        stNewEnvir.NlsAnsiCodePage = (WORD) WaffleGetOptionInt(NULL, NULL, TEXT("NlsAnsiCodePage"), stOldEnvir.NlsAnsiCodePage);
-        *lpNlsAnsiCodePage = stNewEnvir.NlsAnsiCodePage;
-    }
+    stNewEnvir.OemCodePage = WaffleGetOptionInt(NULL, NULL, TEXT("OemCodePage"), 932);
 
     stOldEnvir.ThreadLocale = GetThreadLocale();
-    stNewEnvir.ThreadLocale = WaffleGetOptionInt(NULL, NULL, TEXT("ThreadLocale"), stOldEnvir.ThreadLocale);
+    stNewEnvir.ThreadLocale = WaffleGetOptionInt(NULL, NULL, TEXT("ThreadLocale"), MAKELCID(MAKELANGID(LANG_JAPANESE, SUBLANG_JAPANESE_JAPAN), SORT_DEFAULT));
 
     stOldEnvir.DefaultCharSet = DEFAULT_CHARSET;
-    stNewEnvir.DefaultCharSet = (BYTE) WaffleGetOptionInt(NULL, NULL, TEXT("DefaultCharSet"), stOldEnvir.DefaultCharSet);
+    stNewEnvir.DefaultCharSet = (BYTE) WaffleGetOptionInt(NULL, NULL, TEXT("DefaultCharSet"), SHIFTJIS_CHARSET);
 
     //Subclass system controls
     MojibakeSubclass();

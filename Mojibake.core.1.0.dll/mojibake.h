@@ -11,7 +11,6 @@ typedef struct
 {
     UINT    AnsiCodePage;
     UINT    OemCodePage;
-    WORD    NlsAnsiCodePage;
     LCID    ThreadLocale;
     BYTE    DefaultCharSet;
 } ENVIRONMENT_SETTING, *LPENVIRONMENT_SETTING;
