@@ -17,23 +17,15 @@ int CALLBACK EnumFontsFilterA(
     TEXTMETRICA stTextMetric;
     RtlMoveMemory(&stTextMetric, lptm, sizeof(*lptm));
 
-    // Get the current language id
-    TCHAR szLanguageID[16];
-    wsprintf(szLanguageID, TEXT("%i"), LANGIDFROMLCID(stNewEnvir.ThreadLocale));
-
     // Get the localized font name from ttf file
     LPWSTR lpuszFaceName = MBCSToUnicode(stOldEnvir.AnsiCodePage, lplf->lfFaceName);
-    int Remap = WaffleGetOptionInt(TEXT("FontRemap.ini"), lpuszFaceName, TEXT("Remap"), -1);
-    if (Remap == -1 && (lptm->tmPitchAndFamily & TMPF_TRUETYPE))
+    if (lptm->tmPitchAndFamily & TMPF_TRUETYPE)
     {
-        // Create Section
-        WaffleSetOptionInt(TEXT("FontRemap.ini"), lpuszFaceName, TEXT("Remap"), -1, 0);
-        Remap = FALSE;
-
         // Create Font
         HFONT hFont = CreateFontIndirectA(lplf);
         SelectObject(lpFilter->hDC, hFont);
 
+        // Read "name" table
         DWORD nSize = GetFontData(lpFilter->hDC, TT_TABLE_NAME, 0, NULL, 0);
         if (nSize != GDI_ERROR)
         {
@@ -42,17 +34,18 @@ int CALLBACK EnumFontsFilterA(
             {
                 if (GetFontData(lpFilter->hDC, TT_TABLE_NAME, 0, lpBuffer, nSize) != GDI_ERROR)
                 {
+                    // Get the full name field
                     LPTT_NAME_TABLE_HEADER lpTable = (LPTT_NAME_TABLE_HEADER) lpBuffer;
                     LPTT_NAME_RECORD lpRecord = (LPTT_NAME_RECORD) (lpTable + 1);
                     USHORT nRecord = TTF_WORD(lpTable->nNameRecord);
                     for (int i = 0; i < nRecord; i++)
                     {
-                        if (TTF_WORD(lpRecord[i].languageID) == TT_LANG_ENGLISH) continue;
-                        if (TTF_WORD(lpRecord[i].languageID) == TT_LANG_NEUTRAL) continue;
-                        if (TTF_WORD(lpRecord[i].platformID) != TT_PLATFORM_ID_MICROSOFT) continue;
+                        if (TTF_WORD(lpRecord[i].languageID) != LANGIDFROMLCID(stNewEnvir.ThreadLocale)) continue;
                         if (TTF_WORD(lpRecord[i].nameID) != TT_NAME_ID_FULL_NAME) continue;
+                        if (TTF_WORD(lpRecord[i].platformID) != TT_PLATFORM_ID_MICROSOFT) continue;
                         //if (!Wafflelstrcmpi(lpuszFaceName, TEXT("MS Gothic")))
                         {
+                            // Use the localized font name
                             nSize = TTF_WORD(lpRecord[i].nString);
                             LPWSTR szFullName = (LPWSTR) WaffleAlloc(nSize + sizeof(WCHAR));
                             if (szFullName)
@@ -63,15 +56,22 @@ int CALLBACK EnumFontsFilterA(
                                     szFullName[j] = TTF_WORD(lpFullName[j]);
                                 }
 
-                                TCHAR szLanguageID[16];
-                                wsprintf(szLanguageID, TEXT("%hu"), TTF_WORD(lpRecord[i].languageID));
-                                WaffleSetOptionString(TEXT("FontRemap.ini"), lpuszFaceName, szLanguageID, szFullName, 0);
-                                Remap = TRUE;
+                                // Convert string
+                                LPSTR lpszFullName = UnicodeToAnsi(szFullName);
+                                if (lpszFullName)
+                                {
+                                    lstrcpyA(stLogFont.lfFaceName, lpszFullName);
+                                    MojibakeFree(lpszFullName);
+                                }
+
+                                stLogFont.lfCharSet = stNewEnvir.DefaultCharSet;
+                                stTextMetric.tmCharSet = stNewEnvir.DefaultCharSet;
+
                                 WaffleFree(szFullName);
+                                break;
                             }
                         }
                     }
-                    WaffleSetOptionInt(TEXT("FontRemap.ini"), lpuszFaceName, TEXT("Remap"), Remap, 0);
                 }
 
                 WaffleFree(lpBuffer);
@@ -81,21 +81,6 @@ int CALLBACK EnumFontsFilterA(
         DeleteObject(hFont);
     }
 
-    // Return the localized font name
-    if (Remap == TRUE)
-    {
-        TCHAR szFaceName[64];
-        WaffleGetOptionString(TEXT("FontRemap.ini"), lpuszFaceName, szLanguageID, szFaceName, lengthof(szFaceName), lpuszFaceName);
-        LPSTR lpszFaceName = UnicodeToAnsi(szFaceName);
-        if (lpszFaceName)
-        {
-            lstrcpyA(stLogFont.lfFaceName, lpszFaceName);
-            MojibakeFree(lpszFaceName);
-        }
-
-        stLogFont.lfCharSet = stNewEnvir.DefaultCharSet;
-        stTextMetric.tmCharSet = stNewEnvir.DefaultCharSet;
-    }
     MojibakeFree(lpuszFaceName);
 
     return lpFilter->lpFontFunc(&stLogFont, &stTextMetric, dwType, lpFilter->lpData);
