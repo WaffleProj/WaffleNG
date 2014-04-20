@@ -554,7 +554,11 @@ LIBRARY_EXPORT LPVOID WINAPI WaffleAlloc(
             WaitForSingleObject(lpstProcessSetting->hGlobalMutex, INFINITE);
             if (!lpstProcessSetting->lpstComponent[i].hHeap)  //make sure we need to do so
             {
+#ifdef _DEBUG
+                lpstProcessSetting->lpstComponent[i].hHeap = HeapCreate(HEAP_GENERATE_EXCEPTIONS, 0, 0);
+#else
                 lpstProcessSetting->lpstComponent[i].hHeap = HeapCreate(0, 0, 0);
+#endif // _DEBUG
                 if (!lpstProcessSetting->lpstComponent[i].hHeap)
                 {
                     MessageBox(0, TEXT("FIXME:Unable to create component heap"), 0, 0);
