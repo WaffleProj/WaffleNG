@@ -82,6 +82,7 @@
     <ClInclude Include="mojibake.h" />
     <ClInclude Include="src\rtl.h" />
     <ClInclude Include="src\subclass.h" />
+    <ClInclude Include="src\ttf.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="mojibake.c" />

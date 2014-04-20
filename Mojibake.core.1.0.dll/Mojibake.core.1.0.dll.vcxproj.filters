@@ -24,6 +24,9 @@
     <ClInclude Include="src\subclass.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\ttf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="mojibake.c">

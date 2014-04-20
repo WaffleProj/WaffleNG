@@ -2,14 +2,14 @@
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
 int CALLBACK EnumFontsFilterA(
-    _In_  const LOGFONTA *lplf,
-    _In_  const TEXTMETRICA *lptm,
-    _In_  DWORD dwType,
-    _In_  LPARAM lpData
+    _In_    const LOGFONTA *lplf,
+    _In_    const TEXTMETRICA *lptm,
+    _In_    DWORD dwType,
+    _In_    LPARAM lpData
     )
 {
     // Cast lpData
-    LPENUM_FONTS_FILTER_DATA lpFilter = (LPENUM_FONTS_FILTER_DATA) lpData;
+    LPENUM_FONTS_FILTER_DATAA lpFilter = (LPENUM_FONTS_FILTER_DATAA) lpData;
 
     // Copy the data
     LOGFONTA stLogFont;
@@ -21,14 +21,72 @@ int CALLBACK EnumFontsFilterA(
     TCHAR szThreadLocale[16];
     wsprintf(szThreadLocale, TEXT("%i"), stNewEnvir.ThreadLocale);
 
-    // Get the new font name
-    LPSTR lpszFaceName = NULL;
-    LPWSTR lpuszFaceName = AnsiToUnicode(lplf->lfFaceName);
-    TCHAR szFaceName[64];
-    WaffleGetOptionString(TEXT("FontRemap.ini"), szThreadLocale, lpuszFaceName, szFaceName, lengthof(szFaceName), NULL);
-    if (Wafflelstrcmp(szFaceName, TEXT("")))
+    // Get the localized font name from ttf file
+    LPWSTR lpuszFaceName = MBCSToUnicode(stOldEnvir.AnsiCodePage, lplf->lfFaceName);
+    int Remap = WaffleGetOptionInt(TEXT("FontRemap.ini"), lpuszFaceName, TEXT("Remap"), -1);
+    if (Remap == -1 && (lptm->tmPitchAndFamily & TMPF_TRUETYPE))
     {
-        lpszFaceName = UnicodeToAnsi(szFaceName);
+        // Create Section
+        WaffleSetOptionInt(TEXT("FontRemap.ini"), lpuszFaceName, TEXT("Remap"), -1, 0);
+        Remap = FALSE;
+
+        // Create Font
+        HFONT hFont = CreateFontIndirectA(lplf);
+        SelectObject(lpFilter->hDC, hFont);
+
+        DWORD nSize = GetFontData(lpFilter->hDC, TT_TABLE_NAME, 0, NULL, 0);
+        if (nSize != GDI_ERROR)
+        {
+            LPVOID lpBuffer = WaffleAlloc(nSize);
+            if (lpBuffer)
+            {
+                if (GetFontData(lpFilter->hDC, TT_TABLE_NAME, 0, lpBuffer, nSize) != GDI_ERROR)
+                {
+                    LPTT_NAME_TABLE_HEADER lpTable = (LPTT_NAME_TABLE_HEADER) lpBuffer;
+                    LPTT_NAME_RECORD lpRecord = (LPTT_NAME_RECORD) (lpTable + 1);
+                    USHORT nRecord = TTF_WORD(lpTable->nNameRecord);
+                    for (int i = 0; i < nRecord; i++)
+                    {
+                        if (TTF_WORD(lpRecord[i].languageID) == TT_LANG_ENGLISH) continue;
+                        if (TTF_WORD(lpRecord[i].languageID) == TT_LANG_NEUTRAL) continue;
+                        if (TTF_WORD(lpRecord[i].platformID) != TT_PLATFORM_ID_MICROSOFT) continue;
+                        if (TTF_WORD(lpRecord[i].nameID) != TT_NAME_ID_FULL_NAME) continue;
+                        //if (!Wafflelstrcmpi(lpuszFaceName, TEXT("MS Gothic")))
+                        {
+                            nSize = TTF_WORD(lpRecord[i].nString);
+                            LPWSTR szFullName = (LPWSTR) WaffleAlloc(nSize + sizeof(WCHAR));
+                            if (szFullName)
+                            {
+                                LPWSTR lpFullName = (LPWSTR) (((LPBYTE) lpBuffer) + TTF_WORD(lpTable->offset) + TTF_WORD(lpRecord[i].stringOffset));
+                                for (UINT j = 0; (j < (nSize / sizeof(szFullName[0]))) || (szFullName[j] = L'\0'); j++)
+                                {
+                                    szFullName[j] = TTF_WORD(lpFullName[j]);
+                                }
+
+                                TCHAR szLanguageID[16];
+                                wsprintf(szLanguageID, TEXT("%hu"), TTF_WORD(lpRecord[i].languageID));
+                                WaffleSetOptionString(TEXT("FontRemap.ini"), lpuszFaceName, szLanguageID, szFullName, 0);
+                                Remap = TRUE;
+                                WaffleFree(szFullName);
+                            }
+                        }
+                    }
+                    WaffleSetOptionInt(TEXT("FontRemap.ini"), lpuszFaceName, TEXT("Remap"), Remap, 0);
+                }
+
+                WaffleFree(lpBuffer);
+            }
+        }
+
+        DeleteObject(hFont);
+    }
+
+    // Return the localized font name
+    if (Remap == TRUE)
+    {
+        TCHAR szFaceName[64];
+        WaffleGetOptionString(TEXT("FontRemap.ini"), lpuszFaceName, szThreadLocale, szFaceName, lengthof(szFaceName), lpuszFaceName);
+        LPSTR lpszFaceName = UnicodeToAnsi(szFaceName);
         if (lpszFaceName)
         {
             lstrcpyA(stLogFont.lfFaceName, lpszFaceName);
@@ -56,10 +114,15 @@ LIBRARY_EXPORT int WINAPI DetourEnumFontsA(
         BackupEnumFontsA = (LPENUMFONTSA) WaffleGetBackupAddress(TEXT("gdi32.dll"), TEXT("EnumFontsA"));
     }
 
-    ENUM_FONTS_FILTER_DATA stFilter;
+    ENUM_FONTS_FILTER_DATAA stFilter;
     stFilter.lpFontFunc = lpFontFunc;
     stFilter.lpData = lParam;
-    return BackupEnumFontsA(hdc, lpFaceName, EnumFontsFilterA, (LPARAM) &stFilter);
+    stFilter.hDC = CreateCompatibleDC(NULL);
+
+    int Result = BackupEnumFontsA(hdc, lpFaceName, EnumFontsFilterA, (LPARAM) &stFilter);
+
+    DeleteDC(stFilter.hDC);
+    return Result;
 }
 
 LIBRARY_EXPORT int WINAPI DetourEnumFontFamiliesA(
@@ -75,10 +138,15 @@ LIBRARY_EXPORT int WINAPI DetourEnumFontFamiliesA(
         BackupEnumFontFamiliesA = (LPENUMFONTFAMILIESA) WaffleGetBackupAddress(TEXT("gdi32.dll"), TEXT("EnumFontFamiliesA"));
     }
 
-    ENUM_FONTS_FILTER_DATA stFilter;
+    ENUM_FONTS_FILTER_DATAA stFilter;
     stFilter.lpFontFunc = lpEnumFontFamProc;
     stFilter.lpData = lParam;
-    return BackupEnumFontFamiliesA(hdc, lpszFamily, EnumFontsFilterA, (LPARAM) &stFilter);
+    stFilter.hDC = CreateCompatibleDC(NULL);
+
+    int Result = BackupEnumFontFamiliesA(hdc, lpszFamily, EnumFontsFilterA, (LPARAM) &stFilter);
+
+    DeleteDC(stFilter.hDC);
+    return Result;
 }
 
 LIBRARY_EXPORT int WINAPI DetourEnumFontFamiliesExA(
@@ -95,10 +163,15 @@ LIBRARY_EXPORT int WINAPI DetourEnumFontFamiliesExA(
         BackupEnumFontFamiliesExA = (LPENUMFONTFAMILIESEXA) WaffleGetBackupAddress(TEXT("gdi32.dll"), TEXT("EnumFontFamiliesExA"));
     }
 
-    ENUM_FONTS_FILTER_DATA stFilter;
+    ENUM_FONTS_FILTER_DATAA stFilter;
     stFilter.lpFontFunc = lpEnumFontFamExProc;
     stFilter.lpData = lParam;
-    return BackupEnumFontFamiliesExA(hdc, lpLogfont, EnumFontsFilterA, (LPARAM) &stFilter, dwFlags);
+    stFilter.hDC = CreateCompatibleDC(NULL);
+
+    int Result = BackupEnumFontFamiliesExA(hdc, lpLogfont, EnumFontsFilterA, (LPARAM) &stFilter, dwFlags);
+
+    DeleteDC(stFilter.hDC);
+    return Result;
 }
 
 LIBRARY_EXPORT HFONT WINAPI DetourCreateFontW(
