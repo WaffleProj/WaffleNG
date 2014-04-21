@@ -17,15 +17,15 @@ typedef struct
 
 typedef struct _ENUM_FONTS_FILTER_DATAA
 {
-    FONTENUMPROCA   lpFontFunc;
-    LPARAM          lpData;
+    FONTENUMPROCA   lpEnumFontFamExProc;
+    LPARAM          lParam;
     HDC             hDC;
 } ENUM_FONTS_FILTER_DATAA, *LPENUM_FONTS_FILTER_DATAA;
 
 typedef struct _ENUM_FONTS_FILTER_DATAW
 {
-    FONTENUMPROCW   lpFontFunc;
-    LPARAM          lpData;
+    FONTENUMPROCW   lpEnumFontFamExProc;
+    LPARAM          lParam;
     HDC             hDC;
 } ENUM_FONTS_FILTER_DATAW, *LPENUM_FONTS_FILTER_DATAW;
 

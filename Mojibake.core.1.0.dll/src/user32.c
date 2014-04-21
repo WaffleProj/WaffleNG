@@ -51,47 +51,45 @@ LIBRARY_EXPORT LRESULT WINAPI DetourDefWindowProcA(
     static LPDEFWINDOWPROCA BackupDefWindowProcA;
     if (!BackupDefWindowProcA)
     {
-        BackupDefWindowProcA = (LPDEFWINDOWPROCA)WaffleGetBackupAddress(TEXT("user32.dll"), TEXT("DefWindowProcA"));
+        BackupDefWindowProcA = (LPDEFWINDOWPROCA) WaffleGetBackupAddress(TEXT("user32.dll"), TEXT("DefWindowProcA"));
     }
 
     LRESULT Result = 0;
     switch (Msg)
     {
-        /*
         case WM_SETTEXT:
         {
-        LPWSTR lpuszString = AnsiToUnicode((LPCSTR) lParam);
-        Result = DefWindowProc(hWnd, Msg, wParam, (LPARAM) lpuszString);
-        MojibakeFree(lpuszString);
-        break;
+            LPWSTR lpuszString = AnsiToUnicode((LPCSTR) lParam);
+            Result = DefWindowProc(hWnd, Msg, wParam, (LPARAM) lpuszString);
+            MojibakeFree(lpuszString);
+            break;
         }
-        */
-    case WM_GETTEXTLENGTH:
-    {
-        LRESULT nText = DefWindowProc(hWnd, Msg, wParam, lParam) + 1;
-        DWORD LastError = GetLastError();
+        case WM_GETTEXTLENGTH:
+        {
+            LRESULT nText = DefWindowProc(hWnd, Msg, wParam, lParam) + 1;
+            DWORD LastError = GetLastError();
 
-        LPWSTR lpuszText = (LPWSTR)WaffleAlloc(nText * sizeof(WCHAR));
-        DefWindowProc(hWnd, WM_GETTEXT, nText, (LPARAM)lpuszText);
-        Result = WideCharToMultiByte(stNewEnvir.AnsiCodePage, 0, lpuszText, -1, NULL, 0, NULL, NULL) - 1;
-        MojibakeFree(lpuszText);
-        SetLastError(LastError);
-        break;
-    }
-    case WM_GETTEXT:
-    {
-        LPWSTR lpuszText = (LPWSTR)WaffleAlloc(wParam * sizeof(WCHAR));
-        DefWindowProc(hWnd, Msg, wParam, (LPARAM)lpuszText);
-        DWORD LastError = GetLastError();
-        Result = WideCharToMultiByte(stNewEnvir.AnsiCodePage, 0, lpuszText, -1, (LPSTR)lParam, (unsigned int)wParam * sizeof(CHAR), NULL, NULL) - 1;
-        MojibakeFree(lpuszText);
-        SetLastError(LastError);
-        break;
-    }
-    default:
-    {
-        return BackupDefWindowProcA(hWnd, Msg, wParam, lParam);
-    }
+            LPWSTR lpuszText = (LPWSTR) WaffleAlloc(nText * sizeof(WCHAR));
+            DefWindowProc(hWnd, WM_GETTEXT, nText, (LPARAM) lpuszText);
+            Result = WideCharToMultiByte(stNewEnvir.AnsiCodePage, 0, lpuszText, -1, NULL, 0, NULL, NULL) - 1;
+            MojibakeFree(lpuszText);
+            SetLastError(LastError);
+            break;
+        }
+        case WM_GETTEXT:
+        {
+            LPWSTR lpuszText = (LPWSTR) WaffleAlloc(wParam * sizeof(WCHAR));
+            DefWindowProc(hWnd, Msg, wParam, (LPARAM) lpuszText);
+            DWORD LastError = GetLastError();
+            Result = WideCharToMultiByte(stNewEnvir.AnsiCodePage, 0, lpuszText, -1, (LPSTR) lParam, (unsigned int) wParam * sizeof(CHAR), NULL, NULL) - 1;
+            MojibakeFree(lpuszText);
+            SetLastError(LastError);
+            break;
+        }
+        default:
+        {
+            return BackupDefWindowProcA(hWnd, Msg, wParam, lParam);
+        }
     }
 
     return Result;
@@ -107,47 +105,46 @@ LIBRARY_EXPORT LRESULT WINAPI DetourDefDlgProcA(
     static LPDEFDLGPROCA BackupDefDlgProcA;
     if (!BackupDefDlgProcA)
     {
-        BackupDefDlgProcA = (LPDEFDLGPROCA)WaffleGetBackupAddress(TEXT("user32.dll"), TEXT("DefDlgProcA"));
+        BackupDefDlgProcA = (LPDEFDLGPROCA) WaffleGetBackupAddress(TEXT("user32.dll"), TEXT("DefDlgProcA"));
     }
 
     LRESULT Result = 0;
     switch (Msg)
     {
-        /*
         case WM_SETTEXT:
         {
-        LPWSTR lpuszString = AnsiToUnicode((LPCSTR) lParam);
-        Result = DefDlgProc(hDlg, Msg, wParam, (LPARAM) lpuszString);
-        MojibakeFree(lpuszString);
-        break;
+            // DefWindowProcA,DefDlgProcA disabled;CallWindowProcA,SendMessageA enabled
+            LPWSTR lpuszString = AnsiToUnicode((LPCSTR) lParam);
+            Result = DefDlgProc(hDlg, Msg, wParam, (LPARAM) lpuszString);
+            MojibakeFree(lpuszString);
+            break;
         }
-        */
-    case WM_GETTEXTLENGTH:
-    {
-        LRESULT nText = DefWindowProc(hDlg, Msg, wParam, lParam) + 1;
-        DWORD LastError = GetLastError();
+        case WM_GETTEXTLENGTH:
+        {
+            LRESULT nText = DefWindowProc(hDlg, Msg, wParam, lParam) + 1;
+            DWORD LastError = GetLastError();
 
-        LPWSTR lpuszText = (LPWSTR)WaffleAlloc(nText * sizeof(WCHAR));
-        DefDlgProc(hDlg, WM_GETTEXT, nText, (LPARAM)lpuszText);
-        Result = WideCharToMultiByte(stNewEnvir.AnsiCodePage, 0, lpuszText, -1, NULL, 0, NULL, NULL) - 1;
-        MojibakeFree(lpuszText);
-        SetLastError(LastError);
-        break;
-    }
-    case WM_GETTEXT:
-    {
-        LPWSTR lpuszText = (LPWSTR)WaffleAlloc(wParam * sizeof(WCHAR));
-        DefDlgProc(hDlg, Msg, wParam, (LPARAM)lpuszText);
-        DWORD LastError = GetLastError();
-        Result = WideCharToMultiByte(stNewEnvir.AnsiCodePage, 0, lpuszText, -1, (LPSTR)lParam, (unsigned int)wParam * sizeof(CHAR), NULL, NULL) - 1;
-        MojibakeFree(lpuszText);
-        SetLastError(LastError);
-        break;
-    }
-    default:
-    {
-        return BackupDefDlgProcA(hDlg, Msg, wParam, lParam);
-    }
+            LPWSTR lpuszText = (LPWSTR) WaffleAlloc(nText * sizeof(WCHAR));
+            DefDlgProc(hDlg, WM_GETTEXT, nText, (LPARAM) lpuszText);
+            Result = WideCharToMultiByte(stNewEnvir.AnsiCodePage, 0, lpuszText, -1, NULL, 0, NULL, NULL) - 1;
+            MojibakeFree(lpuszText);
+            SetLastError(LastError);
+            break;
+        }
+        case WM_GETTEXT:
+        {
+            LPWSTR lpuszText = (LPWSTR) WaffleAlloc(wParam * sizeof(WCHAR));
+            DefDlgProc(hDlg, Msg, wParam, (LPARAM) lpuszText);
+            DWORD LastError = GetLastError();
+            Result = WideCharToMultiByte(stNewEnvir.AnsiCodePage, 0, lpuszText, -1, (LPSTR) lParam, (unsigned int) wParam * sizeof(CHAR), NULL, NULL) - 1;
+            MojibakeFree(lpuszText);
+            SetLastError(LastError);
+            break;
+        }
+        default:
+        {
+            return BackupDefDlgProcA(hDlg, Msg, wParam, lParam);
+        }
     }
 
     return Result;
@@ -171,36 +168,17 @@ LIBRARY_EXPORT HWND WINAPI DetourCreateWindowExA(
     static LPCREATEWINDOWEXA BackupCreateWindowExA;
     if (!BackupCreateWindowExA)
     {
-        BackupCreateWindowExA = (LPCREATEWINDOWEXA)WaffleGetBackupAddress(TEXT("user32.dll"), TEXT("CreateWindowExA"));
+        BackupCreateWindowExA = (LPCREATEWINDOWEXA) WaffleGetBackupAddress(TEXT("user32.dll"), TEXT("CreateWindowExA"));
     }
 
     HWND Result = BackupCreateWindowExA(dwExStyle, lpClassName, lpWindowName, dwStyle, x, y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam);
 
     DWORD LastError = GetLastError();
     LPWSTR lpuszWindowName = AnsiToUnicode(lpWindowName);
-    DefWindowProc(Result, WM_SETTEXT, 0, (LPARAM)lpuszWindowName);
+    DefWindowProc(Result, WM_SETTEXT, 0, (LPARAM) lpuszWindowName);
     MojibakeFree(lpuszWindowName);
     SetLastError(LastError);
     return Result;
-}
-
-LIBRARY_EXPORT HWND WINAPI DetourCreateWindowA(
-    _In_opt_    LPCSTR lpClassName,
-    _In_opt_    LPCSTR lpWindowName,
-    _In_        DWORD dwStyle,
-    _In_        int x,
-    _In_        int y,
-    _In_        int nWidth,
-    _In_        int nHeight,
-    _In_opt_    HWND hWndParent,
-    _In_opt_    HMENU hMenu,
-    _In_opt_    HINSTANCE hInstance,
-    _In_opt_    LPVOID lpParam
-    )
-{
-    //There doesn't exist a function called CreateWindowA
-    //See http://msdn.microsoft.com/en-us/library/windows/desktop/ms632679.aspx
-    return DetourCreateWindowExA(0, lpClassName, lpWindowName, dwStyle, x, y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam);
 }
 
 /*
@@ -261,8 +239,8 @@ LIBRARY_EXPORT HWND WINAPI DetourCreateDialogParamA(
     _In_        LPARAM dwInitParam
     )
 {
-    LPWSTR lpuTemplateName = (LPWSTR)lpTemplateName;
-    if ((SIZE_T)lpTemplateName > 0xFFFF)
+    LPWSTR lpuTemplateName = (LPWSTR) lpTemplateName;
+    if ((SIZE_T) lpTemplateName > 0xFFFF)
     {
         lpuTemplateName = AnsiToUnicode(lpTemplateName);
     }
@@ -272,7 +250,7 @@ LIBRARY_EXPORT HWND WINAPI DetourCreateDialogParamA(
     }
     HWND Result = CreateDialogParam(hInstance, lpuTemplateName, hWndParent, lpDialogFunc, dwInitParam);
 
-    if ((SIZE_T)lpTemplateName > 0xFFFF)
+    if ((SIZE_T) lpTemplateName > 0xFFFF)
     {
         MojibakeFree(lpuTemplateName);
     }
@@ -338,8 +316,8 @@ LIBRARY_EXPORT LRESULT WINAPI DetourDialogBoxParamA(
     _In_        LPARAM dwInitParam
     )
 {
-    LPWSTR lpuTemplateName = (LPWSTR)lpTemplateName;
-    if ((SIZE_T)lpTemplateName > 0xFFFF)
+    LPWSTR lpuTemplateName = (LPWSTR) lpTemplateName;
+    if ((SIZE_T) lpTemplateName > 0xFFFF)
     {
         lpuTemplateName = AnsiToUnicode(lpTemplateName);
     }
@@ -351,7 +329,7 @@ LIBRARY_EXPORT LRESULT WINAPI DetourDialogBoxParamA(
 
     LRESULT Result = DialogBoxParam(hInstance, lpuTemplateName, hWndParent, lpDialogFunc, dwInitParam);
 
-    if ((SIZE_T)lpTemplateName > 0xFFFF)
+    if ((SIZE_T) lpTemplateName > 0xFFFF)
     {
         MojibakeFree(lpuTemplateName);
     }
@@ -365,7 +343,7 @@ LIBRARY_EXPORT UINT WINAPI DetourGetDlgItemTextA(
     _In_    int nMaxCount
     )
 {
-    LPWSTR lpuszString = (LPWSTR)WaffleAlloc(nMaxCount * sizeof(WCHAR));
+    LPWSTR lpuszString = (LPWSTR) WaffleAlloc(nMaxCount * sizeof(WCHAR));
     UINT Result = GetDlgItemText(hDlg, nIDDlgItem, lpuszString, nMaxCount);
 
     DWORD LastError = GetLastError();
@@ -393,8 +371,8 @@ LIBRARY_EXPORT HMENU WINAPI DetourLoadMenuA(
     _In_        LPCSTR lpMenuName
     )
 {
-    LPWSTR lpuMenuName = (LPWSTR)lpMenuName;
-    if ((SIZE_T)lpMenuName > 0xFFFF)
+    LPWSTR lpuMenuName = (LPWSTR) lpMenuName;
+    if ((SIZE_T) lpMenuName > 0xFFFF)
     {
         lpuMenuName = AnsiToUnicode(lpMenuName);
     }
@@ -405,7 +383,7 @@ LIBRARY_EXPORT HMENU WINAPI DetourLoadMenuA(
 
     HMENU Result = LoadMenu(hInstance, lpuMenuName);
 
-    if ((SIZE_T)lpMenuName > 0xFFFF)
+    if ((SIZE_T) lpMenuName > 0xFFFF)
     {
         MojibakeFree(lpuMenuName);
     }
@@ -469,7 +447,7 @@ LIBRARY_EXPORT BOOL WINAPI DetourGetMenuItemInfoA(
     RtlMoveMemory(&mii, lpmii, sizeof(MENUITEMINFOW));
     if (lpmii->dwTypeData)
     {
-        mii.dwTypeData = (LPWSTR)WaffleAlloc(lpmii->cch * sizeof(WCHAR));
+        mii.dwTypeData = (LPWSTR) WaffleAlloc(lpmii->cch * sizeof(WCHAR));
     }
 
     BOOL Result = GetMenuItemInfo(hMenu, uItem, fByPosition, &mii);
@@ -515,7 +493,7 @@ LIBRARY_EXPORT int WINAPI DetourLoadStringA(
     static LPLOADSTRINGA BackupLoadStringA;
     if (!BackupLoadStringA)
     {
-        BackupLoadStringA = (LPLOADSTRINGA)WaffleGetBackupAddress(TEXT("user32.dll"), TEXT("LoadStringA"));
+        BackupLoadStringA = (LPLOADSTRINGA) WaffleGetBackupAddress(TEXT("user32.dll"), TEXT("LoadStringA"));
     }
 
     if (!nBufferMax)
@@ -524,7 +502,7 @@ LIBRARY_EXPORT int WINAPI DetourLoadStringA(
         return BackupLoadStringA(hInstance, uID, lpBuffer, nBufferMax);
     }
 
-    LPWSTR lpuBuffer = (LPWSTR)WaffleAlloc(nBufferMax * sizeof(WCHAR));
+    LPWSTR lpuBuffer = (LPWSTR) WaffleAlloc(nBufferMax * sizeof(WCHAR));
     int Result = LoadString(hInstance, uID, lpuBuffer, nBufferMax);
     DWORD LastError = GetLastError();
     WideCharToMultiByte(stNewEnvir.AnsiCodePage, 0, lpuBuffer, -1, lpBuffer, nBufferMax * sizeof(CHAR), NULL, FALSE);
@@ -572,40 +550,42 @@ LIBRARY_EXPORT LRESULT WINAPI DetourCallWindowProcA(
     static LPCALLWINDOWPROCA BackupCallWindowProcA;
     if (!BackupCallWindowProcA)
     {
-        BackupCallWindowProcA = (LPCALLWINDOWPROCA)WaffleGetBackupAddress(TEXT("user32.dll"), TEXT("CallWindowProcA"));
+        BackupCallWindowProcA = (LPCALLWINDOWPROCA) WaffleGetBackupAddress(TEXT("user32.dll"), TEXT("CallWindowProcA"));
     }
 
     LRESULT Result = 0;
     switch (Msg)
     {
-    case WM_SETTEXT:
-    {
+        /*
+        case WM_SETTEXT:
+        {
         /*
         Result = BackupCallWindowProcA(lpPrevWndFunc, hWnd, Msg, wParam, lParam);
         LPWSTR lpuszString = AnsiToUnicode((LPCSTR) lParam);
         Result = CallWindowProc(lpPrevWndFunc, hWnd, Msg, wParam, (LPARAM) lpuszString);
         MojibakeFree(lpuszString);
-        */
+        //*//*
 
         Result = BackupCallWindowProcA(lpPrevWndFunc, hWnd, Msg, wParam, lParam);
 
         DWORD LastError = GetLastError();
         LRESULT sizeString = DefWindowProcA(hWnd, WM_GETTEXTLENGTH, 0, 0);
         sizeString++;
-        LPSTR lpszString = (LPSTR)WaffleAlloc(sizeString);
-        DefWindowProcA(hWnd, WM_GETTEXT, sizeString, (LPARAM)lpszString);
+        LPSTR lpszString = (LPSTR) WaffleAlloc(sizeString);
+        DefWindowProcA(hWnd, WM_GETTEXT, sizeString, (LPARAM) lpszString);
         LPWSTR lpuszString = AnsiToUnicode(lpszString);
-        DefWindowProc(hWnd, WM_SETTEXT, 0, (LPARAM)lpuszString);
+        DefWindowProc(hWnd, WM_SETTEXT, 0, (LPARAM) lpuszString);
         MojibakeFree(lpuszString);
         MojibakeFree(lpszString);
         SetLastError(LastError);
 
         break;
-    }
-    default:
-    {
-        return BackupCallWindowProcA(lpPrevWndFunc, hWnd, Msg, wParam, lParam);
-    }
+        }
+        */
+        default:
+        {
+            return BackupCallWindowProcA(lpPrevWndFunc, hWnd, Msg, wParam, lParam);
+        }
     }
 
     return Result;
@@ -621,23 +601,25 @@ LIBRARY_EXPORT LRESULT WINAPI DetourSendMessageA(
     static LPSENDMESSAGEA BackupSendMessageA;
     if (!BackupSendMessageA)
     {
-        BackupSendMessageA = (LPSENDMESSAGEA)WaffleGetBackupAddress(TEXT("user32.dll"), TEXT("SendMessageA"));
+        BackupSendMessageA = (LPSENDMESSAGEA) WaffleGetBackupAddress(TEXT("user32.dll"), TEXT("SendMessageA"));
     }
 
     LRESULT Result;
     switch (Msg)
     {
-    case WM_SETTEXT:
-    {
-        LPWSTR lpuszString = AnsiToUnicode((LPCSTR)lParam);
-        Result = SendMessage(hWnd, Msg, wParam, (LPARAM)lpuszString);
+        /*
+        case WM_SETTEXT:
+        {
+        LPWSTR lpuszString = AnsiToUnicode((LPCSTR) lParam);
+        Result = SendMessage(hWnd, Msg, wParam, (LPARAM) lpuszString);
         MojibakeFree(lpuszString);
         break;
-    }
-    default:
-    {
-        return BackupSendMessageA(hWnd, Msg, wParam, lParam);
-    }
+        }
+        */
+        default:
+        {
+            return BackupSendMessageA(hWnd, Msg, wParam, lParam);
+        }
     }
 
     return Result;
@@ -664,7 +646,7 @@ LIBRARY_EXPORT BOOL WINAPI DetourExitWindowsEx(
     static LPEXITWINDOWSEX BackupExitWindowsEx;
     if (!BackupExitWindowsEx)
     {
-        BackupExitWindowsEx = (LPEXITWINDOWSEX)WaffleGetBackupAddress(TEXT("user32.dll"), TEXT("ExitWindowsEx"));
+        BackupExitWindowsEx = (LPEXITWINDOWSEX) WaffleGetBackupAddress(TEXT("user32.dll"), TEXT("ExitWindowsEx"));
     }
 
     int Result = MessageBox(0, TEXT("FIXME:This program called ExitWindowsEx, which may not be what you want it to do.\nAre you sure to execute this function?"), 0, MB_YESNO | MB_ICONWARNING);

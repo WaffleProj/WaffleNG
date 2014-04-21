@@ -1,28 +1,27 @@
 ﻿#include "..\mojibake.h"
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
-int CALLBACK EnumFontsFilterA(
-    _In_    const LOGFONTA *lplf,
-    _In_    const TEXTMETRICA *lptm,
-    _In_    DWORD dwType,
-    _In_    LPARAM lpData
+int CALLBACK EnumFontFamExFilterW(
+    _In_    const LOGFONTW *lpelfe,
+    _In_    const TEXTMETRICW *lpntme,
+    _In_    DWORD FontType,
+    _In_    LPARAM lParam
     )
 {
     // Cast lpData
-    LPENUM_FONTS_FILTER_DATAA lpFilter = (LPENUM_FONTS_FILTER_DATAA) lpData;
+    LPENUM_FONTS_FILTER_DATAW lpFilter = (LPENUM_FONTS_FILTER_DATAW) lParam;
 
     // Copy the data
-    LOGFONTA stLogFont;
-    RtlMoveMemory(&stLogFont, lplf, sizeof(*lplf));
-    TEXTMETRICA stTextMetric;
-    RtlMoveMemory(&stTextMetric, lptm, sizeof(*lptm));
+    LOGFONTW stLogFont;
+    RtlMoveMemory(&stLogFont, lpelfe, sizeof(*lpelfe));
+    TEXTMETRICW stTextMetric;
+    RtlMoveMemory(&stTextMetric, lpntme, sizeof(*lpntme));
 
     // Get the localized font name from ttf file
-    LPWSTR lpuszFaceName = MBCSToUnicode(stOldEnvir.AnsiCodePage, lplf->lfFaceName);
-    if (lptm->tmPitchAndFamily & TMPF_TRUETYPE)
+    if (lpntme->tmPitchAndFamily & TMPF_TRUETYPE)
     {
         // Create Font
-        HFONT hFont = CreateFontIndirectA(lplf);
+        HFONT hFont = CreateFontIndirectW(lpelfe);
         SelectObject(lpFilter->hDC, hFont);
 
         // Read "name" table
@@ -40,36 +39,34 @@ int CALLBACK EnumFontsFilterA(
                     USHORT nRecord = TTF_WORD(lpTable->nNameRecord);
                     for (int i = 0; i < nRecord; i++)
                     {
-                        if (TTF_WORD(lpRecord[i].languageID) != LANGIDFROMLCID(stNewEnvir.ThreadLocale)) continue;
                         if (TTF_WORD(lpRecord[i].nameID) != TT_NAME_ID_FULL_NAME) continue;
                         if (TTF_WORD(lpRecord[i].platformID) != TT_PLATFORM_ID_MICROSOFT) continue;
-                        //if (!Wafflelstrcmpi(lpuszFaceName, TEXT("MS Gothic")))
+
+                        // min(Face name length, lfFaceName size - 1);
+                        UINT n = min((TTF_WORD(lpRecord[i].nString) / sizeof(stLogFont.lfFaceName[0])), (sizeof(stLogFont.lfFaceName) / sizeof(stLogFont.lfFaceName[0] - 1)));
+                        LPWSTR lpFullName = (LPWSTR) (((LPBYTE) lpBuffer) + TTF_WORD(lpTable->offset) + TTF_WORD(lpRecord[i].stringOffset));
+
+                        // Get the default name for localized font name
+                        if (TTF_WORD(lpRecord[i].languageID) == TT_LANG_NEUTRAL)
                         {
-                            // Use the localized font name
-                            nSize = TTF_WORD(lpRecord[i].nString);
-                            LPWSTR szFullName = (LPWSTR) WaffleAlloc(nSize + sizeof(WCHAR));
-                            if (szFullName)
+                            for (UINT j = 0; (j < n) || (stLogFont.lfFaceName[j] = L'\0'); j++)
                             {
-                                LPWSTR lpFullName = (LPWSTR) (((LPBYTE) lpBuffer) + TTF_WORD(lpTable->offset) + TTF_WORD(lpRecord[i].stringOffset));
-                                for (UINT j = 0; (j < (nSize / sizeof(szFullName[0]))) || (szFullName[j] = L'\0'); j++)
-                                {
-                                    szFullName[j] = TTF_WORD(lpFullName[j]);
-                                }
-
-                                // Convert string
-                                LPSTR lpszFullName = UnicodeToAnsi(szFullName);
-                                if (lpszFullName)
-                                {
-                                    lstrcpyA(stLogFont.lfFaceName, lpszFullName);
-                                    MojibakeFree(lpszFullName);
-                                }
-
-                                stLogFont.lfCharSet = stNewEnvir.DefaultCharSet;
-                                stTextMetric.tmCharSet = stNewEnvir.DefaultCharSet;
-
-                                WaffleFree(szFullName);
-                                break;
+                                stLogFont.lfFaceName[j] = TTF_WORD(lpFullName[j]);
                             }
+                        }
+
+                        // Get the localized font name if it has one
+                        if (TTF_WORD(lpRecord[i].languageID) == LANGIDFROMLCID(stNewEnvir.ThreadLocale))
+                        {
+                            for (UINT j = 0; (j < n) || (stLogFont.lfFaceName[j] = L'\0'); j++)
+                            {
+                                stLogFont.lfFaceName[j] = TTF_WORD(lpFullName[j]);
+                            }
+
+                            stLogFont.lfCharSet = stNewEnvir.DefaultCharSet;
+                            stTextMetric.tmCharSet = stNewEnvir.DefaultCharSet;
+
+                            break;
                         }
                     }
                 }
@@ -81,57 +78,97 @@ int CALLBACK EnumFontsFilterA(
         DeleteObject(hFont);
     }
 
-    MojibakeFree(lpuszFaceName);
-
-    return lpFilter->lpFontFunc(&stLogFont, &stTextMetric, dwType, lpFilter->lpData);
+    return lpFilter->lpEnumFontFamExProc(&stLogFont, &stTextMetric, FontType, lpFilter->lParam);
 }
 
-LIBRARY_EXPORT int WINAPI DetourEnumFontsA(
-    _In_  HDC hdc,
-    _In_  LPCSTR lpFaceName,
-    _In_  FONTENUMPROCA lpFontFunc,
-    _In_  LPARAM lParam
-    )
-{
-    static LPENUMFONTSA BackupEnumFontsA;
-    if (!BackupEnumFontsA)
-    {
-        BackupEnumFontsA = (LPENUMFONTSA) WaffleGetBackupAddress(TEXT("gdi32.dll"), TEXT("EnumFontsA"));
-    }
-
-    ENUM_FONTS_FILTER_DATAA stFilter;
-    stFilter.lpFontFunc = lpFontFunc;
-    stFilter.lpData = lParam;
-    stFilter.hDC = CreateCompatibleDC(NULL);
-
-    int Result = BackupEnumFontsA(hdc, lpFaceName, EnumFontsFilterA, (LPARAM) &stFilter);
-
-    DeleteDC(stFilter.hDC);
-    return Result;
-}
-
-LIBRARY_EXPORT int WINAPI DetourEnumFontFamiliesA(
-    _In_    HDC hdc,
-    _In_    LPCSTR lpszFamily,
-    _In_    FONTENUMPROCA lpEnumFontFamProc,
+int CALLBACK EnumFontFamExFilterA(
+    _In_    const LOGFONTW *lpelfe,
+    _In_    const TEXTMETRICW *lpntme,
+    _In_    DWORD FontType,
     _In_    LPARAM lParam
     )
 {
-    static LPENUMFONTFAMILIESA BackupEnumFontFamiliesA;
-    if (!BackupEnumFontFamiliesA)
+    // ENUMLOGFONTEXDVW stEnumLogFontExDV;
+    LPENUM_FONTS_FILTER_DATAA lpFilter = (LPENUM_FONTS_FILTER_DATAA) lParam;
+
+    LOGFONTA stLogFont;
+    RtlMoveMemory(&stLogFont, lpelfe, offsetof(LOGFONTW, lfFaceName));
+    stLogFont.lfFaceName[0] = '\0';
+    LPSTR lpszFaceName = UnicodeToAnsi(lpelfe->lfFaceName);
+    if (lpszFaceName)
     {
-        BackupEnumFontFamiliesA = (LPENUMFONTFAMILIESA) WaffleGetBackupAddress(TEXT("gdi32.dll"), TEXT("EnumFontFamiliesA"));
+        WafflelstrcpyA(stLogFont.lfFaceName, lpszFaceName);
+        MojibakeFree(lpszFaceName);
     }
 
-    ENUM_FONTS_FILTER_DATAA stFilter;
-    stFilter.lpFontFunc = lpEnumFontFamProc;
-    stFilter.lpData = lParam;
+    TEXTMETRICA stTextMetric;
+    RtlMoveMemory(&stTextMetric, lpntme, offsetof(TEXTMETRICW, tmFirstChar));
+    stTextMetric.tmFirstChar = lpntme->tmFirstChar;
+    stTextMetric.tmLastChar = lpntme->tmLastChar;
+    stTextMetric.tmDefaultChar = lpntme->tmDefaultChar;
+    stTextMetric.tmBreakChar = lpntme->tmBreakChar;
+    RtlMoveMemory(&(stTextMetric.tmItalic), &(lpntme->tmItalic), sizeof(TEXTMETRICW) - offsetof(TEXTMETRICW, tmItalic));
+
+    return lpFilter->lpEnumFontFamExProc(&stLogFont, &stTextMetric, FontType, lpFilter->lParam);
+}
+
+LIBRARY_EXPORT int WINAPI DetourEnumFontFamiliesExW(
+    _In_    HDC hdc,
+    _In_    LPLOGFONTW lpLogfont,
+    _In_    FONTENUMPROCW lpEnumFontFamExProc,
+    _In_    LPARAM lParam,
+    _In_    DWORD dwFlags
+    )
+{
+    static LPENUMFONTFAMILIESEXW BackupEnumFontFamiliesExW;
+    if (!BackupEnumFontFamiliesExW)
+    {
+        BackupEnumFontFamiliesExW = (LPENUMFONTFAMILIESEXW) WaffleGetBackupAddress(TEXT("gdi32.dll"), TEXT("EnumFontFamiliesExW"));
+    }
+
+    ENUM_FONTS_FILTER_DATAW stFilter;
+    stFilter.lpEnumFontFamExProc = lpEnumFontFamExProc;
+    stFilter.lParam = lParam;
     stFilter.hDC = CreateCompatibleDC(NULL);
 
-    int Result = BackupEnumFontFamiliesA(hdc, lpszFamily, EnumFontsFilterA, (LPARAM) &stFilter);
+    int Result = BackupEnumFontFamiliesExW(hdc, lpLogfont, EnumFontFamExFilterW, (LPARAM) &stFilter, dwFlags);
 
     DeleteDC(stFilter.hDC);
     return Result;
+}
+
+LIBRARY_EXPORT int WINAPI DetourEnumFontFamiliesW(
+    _In_    HDC hdc,
+    _In_    LPCWSTR lpszFamily,
+    _In_    FONTENUMPROCW lpEnumFontFamProc,
+    _In_    LPARAM lParam
+    )
+{
+    LOGFONTW stLogFont;
+
+    RtlZeroMemory(&stLogFont, sizeof(stLogFont));
+    stLogFont.lfCharSet = DEFAULT_CHARSET;
+    stLogFont.lfFaceName[0] = L'\0';
+    WafflelstrcpyW(stLogFont.lfFaceName, lpszFamily);
+
+    return DetourEnumFontFamiliesExW(hdc, &stLogFont, lpEnumFontFamProc, lParam, 0);
+}
+
+LIBRARY_EXPORT int WINAPI DetourEnumFontsW(
+    _In_  HDC hdc,
+    _In_  LPCWSTR lpFaceName,
+    _In_  FONTENUMPROCW lpFontFunc,
+    _In_  LPARAM lParam
+    )
+{
+    LOGFONTW stLogFont;
+
+    RtlZeroMemory(&stLogFont, sizeof(stLogFont));
+    stLogFont.lfCharSet = DEFAULT_CHARSET;
+    stLogFont.lfFaceName[0] = L'\0';
+    WafflelstrcpyW(stLogFont.lfFaceName, lpFaceName);
+
+    return DetourEnumFontFamiliesExW(hdc, &stLogFont, lpFontFunc, lParam, 0);
 }
 
 LIBRARY_EXPORT int WINAPI DetourEnumFontFamiliesExA(
@@ -142,21 +179,56 @@ LIBRARY_EXPORT int WINAPI DetourEnumFontFamiliesExA(
     _In_    DWORD dwFlags
     )
 {
-    static LPENUMFONTFAMILIESEXA BackupEnumFontFamiliesExA;
-    if (!BackupEnumFontFamiliesExA)
+    LOGFONTW stLogFont;
+    RtlMoveMemory(&stLogFont, lpLogfont, offsetof(LOGFONTA, lfFaceName));
+    stLogFont.lfFaceName[0] = L'\0';
+    LPWSTR lpuszFaceName = AnsiToUnicode(lpLogfont->lfFaceName);
+    if (lpuszFaceName)
     {
-        BackupEnumFontFamiliesExA = (LPENUMFONTFAMILIESEXA) WaffleGetBackupAddress(TEXT("gdi32.dll"), TEXT("EnumFontFamiliesExA"));
+        WafflelstrcpyW(stLogFont.lfFaceName, lpuszFaceName);
+        MojibakeFree(lpuszFaceName);
     }
 
     ENUM_FONTS_FILTER_DATAA stFilter;
-    stFilter.lpFontFunc = lpEnumFontFamExProc;
-    stFilter.lpData = lParam;
-    stFilter.hDC = CreateCompatibleDC(NULL);
+    stFilter.lpEnumFontFamExProc = lpEnumFontFamExProc;
+    stFilter.lParam = lParam;
+    stFilter.hDC = NULL;
 
-    int Result = BackupEnumFontFamiliesExA(hdc, lpLogfont, EnumFontsFilterA, (LPARAM) &stFilter, dwFlags);
+    return DetourEnumFontFamiliesExW(hdc, &stLogFont, EnumFontFamExFilterA, (LPARAM) &stFilter, 0);
+}
 
-    DeleteDC(stFilter.hDC);
-    return Result;
+LIBRARY_EXPORT int WINAPI DetourEnumFontFamiliesA(
+    _In_    HDC hdc,
+    _In_    LPCSTR lpszFamily,
+    _In_    FONTENUMPROCA lpEnumFontFamProc,
+    _In_    LPARAM lParam
+    )
+{
+    LOGFONTA stLogFont;
+
+    RtlZeroMemory(&stLogFont, sizeof(stLogFont));
+    stLogFont.lfCharSet = DEFAULT_CHARSET;
+    stLogFont.lfFaceName[0] = '\0';
+    WafflelstrcpyA(stLogFont.lfFaceName, lpszFamily);
+
+    return DetourEnumFontFamiliesExA(hdc, &stLogFont, lpEnumFontFamProc, lParam, 0);
+}
+
+LIBRARY_EXPORT int WINAPI DetourEnumFontsA(
+    _In_  HDC hdc,
+    _In_  LPCSTR lpFaceName,
+    _In_  FONTENUMPROCA lpFontFunc,
+    _In_  LPARAM lParam
+    )
+{
+    LOGFONTA stLogFont;
+
+    RtlZeroMemory(&stLogFont, sizeof(stLogFont));
+    stLogFont.lfCharSet = DEFAULT_CHARSET;
+    stLogFont.lfFaceName[0] = '\0';
+    WafflelstrcpyA(stLogFont.lfFaceName, lpFaceName);
+
+    return DetourEnumFontFamiliesExA(hdc, &stLogFont, lpFontFunc, lParam, 0);
 }
 
 LIBRARY_EXPORT HFONT WINAPI DetourCreateFontW(
