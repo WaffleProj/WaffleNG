@@ -27,7 +27,9 @@ LIBRARY_EXPORT SIZE_T WINAPI WaffleInit(
     }
 
     //return 0; //for attaching debugger
-    //MessageBoxA(0, "Attach", 0, 0);
+#ifdef _DEBUG
+    MessageBox(0, TEXT("Ready to resume main thread"), 0, 0);
+#endif // _DEBUG
 
     WaffleResumeMainThread();
 
