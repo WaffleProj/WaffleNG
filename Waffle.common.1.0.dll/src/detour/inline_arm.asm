@@ -7,10 +7,10 @@
 		area	.rdata, data, readonly
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 Patch		b	.
-		mov	r0,pc
+		mov	r0,pc		;second instruction
 		ldr	pc,[pc,#0]
 		dcd	WaffleInlineHandler
-		push	{r0-r3}
+		push	{r0-r3}		;first instruction
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 		area	.text, code
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

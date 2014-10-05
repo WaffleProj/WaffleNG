@@ -370,8 +370,8 @@ LIBRARY_EXPORT VOID WINAPI WaffleLeaveReaderLock(
 }
 
 LIBRARY_EXPORT LPBYTE WINAPI WaffleGetProcAddressW(
-    _In_opt_    HMODULE hModule,
-    _In_        LPCWSTR lpszFuncName
+    _In_    HMODULE hModule,
+    _In_    LPCWSTR lpszFuncName
     )
 {
     LPBYTE lpFunction = NULL;
@@ -389,8 +389,8 @@ LIBRARY_EXPORT LPBYTE WINAPI WaffleGetProcAddressW(
 }
 
 LIBRARY_EXPORT LPBYTE WINAPI WaffleGetProcAddressA(
-    _In_opt_    HMODULE hModule,
-    _In_        LPCSTR lpszFuncName
+    _In_    HMODULE hModule,
+    _In_    LPCSTR lpszFuncName
     )
 {
     LPBYTE lpAddress = NULL;
