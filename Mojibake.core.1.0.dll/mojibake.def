@@ -35,6 +35,7 @@ EXPORTS
     DetourGetPrivateProfileIntA
     DetourGetPrivateProfileStringA
     DetourRegQueryValueExA
+    DetourGetThreadPreferredUILanguages
     
     DetourCreateWindowExA
     DetourDefWindowProcA

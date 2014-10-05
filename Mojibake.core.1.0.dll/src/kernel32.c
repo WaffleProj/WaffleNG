@@ -622,3 +622,30 @@ LIBRARY_EXPORT LONG WINAPI DetourRegQueryValueExA(
     }
     return Result;
 }
+
+LIBRARY_EXPORT BOOL WINAPI DetourGetThreadPreferredUILanguages(
+    _In_        DWORD dwFlags,
+    _Out_       PULONG pulNumLanguages,
+    _Out_opt_   PZZWSTR pwszLanguagesBuffer,
+    _Inout_     PULONG pcchLanguagesBuffer
+    )
+{
+    static LPGETTHREADPREFERREDUILANGUAGES BackupGetThreadPreferredUILanguages;
+    if (!BackupGetThreadPreferredUILanguages)
+    {
+        BackupGetThreadPreferredUILanguages = (LPGETTHREADPREFERREDUILANGUAGES) WaffleGetBackupAddress(TEXT("kernel32.dll"), TEXT("GetThreadPreferredUILanguages"));
+    }
+
+    BOOL Result = BackupGetThreadPreferredUILanguages(dwFlags, pulNumLanguages, pwszLanguagesBuffer, pcchLanguagesBuffer);
+    if (pwszLanguagesBuffer)
+    {
+        lstrcpyW(&pwszLanguagesBuffer[1 + *pcchLanguagesBuffer], L"ja-JP\0ja\0");
+    }
+    *pulNumLanguages += 2;
+    *pcchLanguagesBuffer += 9;
+    if (pwszLanguagesBuffer)
+    {
+        pwszLanguagesBuffer[1 + *pcchLanguagesBuffer] = L'\0';
+    }
+    return Result;
+}

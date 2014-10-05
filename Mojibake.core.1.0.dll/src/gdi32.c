@@ -63,9 +63,10 @@ int CALLBACK EnumFontFamExFilterW(
                                 stLogFont.lfFaceName[j] = TTF_WORD(lpFullName[j]);
                             }
 
+                            /*
                             stLogFont.lfCharSet = stNewEnvir.DefaultCharSet;
                             stTextMetric.tmCharSet = stNewEnvir.DefaultCharSet;
-
+                            */
                             break;
                         }
                     }
@@ -318,11 +319,6 @@ LIBRARY_EXPORT HFONT WINAPI DetourCreateFontIndirectA(
     LOGFONTW lf;
     RtlMoveMemory(&lf, lplf, sizeof(lf));
 
-    if (lf.lfCharSet == DEFAULT_CHARSET)
-    {
-        lf.lfCharSet = stNewEnvir.DefaultCharSet;
-    }
-
     LPWSTR lfuFaceName = AnsiToUnicode(lplf->lfFaceName);
     lstrcpy(lf.lfFaceName, lfuFaceName);
     MojibakeFree(lfuFaceName);
@@ -357,11 +353,6 @@ LIBRARY_EXPORT HFONT WINAPI DetourCreateFontIndirectExA(
 {
     ENUMLOGFONTEXDVW enumlfex;
     RtlMoveMemory(&enumlfex, penumlfex, sizeof(enumlfex));
-
-    if (enumlfex.elfEnumLogfontEx.elfLogFont.lfCharSet == DEFAULT_CHARSET)
-    {
-        enumlfex.elfEnumLogfontEx.elfLogFont.lfCharSet = stNewEnvir.DefaultCharSet;
-    }
 
     LPWSTR lfuFaceName = AnsiToUnicode(penumlfex->elfEnumLogfontEx.elfLogFont.lfFaceName);
     LPWSTR elfuFullName = AnsiToUnicode((LPCSTR) penumlfex->elfEnumLogfontEx.elfFullName);
