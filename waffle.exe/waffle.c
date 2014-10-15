@@ -1,13 +1,14 @@
 ﻿#include <waffle.h>
+#include <Shlwapi.h>
 #include "resource.h"
 #pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 
 #define DEBUG_PRINTF(fmt, ...) \
-    { \
+        { \
     TCHAR szMessage[256]; \
     wsprintf(szMessage, TEXT("[%s@%s] ") ## TEXT(fmt), TEXT(__FILE__), TEXT(__TIMESTAMP__), __VA_ARGS__); \
     MessageBox(0, szMessage, TEXT("Waffle"), 0); \
-    }
+        }
 
 int CALLBACK PropSheetProc(
     _In_        HWND hwndDlg,
@@ -166,184 +167,71 @@ int WINAPI Main(void)
         szExtName[0] = TEXT('\0');
         Wafflelstrcpy(szExtName, &szTarget[i]);
 
-        TCHAR szRegExplorer[128];
-        szRegExplorer[0] = TEXT('\0');
-        wsprintf(szRegExplorer, TEXT("Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FileExts\\%s"), szExtName);
+        // Try new fancy AssocQueryString 
+        DWORD cchOut = 0;
+        AssocQueryString(ASSOCF_NONE, ASSOCSTR_COMMAND, szExtName, NULL, NULL, &cchOut);
+        LPTSTR lpszShellOpen = (LPTSTR) WaffleAlloc(cchOut * sizeof(TCHAR));
+        AssocQueryString(ASSOCF_NONE, ASSOCSTR_COMMAND, szExtName, NULL, lpszShellOpen, &cchOut);
 
-        // Try to get Progid first
-        HKEY hRegExplorer = NULL;
-        if (RegOpenKey(HKEY_CURRENT_USER, szRegExplorer, &hRegExplorer) == ERROR_SUCCESS)
+        // Fill in value
+        SIZE_T nSize = Wafflelstrlen(lpszShellOpen) + 1;
+        LPTSTR lpszCmdLine = (LPTSTR) WaffleAlloc(nSize * sizeof(TCHAR));
+        for (i = 0, j = 0; lpszCmdLine[j] = lpszShellOpen[i]; i++, j++)
         {
-            TCHAR szProgid[128];
-            LONG lProgid;
-            DWORD dwProgid;
-            do
+            if (lpszShellOpen[i] == TEXT('%'))
             {
-                // First place, the default action, require extra privilege on Windows 8
-                szProgid[0] = TEXT('\0');
-                lProgid = sizeof(szProgid);
-                HKEY hRegUserChoice = NULL;
-                if (RegOpenKeyEx(hRegExplorer, TEXT("UserChoice\\Progid"), 0, KEY_QUERY_VALUE, &hRegUserChoice) == ERROR_SUCCESS)
+                switch (lpszShellOpen[++i])
                 {
-                    LONG Return = RegQueryValue(hRegUserChoice, NULL, szProgid, &lProgid);
-
-                    RegCloseKey(hRegUserChoice);
-                    if (Return == ERROR_SUCCESS)
+                    case TEXT('0'):
+                    case TEXT('1'):
+                    case TEXT('L'):
                     {
-                        break;
-                    }
-                }
-
-                // Second place, local setting
-                szProgid[0] = TEXT('\0');
-                dwProgid = lengthof(szProgid);
-                HKEY hRegOpenWithProgids = NULL;
-                if (RegOpenKey(hRegExplorer, TEXT("OpenWithProgids"), &hRegOpenWithProgids) == ERROR_SUCCESS)
-                {
-                    LONG Return = RegEnumValue(hRegOpenWithProgids, 0, szProgid, &dwProgid, NULL, NULL, NULL, NULL);
-
-                    RegCloseKey(hRegOpenWithProgids);
-
-                    if (Return == ERROR_SUCCESS)
-                    {
-                        break;
-                    }
-                }
-
-                // Third place, global setting
-                szProgid[0] = TEXT('\0');
-                lProgid = sizeof(szProgid);
-                TCHAR szRegRoot[128];
-                szRegRoot[0] = TEXT('\0');
-                wsprintf(szRegRoot, TEXT("%s"), szExtName);
-                if (RegQueryValue(HKEY_CLASSES_ROOT, szRegRoot, szProgid, &lProgid) == ERROR_SUCCESS)
-                {
-                    break;
-                }
-            } while (FALSE);
-
-            RegCloseKey(hRegExplorer);
-
-            // Read operation
-            TCHAR szShellOpen[512];
-            szShellOpen[0] = TEXT('\0');
-            LONG lShellOpen = sizeof(szShellOpen);
-
-            // open is the default operation
-            TCHAR szRegRoot[128];
-            szRegRoot[0] = TEXT('\0');
-            if (Wafflelstrcmpi(szProgid, TEXT("")))
-            {
-                wsprintf(szRegRoot, TEXT("%s\\shell\\open\\command"), szProgid);
-            }
-            else
-            {
-                // Even legacy
-                wsprintf(szRegRoot, TEXT("%s\\shell\\open\\command"), szExtName);
-            }
-
-            if (RegQueryValue(HKEY_CLASSES_ROOT, szRegRoot, szShellOpen, &lShellOpen) != ERROR_SUCCESS)
-            {
-                // Then Windows will sort everything in alphabetical order
-                if (Wafflelstrcmpi(szProgid, TEXT("")))
-                {
-                    wsprintf(szRegRoot, TEXT("%s\\shell"), szProgid);
-                }
-                else
-                {
-                    wsprintf(szRegRoot, TEXT("%s\\shell"), szExtName);
-                }
-
-                HKEY hRegOperation = NULL;
-                if (RegOpenKey(HKEY_CLASSES_ROOT, szRegRoot, &hRegOperation) == ERROR_SUCCESS)
-                {
-                    TCHAR szName[64];
-                    TCHAR szDefault[64];
-                    szDefault[0] = (TCHAR) -1;
-                    for (j = 0; RegEnumKey(hRegOperation, j, szName, lengthof(szName)) == ERROR_SUCCESS; j++)
-                    {
-                        if (Wafflelstrcmpi(szDefault, szName) > 0)
+                        nSize += Wafflelstrlen(szTarget);
+                        if (!(lpszCmdLine = (LPTSTR) WaffleReAlloc(lpszCmdLine, nSize * sizeof(TCHAR))))
                         {
-                            Wafflelstrcpy(szDefault, szName);
-                        }
-                    }
-                    RegCloseKey(hRegOperation);
-
-                    if (Wafflelstrcmpi(szProgid, TEXT("")))
-                    {
-                        wsprintf(szRegRoot, TEXT("%s\\shell\\%s\\command"), szProgid, szDefault);
-                    }
-                    else
-                    {
-                        wsprintf(szRegRoot, TEXT("%s\\shell\\%s\\command"), szExtName, szDefault);
-                    }
-
-                    if (RegQueryValue(HKEY_CLASSES_ROOT, szRegRoot, szShellOpen, &lShellOpen) != ERROR_SUCCESS)
-                    {
-                        DEBUG_PRINTF("Unable to find the file association.");
-                        ExitProcess(0);
-                    }
-                }
-            }
-
-            // Fill in value
-            SIZE_T nSize = Wafflelstrlen(szShellOpen) + 1;
-            LPTSTR lpszCmdLine = (LPTSTR) WaffleAlloc(nSize * sizeof(TCHAR));
-            for (i = 0, j = 0; lpszCmdLine[j] = szShellOpen[i]; i++, j++)
-            {
-                if (szShellOpen[i] == TEXT('%'))
-                {
-                    switch (szShellOpen[++i])
-                    {
-                        case TEXT('0'):
-                        case TEXT('1'):
-                        case TEXT('L'):
-                        {
-                            nSize += Wafflelstrlen(szTarget);
-                            if (!(lpszCmdLine = (LPTSTR) WaffleReAlloc(lpszCmdLine, nSize * sizeof(TCHAR))))
-                            {
-                                DEBUG_PRINTF("Out of memory.");
-                                ExitProcess(0);
-                            }
-                            Wafflelstrcpy(&lpszCmdLine[j], szTarget);
-                            j = Wafflelstrlen(lpszCmdLine) - 1;
-                            break;
-                        }
-                        case TEXT('*'):
-                        {
-                            nSize += Wafflelstrlen(lpszArgument);
-                            if (!(lpszCmdLine = (LPTSTR) WaffleReAlloc(lpszCmdLine, nSize * sizeof(TCHAR))))
-                            {
-                                DEBUG_PRINTF("Out of memory.");
-                                ExitProcess(0);
-                            }
-                            Wafflelstrcpy(&lpszCmdLine[j], lpszArgument);
-                            j = Wafflelstrlen(lpszCmdLine) - 1;
-                            break;
-                        }
-                        default:
-                        {
-                            DEBUG_PRINTF("Unknown argument:%s.", szShellOpen);
+                            DEBUG_PRINTF("Out of memory.");
                             ExitProcess(0);
-                            break;
                         }
+                        Wafflelstrcpy(&lpszCmdLine[j], szTarget);
+                        j = Wafflelstrlen(lpszCmdLine) - 1;
+                        break;
+                    }
+                    case TEXT('*'):
+                    {
+                        nSize += Wafflelstrlen(lpszArgument);
+                        if (!(lpszCmdLine = (LPTSTR) WaffleReAlloc(lpszCmdLine, nSize * sizeof(TCHAR))))
+                        {
+                            DEBUG_PRINTF("Out of memory.");
+                            ExitProcess(0);
+                        }
+                        Wafflelstrcpy(&lpszCmdLine[j], lpszArgument);
+                        j = Wafflelstrlen(lpszCmdLine) - 1;
+                        break;
+                    }
+                    default:
+                    {
+                        DEBUG_PRINTF("Unknown argument:%s.", lpszShellOpen);
+                        ExitProcess(0);
+                        break;
                     }
                 }
             }
+        }
 
-            // Overwrite
-            WaffleArgv(lpszCmdLine, 1, szTarget, lengthof(szTarget));
+        WaffleFree(lpszShellOpen);
 
-            lpszArgument = (LPTSTR) GlobalAlloc(GPTR, (lstrlen(WaffleArgp(lpszCmdLine, 2)) + 1) * sizeof(TCHAR));
-            if (lpszArgument)
-            {
-                Wafflelstrcpy(lpszArgument, WaffleArgp(lpszCmdLine, 2));
-            }
-            else
-            {
-                DEBUG_PRINTF("Out of memory.");
-                ExitProcess(0);
-            }
+        // Overwrite
+        WaffleArgv(lpszCmdLine, 1, szTarget, lengthof(szTarget));
+
+        lpszArgument = (LPTSTR) GlobalAlloc(GPTR, (lstrlen(WaffleArgp(lpszCmdLine, 2)) + 1) * sizeof(TCHAR));
+        if (lpszArgument)
+        {
+            Wafflelstrcpy(lpszArgument, WaffleArgp(lpszCmdLine, 2));
+        }
+        else
+        {
+            DEBUG_PRINTF("Out of memory.");
+            ExitProcess(0);
         }
 
 
