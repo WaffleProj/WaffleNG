@@ -12,9 +12,6 @@
   <PropertyGroup>
     <TargetName>Waffle</TargetName>
   </PropertyGroup>
-  <PropertyGroup Label="UserMacros">
-    <ComponentNamespace>Waffle</ComponentNamespace>
-  </PropertyGroup>
 
   <Import Project="$(SolutionDir)\Waffle.props" />
 
