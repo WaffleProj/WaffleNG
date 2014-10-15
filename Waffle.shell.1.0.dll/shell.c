@@ -60,7 +60,7 @@ STDAPI DllRegisterServer(void)
         RegSetValue(hKey, NULL, REG_SZ, TEXT("Waffle Shell Extension"), 0);
         if (RegCreateKey(hKey, TEXT("InprocServer32"), &hSubKey) == ERROR_SUCCESS)
         {
-            RegSetValue(hSubKey, NULL, REG_SZ, TEXT("E:\\Project\\WaffleProject\\WaffleNightly\\Component\\Waffle\\AMD64\\Waffle.shell.1.0.dll"), 0);
+            RegSetValue(hSubKey, NULL, REG_SZ, TEXT("D:\\Project\\WaffleProject\\WaffleNightly\\Component\\Waffle\\AMD64\\Waffle.shell.1.0.dll"), 0);
             RegSetKeyValue(hSubKey, NULL, TEXT("ThreadingModel"), REG_SZ, TEXT("Both"), 8);
             RegCloseKey(hSubKey);
         }
