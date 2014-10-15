@@ -12,6 +12,9 @@
   <PropertyGroup>
     <TargetName>Waffle.shell.1.0</TargetName>
   </PropertyGroup>
+  <PropertyGroup Label="UserMacros">
+    <ComponentNamespace>Waffle</ComponentNamespace>
+  </PropertyGroup>
 
   <Import Project="$(SolutionDir)\Waffle.props" />
 
@@ -30,5 +33,5 @@
     <ClInclude Include="src\IContextMenu.h" />
     <ClInclude Include="src\IShellExtInit.h" />
   </ItemGroup>
-  
+
 </Project>
