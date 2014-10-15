@@ -1,5 +1,9 @@
 ﻿#include <waffle.h>
 #include <Shlwapi.h>
+#ifndef ASSOCF_NONE
+#define ASSOCF_NONE 0x00000000
+#endif // !ASSOCF_NONE
+
 #include "resource.h"
 #pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 
