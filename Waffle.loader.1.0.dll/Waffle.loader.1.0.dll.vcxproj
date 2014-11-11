@@ -42,7 +42,7 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{73C4DE97-A94E-4FB2-91B2-D71BD6E24C34}</ProjectGuid>
-    <RootNamespace>Waffleloader10dll</RootNamespace>
+    <RootNamespace>Waffleloaderdll</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -51,7 +51,7 @@
   <Import Project="$(SolutionDir)\Microsoft.Cpp.props" />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <PropertyGroup>
-    <TargetName>Waffle.loader.1.0</TargetName>
+    <TargetName>Waffle.loader</TargetName>
     <OutDir>$(SolutionDir)WaffleNightly\Component\Waffle\$(PEMachine)\</OutDir>
     <IncludePath>$(SolutionDir)SDK\Include;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)SDK\Lib\$(PEMachine);$(LibraryPath)</LibraryPath>
