@@ -1,7 +1,7 @@
 ﻿#ifndef __MOJIBAKE_MAIN_MOJIBAKE_H_
 #define __MOJIBAKE_MAIN_MOJIBAKE_H_
 
-#define WAFFLE_COMPONENT_BUILD
+#define _BUILD_WAFFLE_COMPONENT_
 #include <waffle.h>
 #include "src\rtl.h"
 #include "src\ttf.h"

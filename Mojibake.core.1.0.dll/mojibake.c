@@ -4,7 +4,7 @@
 ENVIRONMENT_SETTING stOldEnvir;
 ENVIRONMENT_SETTING stNewEnvir;
 
-LIBRARY_EXPORT SIZE_T WINAPI DetourBaseThreadInitThunk(
+WAFFLE_COMPONENT_FUNCTION SIZE_T WINAPI DetourBaseThreadInitThunk(
     _In_    LPWAFFLE_THREAD_CONTEXT lpstThread
     )
 {
@@ -12,7 +12,7 @@ LIBRARY_EXPORT SIZE_T WINAPI DetourBaseThreadInitThunk(
     return 0;
 }
 
-LIBRARY_EXPORT SIZE_T WINAPI ComponentInit(
+WAFFLE_COMPONENT_FUNCTION SIZE_T WINAPI ComponentInit(
     _In_    LPWAFFLE_PROCESS_SETTING lpstProcessSetting
     )
 {
