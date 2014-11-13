@@ -9,7 +9,7 @@ VirtualProtect		proto	:QWORD,:QWORD,:QWORD,:QWORD
 FlushInstructionCache	proto	:QWORD,:QWORD,:QWORD
 GetCurrentProcess	proto
 
-WaffleFindDetourAddress	proto	:QWORD,:QWORD
+WaffleHookDBLookup	proto	:QWORD,:QWORD
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 		.code
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -28,7 +28,7 @@ WaffleInlineHandler	proc
 		sub	rcx,6
 		mov	rdx,qword ptr [rsp+28h]	;CallerReturnAddress
 		sub	rsp,20h
-		call	WaffleFindDetourAddress
+		call	WaffleHookDBLookup
 		add	rsp,20h
 		
 		mov	rcx,qword ptr [rsp]

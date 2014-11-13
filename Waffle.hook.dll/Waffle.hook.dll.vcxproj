@@ -39,9 +39,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.c" />
-    <ClCompile Include="src\detour.c" />
-    <ClCompile Include="src\init.c" />
-    <ClCompile Include="src\inline_c.c" />
+    <ClCompile Include="src\hookdb.c" />
+    <ClCompile Include="src\hook.c" />
     <ClCompile Include="src\smartarray.c" />
     <ClCompile Include="src\veh.c" />
   </ItemGroup>

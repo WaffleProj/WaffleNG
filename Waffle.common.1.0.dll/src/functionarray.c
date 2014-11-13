@@ -1,6 +1,6 @@
 ﻿#include "..\common.h"
 
-LIBRARY_EXPORT VOID WINAPI WaffleAddFunction(
+WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleAddFunction(
     _In_    LPWAFFLE_FUNCTION_ARRAY lpstNewFunction,
     _In_    HMODULE hDetour
     )
@@ -71,7 +71,7 @@ LIBRARY_EXPORT VOID WINAPI WaffleAddFunction(
 
     RtlMoveMemory(&lpstFunction[lpstFunction[0].dwBehind], lpstNewFunction, sizeof(WAFFLE_FUNCTION_ARRAY));
 }
-LIBRARY_EXPORT LPVOID WINAPI WaffleGetBackupAddress(
+WAFFLE_COMMON_DLL_FUNCTION LPVOID WINAPI WaffleGetBackupAddress(
     _In_    LPCTSTR lpszLibrary,
     _In_    LPCTSTR lpszFunction
     )
@@ -98,7 +98,7 @@ LIBRARY_EXPORT LPVOID WINAPI WaffleGetBackupAddress(
     return NULL;
 }
 
-LIBRARY_EXPORT SIZE_T WINAPI WaffleFindDetourAddress(
+WAFFLE_COMMON_DLL_FUNCTION SIZE_T WINAPI WaffleFindDetourAddress(
     _In_    PVOID ExceptionAddress,
     _In_    PVOID CallerAddress
     )

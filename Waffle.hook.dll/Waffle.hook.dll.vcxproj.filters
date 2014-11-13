@@ -23,16 +23,13 @@
     <ClCompile Include="main.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\detour.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\inline_c.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\veh.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\init.c">
+    <ClCompile Include="src\hook.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\hookdb.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\smartarray.c">

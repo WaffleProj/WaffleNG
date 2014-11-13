@@ -12,7 +12,7 @@ VirtualProtect		proto	:DWORD,:DWORD,:DWORD,:DWORD
 FlushInstructionCache	proto	:DWORD,:DWORD,:DWORD
 GetCurrentProcess	proto
 
-WaffleFindDetourAddress	proto	:DWORD,:DWORD
+WaffleHookDBLookup	proto	:DWORD,:DWORD
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 		.code
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -23,7 +23,7 @@ WaffleInlineHandler	proc
 
 		mov	ecx,dword ptr [esp]	;HotpatchReturnAddress
 		mov	edx,dword ptr [esp+4]	;CallerReturnAddress
-		invoke	WaffleFindDetourAddress,ecx,edx
+		invoke	WaffleHookDBLookup,ecx,edx
 		.if	eax
 			mov	dword ptr [esp],eax
 		.else

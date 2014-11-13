@@ -1,6 +1,6 @@
 ﻿#include "..\..\common.h"
 
-LIBRARY_EXPORT BOOL WINAPI WaffleExceptionDetour(
+WAFFLE_COMMON_DLL_FUNCTION BOOL WINAPI WaffleExceptionDetour(
     _In_    LPBYTE  lpFunction
     )
 {
@@ -19,7 +19,7 @@ LIBRARY_EXPORT BOOL WINAPI WaffleExceptionDetour(
     return TRUE;
 }
 
-LIBRARY_EXPORT LONG CALLBACK WaffleExceptionHandler(
+WAFFLE_COMMON_DLL_FUNCTION LONG CALLBACK WaffleExceptionHandler(
     _In_    PEXCEPTION_POINTERS ExceptionInfo
     )
 {

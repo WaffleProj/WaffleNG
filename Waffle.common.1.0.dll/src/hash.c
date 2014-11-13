@@ -17,7 +17,7 @@ typedef struct
     HCRYPTHASH hCryptHash;
 } WAFFLE_HASH, *LPWAFFLE_HASH;
 
-LIBRARY_EXPORT VOID WINAPI WaffleDestroyHash(
+WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleDestroyHash(
     _In_    LPWAFFLE_HASH hHash
     )
 {
@@ -42,7 +42,7 @@ LIBRARY_EXPORT VOID WINAPI WaffleDestroyHash(
     }
 }
 
-LIBRARY_EXPORT LPWAFFLE_HASH WINAPI WaffleCreateHash(void)
+WAFFLE_COMMON_DLL_FUNCTION LPWAFFLE_HASH WINAPI WaffleCreateHash(void)
 {
     LPWAFFLE_HASH hHash = WaffleAlloc(sizeof(*hHash));
     if (!hHash)
@@ -79,7 +79,7 @@ LIBRARY_EXPORT LPWAFFLE_HASH WINAPI WaffleCreateHash(void)
     return hHash;
 }
 
-LIBRARY_EXPORT BOOL WINAPI WaffleFeedHash(
+WAFFLE_COMMON_DLL_FUNCTION BOOL WINAPI WaffleFeedHash(
     _In_    LPWAFFLE_HASH hHash,
     _In_    LPBYTE lpBuffer,
     _In_    DWORD nNumberOfBytesRead
@@ -88,7 +88,7 @@ LIBRARY_EXPORT BOOL WINAPI WaffleFeedHash(
     return hHash->CryptHashData(hHash->hCryptHash, lpBuffer, nNumberOfBytesRead, 0);
 }
 
-LIBRARY_EXPORT BOOL WINAPI WaffleGetHashString(
+WAFFLE_COMMON_DLL_FUNCTION BOOL WINAPI WaffleGetHashString(
     _In_    LPWAFFLE_HASH hHash,
     _Out_   LPTSTR lpszResult
     )
@@ -112,7 +112,7 @@ LIBRARY_EXPORT BOOL WINAPI WaffleGetHashString(
     return FALSE;
 }
 
-LIBRARY_EXPORT VOID WINAPI WaffleGetFileHash(
+WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleGetFileHash(
     _In_    LPCTSTR lpszFile,
     _Out_   LPTSTR lpszResult
     )

@@ -1,6 +1,6 @@
 ﻿#include "..\common.h"
 
-LIBRARY_EXPORT VOID WINAPI WaffleGetModuleDirectory(
+WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleGetModuleDirectory(
     _In_opt_            HMODULE hModule,
     _Out_writes_(nSize) LPTSTR lpFilename,
     _In_                DWORD nSize
@@ -23,7 +23,7 @@ LIBRARY_EXPORT VOID WINAPI WaffleGetModuleDirectory(
     }
 }
 
-LIBRARY_EXPORT VOID WINAPI WaffleDisableWow64FsRedirection(
+WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleDisableWow64FsRedirection(
     _Inout_ PVOID *OldValue
     )
 {
@@ -38,7 +38,7 @@ LIBRARY_EXPORT VOID WINAPI WaffleDisableWow64FsRedirection(
     }
 }
 
-LIBRARY_EXPORT VOID WINAPI WaffleRevertWow64FsRedirection(
+WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleRevertWow64FsRedirection(
     _In_    PVOID OldValue
     )
 {

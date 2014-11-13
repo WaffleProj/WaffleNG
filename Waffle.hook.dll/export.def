@@ -1,3 +1,6 @@
 NAME    Waffle.hook.dll
 EXPORTS
     
+    WaffleRegisterHookOnAPI
+    WaffleRegisterHookOnCOMOffset
+    WaffleUnregisterHook

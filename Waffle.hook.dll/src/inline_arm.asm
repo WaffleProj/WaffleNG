@@ -2,7 +2,7 @@
 		extern	FlushInstructionCache
 		extern	GetCurrentProcess
 
-		extern	WaffleFindDetourAddress
+		extern	WaffleHookDBLookup
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 		area	.rdata, data, readonly
 ;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -27,7 +27,7 @@ WaffleInlineHandler	proc
 		sub	r0,r0,#6
 		orr	r0,r0,#1
 		mov	r1,lr
-		blx	WaffleFindDetourAddress
+		blx	WaffleHookDBLookup
 		
 		tst	r0,r0
 		it	ne

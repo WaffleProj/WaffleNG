@@ -1,6 +1,6 @@
 ﻿#include "..\..\common.h"
 
-LIBRARY_EXPORT BOOL WINAPI WaffleJumpDetection(
+WAFFLE_COMMON_DLL_FUNCTION BOOL WINAPI WaffleJumpDetection(
     _In_    LPBYTE lpSource
     )
 {
@@ -65,7 +65,7 @@ LIBRARY_EXPORT BOOL WINAPI WaffleJumpDetection(
     return FALSE;
 }
 
-LIBRARY_EXPORT BOOL WINAPI WaffleSetDetour(
+WAFFLE_COMMON_DLL_FUNCTION BOOL WINAPI WaffleSetDetour(
     _In_    DWORD dwLibrary,
     _In_    DWORD dwFunction
     )
@@ -108,7 +108,7 @@ LIBRARY_EXPORT BOOL WINAPI WaffleSetDetour(
     return bDetour;
 }
 
-LIBRARY_EXPORT BOOL WINAPI WaffleAddDetour(
+WAFFLE_COMMON_DLL_FUNCTION BOOL WINAPI WaffleAddDetour(
     _In_    LPBYTE lpSource,
     _In_    LPCTSTR lpszFunction,
     _In_    HMODULE hDetour
@@ -128,7 +128,7 @@ LIBRARY_EXPORT BOOL WINAPI WaffleAddDetour(
     return TRUE;
 }
 
-LIBRARY_EXPORT VOID WINAPI WaffleLoadDetourOption(void)
+WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleLoadDetourOption(void)
 {
     LPTSTR lpszSection = WaffleGetOptionSectionNames(TEXT("Detour.ini"));
     if (!lpszSection)

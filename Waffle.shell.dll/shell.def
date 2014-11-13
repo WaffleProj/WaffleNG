@@ -1,4 +1,4 @@
-LIBRARY Waffle.shell.1.0.dll
+LIBRARY Waffle.shell.dll
 EXPORTS
     DllCanUnloadNow     PRIVATE
     DllGetClassObject   PRIVATE

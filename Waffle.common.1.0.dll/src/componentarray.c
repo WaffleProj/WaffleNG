@@ -1,6 +1,6 @@
 ﻿#include "..\common.h"
 
-LIBRARY_EXPORT HMODULE WINAPI WaffleLoadComponent(
+WAFFLE_COMMON_DLL_FUNCTION HMODULE WINAPI WaffleLoadComponent(
     _In_    LPCTSTR lpszComponent
     )
 {
@@ -56,7 +56,7 @@ LIBRARY_EXPORT HMODULE WINAPI WaffleLoadComponent(
     return hComponent;
 }
 
-LIBRARY_EXPORT VOID WINAPI WaffleAddComponent(
+WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleAddComponent(
     _In_    LPCTSTR lpszComponent
     )
 {
@@ -101,7 +101,7 @@ LIBRARY_EXPORT VOID WINAPI WaffleAddComponent(
     RtlMoveMemory(&lpstProcessSetting->lpstComponent[lpstProcessSetting->lpstComponent[0].dwBehind], &stNewComponent, sizeof(WAFFLE_COMPONENT_ARRAY));
 }
 
-LIBRARY_EXPORT int WINAPI WaffleFindComponent(
+WAFFLE_COMMON_DLL_FUNCTION int WINAPI WaffleFindComponent(
     _In_    LPVOID lpMemory
     )
 {

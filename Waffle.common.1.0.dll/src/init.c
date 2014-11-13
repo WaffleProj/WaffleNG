@@ -1,7 +1,7 @@
 ﻿#include "..\common.h"
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
-LIBRARY_EXPORT SIZE_T WINAPI WaffleInit(
+WAFFLE_COMMON_DLL_FUNCTION SIZE_T WINAPI WaffleInit(
     _In_    LPVOID lpReserved
     )
 {

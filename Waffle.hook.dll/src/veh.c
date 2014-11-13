@@ -1,6 +1,6 @@
 ﻿#include "..\main.h"
 
-LIBRARY_EXPORT BOOL WINAPI WaffleExceptionDetour(
+WAFFLE_HOOK_DLL_FUNCTION BOOL WINAPI WaffleExceptionDetour(
     _In_    LPBYTE  lpFunction
     )
 {
@@ -19,7 +19,7 @@ LIBRARY_EXPORT BOOL WINAPI WaffleExceptionDetour(
     return TRUE;
 }
 
-LIBRARY_EXPORT LONG CALLBACK WaffleExceptionHandler(
+WAFFLE_HOOK_DLL_FUNCTION LONG CALLBACK WaffleExceptionHandler(
     _In_    PEXCEPTION_POINTERS ExceptionInfo
     )
 {
@@ -33,7 +33,7 @@ LIBRARY_EXPORT LONG CALLBACK WaffleExceptionHandler(
             //if (*(WAFFLE_PORT_EXCEPTION_INSTRUCTION_DATA *) (ExceptionInfo->ExceptionRecord->ExceptionAddress) == (WAFFLE_PORT_EXCEPTION_INSTRUCTION_DATA) WAFFLE_PORT_EXCEPTION_INSTRUCTION)
         {
             SIZE_T lpCaller = (SIZE_T) WAFFLE_PORT_EXCEPTION_GET_CALLER(ExceptionInfo);
-            SIZE_T lpDetour = WaffleFindDetourAddress((LPVOID) WAFFLE_PORT_EXCEPTION_ADDRESS_TO_PHYSICAL_ADDRESS(ExceptionInfo), (PVOID) lpCaller);
+            SIZE_T lpDetour = WaffleHookDBLookup((SIZE_T) WAFFLE_PORT_EXCEPTION_ADDRESS_TO_PHYSICAL_ADDRESS(ExceptionInfo), (SIZE_T) lpCaller);
             if (lpDetour)
             {
                 ExceptionInfo->ContextRecord->WAFFLE_PORT_PROGRAM_POINTER = lpDetour;

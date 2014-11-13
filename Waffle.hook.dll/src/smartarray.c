@@ -1,37 +1,10 @@
 #include "..\main.h"
 
-typedef INT(WINAPI *LPCOMPARE) (LPVOID Element1, LPVOID Element2);
-
-typedef enum
-{
-    SEARCH_SUCCESS = 0,
-    SEARCH_BETWEEN,
-    SEARCH_MISSING
-} WAFFLE_SMART_ARRAY_SEARCH_RESULT_ENUM, *LPWAFFLE_SMART_ARRAY_SEARCH_RESULT_ENUM;
-
-typedef struct
-{
-    WAFFLE_SMART_ARRAY_SEARCH_RESULT_ENUM   Status;
-    SIZE_T  Param1;
-    SIZE_T  Param2;
-} WAFFLE_SMART_ARRAY_SEARCH_RESULT, *LPWAFFLE_SMART_ARRAY_SEARCH_RESULT;
-
-typedef struct
-{
-    HANDLE      hHeap;
-    SRWLOCK     hLock;
-    LPCOMPARE   pCompare;
-    SIZE_T      nSize;
-    SIZE_T      nCount;
-    LPVOID *    lpArray;
-} WAFFLE_SMART_ARRAY, *LPWAFFLE_SMART_ARRAY;
-
-LIBRARY_EXPORT LPWAFFLE_SMART_ARRAY WINAPI WaffleSmartArrayCreate(
-    _In_    SIZE_T nSize,
-    _In_    LPCOMPARE pCompare
+WAFFLE_HOOK_DLL_FUNCTION LPWAFFLE_SMART_ARRAY WINAPI WaffleSmartArrayCreate(
+    _In_    SIZE_T nSize
     )
 {
-    if (!nSize || !pCompare)
+    if (!nSize)
     {
         return NULL;
     }
@@ -51,7 +24,6 @@ LIBRARY_EXPORT LPWAFFLE_SMART_ARRAY WINAPI WaffleSmartArrayCreate(
 
     lpHeader->hHeap = hHeap;
     InitializeSRWLock(&lpHeader->hLock);
-    lpHeader->pCompare = pCompare;
     lpHeader->nSize = nSize;
     lpHeader->nCount = 0;
     lpHeader->lpArray = NULL;
@@ -59,11 +31,11 @@ LIBRARY_EXPORT LPWAFFLE_SMART_ARRAY WINAPI WaffleSmartArrayCreate(
     return lpHeader;
 }
 
-LIBRARY_EXPORT BOOL WINAPI WaffleSmartArrayVerify(
+WAFFLE_HOOK_DLL_FUNCTION BOOL WINAPI WaffleSmartArrayVerify(
     _In_    LPWAFFLE_SMART_ARRAY lpHeader
     )
 {
-    if (!lpHeader || !lpHeader->hHeap || !lpHeader->pCompare || !lpHeader->nSize)
+    if (!lpHeader || !lpHeader->hHeap || !lpHeader->nSize)
     {
         return FALSE;
     }
@@ -81,21 +53,33 @@ LIBRARY_EXPORT BOOL WINAPI WaffleSmartArrayVerify(
     return TRUE;
 }
 
-LIBRARY_EXPORT BOOL WINAPI WaffleSmartArrayDestroy(
+WAFFLE_HOOK_DLL_FUNCTION BOOL WINAPI WaffleSmartArrayDestroy(
     _In_    LPWAFFLE_SMART_ARRAY lpHeader
     )
 {
-    if (!WaffleSmartArrayVerify(lpHeader))
+    if (!lpHeader || !lpHeader->hHeap)
     {
         return FALSE;
     }
 
+    AcquireSRWLockExclusive(&lpHeader->hLock);
+    ReleaseSRWLockExclusive(&lpHeader->hLock);
+
     return HeapDestroy(lpHeader->hHeap);
 }
 
-LIBRARY_EXPORT WAFFLE_SMART_ARRAY_SEARCH_RESULT WINAPI WaffleSmartArraySearch(
+WAFFLE_HOOK_DLL_FUNCTION LPVOID WINAPI WaffleSmartArrayIndexToAddress(
     _In_    LPWAFFLE_SMART_ARRAY lpHeader,
-    _In_    LPVOID lpElement
+    _In_    SIZE_T Index
+    )
+{
+    return (LPVOID) (((SIZE_T) lpHeader->lpArray) + lpHeader->nSize * Index);
+}
+
+WAFFLE_HOOK_DLL_FUNCTION WAFFLE_SMART_ARRAY_SEARCH_RESULT WINAPI WaffleSmartArraySearch(
+    _In_    LPWAFFLE_SMART_ARRAY lpHeader,
+    _In_    LPVOID lpElement,
+    _In_    LPCOMPARE pCompare
     )
 {
     WAFFLE_SMART_ARRAY_SEARCH_RESULT stResult;
@@ -103,109 +87,65 @@ LIBRARY_EXPORT WAFFLE_SMART_ARRAY_SEARCH_RESULT WINAPI WaffleSmartArraySearch(
     stResult.Param1 = SIZE_MAX;
     stResult.Param2 = 0;
 
-    if (!WaffleSmartArrayVerify(lpHeader))
+    if (!WaffleSmartArrayVerify(lpHeader) || !lpHeader->lpArray)
     {
         return stResult;
     }
 
-    SIZE_T Min = 0;
-    SIZE_T Max = lpHeader->nCount - 1;
-    LPVOID * lpArray = lpHeader->lpArray;
-    for (SIZE_T Index = Min + (Max - Min) / 2; Min <= Max; Index = Min + (Max - Min) / 2)
+    AcquireSRWLockShared(&lpHeader->hLock);
+
+    for (SIZE_T i = 0; i < lpHeader->nCount - 1; i++)
     {
-        INT nResult = lpHeader->pCompare(lpElement, lpArray[Index]);
-        if (nResult > 0)
-        {
-            Min = Index + 1;
-        }
-        else if (nResult < 0)
-        {
-            Max = Index - 1;
-        }
-        else if (nResult == 0)
+        if (!pCompare(lpElement, WaffleSmartArrayIndexToAddress(lpHeader,i)))
         {
             stResult.Status = SEARCH_SUCCESS;
-            stResult.Param1 = Index;
-            stResult.Param2 = Index;
+            stResult.Param1 = i;
+            stResult.Param2 = i;
 
-            return stResult;
+            break;
         }
     }
 
-    stResult.Status = SEARCH_BETWEEN;
-    stResult.Param1 = Min;
-    stResult.Param2 = Max;
+    ReleaseSRWLockShared(&lpHeader->hLock);
 
     return stResult;
 }
 
-LIBRARY_EXPORT BOOL WINAPI WaffleSmartArrayAddUnsafe(
+WAFFLE_HOOK_DLL_FUNCTION LPVOID WINAPI WaffleSmartArrayAdd(
     _In_    LPWAFFLE_SMART_ARRAY lpHeader,
     _In_    LPVOID lpElement
     )
 {
     if (!WaffleSmartArrayVerify(lpHeader) || !lpElement)
     {
-        return FALSE;
+        return NULL;
     }
 
     AcquireSRWLockExclusive(&lpHeader->hLock);
 
+    LPVOID lpNewArray = NULL;
     if (!lpHeader->nCount)
     {
-        lpHeader->lpArray = (LPVOID *) HeapAlloc(lpHeader->hHeap, HEAP_ZERO_MEMORY, sizeof(lpHeader->lpArray[0]) * 1);
-        if (!lpHeader->lpArray)
+        lpNewArray = HeapAlloc(lpHeader->hHeap, HEAP_ZERO_MEMORY, lpHeader->nSize * (lpHeader->nCount + 1));
+        if (!lpNewArray)
         {
             ReleaseSRWLockExclusive(&lpHeader->hLock);
-            return FALSE;
+            return NULL;
         }
-
-        lpHeader->lpArray[0] = HeapAlloc(lpHeader->hHeap, HEAP_ZERO_MEMORY, lpHeader->nSize);
-        if (!lpHeader->lpArray)
-        {
-            HeapDestroy(lpHeader->lpArray);
-            lpHeader->lpArray = NULL;
-            ReleaseSRWLockExclusive(&lpHeader->hLock);
-            return FALSE;
-        }
-
-        RtlMoveMemory(lpHeader->lpArray, lpElement, lpHeader->nSize);
-        lpHeader->nCount++;
-        ReleaseSRWLockExclusive(&lpHeader->hLock);
-        return TRUE;
     }
-
-    WAFFLE_SMART_ARRAY_SEARCH_RESULT stResult = WaffleSmartArraySearch(lpHeader, lpElement);
-    switch (stResult.Status)
+    else
     {
-        case SEARCH_BETWEEN:
+        lpNewArray = HeapReAlloc(lpHeader->hHeap, HEAP_ZERO_MEMORY, lpHeader->lpArray, lpHeader->nSize * (lpHeader->nCount + 1));
+        if (!lpNewArray)
         {
-            LPVOID lpNewElement = HeapAlloc(lpHeader->hHeap, 0, lpHeader->nSize);
-            if (!lpNewElement)
-            {
-                ReleaseSRWLockExclusive(&lpHeader->hLock);
-                return FALSE;
-            }
-
-            LPVOID * lpNewArray = HeapReAlloc(lpHeader->hHeap, HEAP_ZERO_MEMORY, lpHeader->lpArray, sizeof(lpHeader->lpArray[0]) * (lpHeader->nCount + 1));
-            if (!lpNewArray)
-            {
-                HeapFree(lpHeader->hHeap, 0, lpNewElement);
-                ReleaseSRWLockExclusive(&lpHeader->hLock);
-                return FALSE;
-            }
-
-            RtlMoveMemory(lpNewElement, lpElement, lpHeader->nSize);
-
-            break;
-        }
-        case SEARCH_SUCCESS:
-        {
-            break;
-        }
-        case SEARCH_MISSING:
-        {
-            break;
+            ReleaseSRWLockExclusive(&lpHeader->hLock);
+            return NULL;
         }
     }
+
+    lpHeader->lpArray = lpNewArray;
+    RtlMoveMemory(WaffleSmartArrayIndexToAddress(lpHeader, lpHeader->nCount), lpElement, lpHeader->nSize);
+    lpHeader->nCount++;
+    ReleaseSRWLockExclusive(&lpHeader->hLock);
+    return WaffleSmartArrayIndexToAddress(lpHeader, lpHeader->nCount - 1);
 }

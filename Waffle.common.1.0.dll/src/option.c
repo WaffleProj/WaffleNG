@@ -1,6 +1,6 @@
 ﻿#include "..\common.h"
 
-LIBRARY_EXPORT VOID WINAPI WaffleCheckOptionEncoding(
+WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleCheckOptionEncoding(
     _In_    LPCTSTR lpFileName
     )
 {
@@ -31,7 +31,7 @@ LIBRARY_EXPORT VOID WINAPI WaffleCheckOptionEncoding(
     }
 }
 
-LIBRARY_EXPORT VOID WINAPI WaffleGetOptionString(
+WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleGetOptionString(
     _In_opt_    LPCTSTR lpszFileName,
     _In_opt_    LPCTSTR lpszSectionName,
     _In_        LPCTSTR lpszKeyName,
@@ -80,7 +80,7 @@ LIBRARY_EXPORT VOID WINAPI WaffleGetOptionString(
     return;
 }
 
-LIBRARY_EXPORT VOID WINAPI WaffleSetOptionString(
+WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleSetOptionString(
     _In_opt_    LPCTSTR lpszFileName,
     _In_opt_    LPCTSTR lpszSectionName,
     _In_        LPCTSTR lpszKeyName,
@@ -127,7 +127,7 @@ LIBRARY_EXPORT VOID WINAPI WaffleSetOptionString(
     return;
 }
 
-LIBRARY_EXPORT int WINAPI WaffleGetOptionInt(
+WAFFLE_COMMON_DLL_FUNCTION int WINAPI WaffleGetOptionInt(
     _In_opt_    LPCTSTR lpszFileName,
     _In_opt_    LPCTSTR lpszSectionName,
     _In_        LPCTSTR lpszKeyName,
@@ -139,7 +139,7 @@ LIBRARY_EXPORT int WINAPI WaffleGetOptionInt(
     return WaffleStrToInt(szValue, nDefaultValue);
 }
 
-LIBRARY_EXPORT VOID WINAPI WaffleSetOptionInt(
+WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleSetOptionInt(
     _In_opt_    LPCTSTR lpszFileName,
     _In_opt_    LPCTSTR lpszSectionName,
     _In_        LPCTSTR lpszKeyName,
@@ -153,7 +153,7 @@ LIBRARY_EXPORT VOID WINAPI WaffleSetOptionInt(
     return;
 }
 
-LIBRARY_EXPORT int WINAPI WaffleGetOptionStringNumber(
+WAFFLE_COMMON_DLL_FUNCTION int WINAPI WaffleGetOptionStringNumber(
     _In_    LPCTSTR lpszString
     )
 {
@@ -168,7 +168,7 @@ LIBRARY_EXPORT int WINAPI WaffleGetOptionStringNumber(
     return nString;
 }
 
-LIBRARY_EXPORT LPTSTR WINAPI WaffleGetOptionSectionNames(
+WAFFLE_COMMON_DLL_FUNCTION LPTSTR WINAPI WaffleGetOptionSectionNames(
     _In_    LPCTSTR lpszOption
     )
 {
@@ -201,7 +201,7 @@ LIBRARY_EXPORT LPTSTR WINAPI WaffleGetOptionSectionNames(
     return lpszSection;
 }
 
-LIBRARY_EXPORT LPTSTR WINAPI WaffleGetOptionSectionKeys(
+WAFFLE_COMMON_DLL_FUNCTION LPTSTR WINAPI WaffleGetOptionSectionKeys(
     _In_    LPCTSTR lpszOption,
     _In_    LPCTSTR lpszSection
     )

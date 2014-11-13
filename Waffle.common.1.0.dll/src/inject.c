@@ -1,7 +1,7 @@
 ﻿#include "..\common.h"
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 
-LIBRARY_EXPORT BOOL WINAPI WaffleCreateProcess(
+WAFFLE_COMMON_DLL_FUNCTION BOOL WINAPI WaffleCreateProcess(
     _In_opt_    LPCTSTR lpApplicationName,
     _Inout_opt_ LPTSTR lpCommandLine,
     _In_opt_    LPSECURITY_ATTRIBUTES lpProcessAttributes,
@@ -39,7 +39,7 @@ LIBRARY_EXPORT BOOL WINAPI WaffleCreateProcess(
     return Result;
 }
 
-LIBRARY_EXPORT VOID WINAPI WaffleInjectDll(
+WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleInjectDll(
     _In_    HANDLE hProcess,
     _In_    HANDLE hThread,
     _In_    LPCTSTR lpszDllFull
@@ -64,7 +64,7 @@ LIBRARY_EXPORT VOID WINAPI WaffleInjectDll(
     }
 }
 
-LIBRARY_EXPORT VOID WINAPI WaffleExecuteTo(
+WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleExecuteTo(
     _In_        HANDLE hProcess,
     _In_        HANDLE hThread,
     _In_        LPBYTE lpProgramCounter
@@ -114,7 +114,7 @@ LIBRARY_EXPORT VOID WINAPI WaffleExecuteTo(
 #endif
 }
 
-LIBRARY_EXPORT VOID WINAPI WaffleExecute(
+WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleExecute(
     _Out_       LPWAFFLE_PROCESS_SETTING lpstPS,
     _In_        LPCTSTR lpApplicationName,
     _Inout_opt_ LPTSTR lpCommandLine,

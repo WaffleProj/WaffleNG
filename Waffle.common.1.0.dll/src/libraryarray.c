@@ -1,6 +1,6 @@
 ﻿#include "..\common.h"
 
-LIBRARY_EXPORT int WINAPI WaffleFindLibrary(
+WAFFLE_COMMON_DLL_FUNCTION int WINAPI WaffleFindLibrary(
     _In_    LPVOID lpMemory
     )
 {
@@ -20,7 +20,7 @@ LIBRARY_EXPORT int WINAPI WaffleFindLibrary(
     return -1;
 }
 
-LIBRARY_EXPORT VOID WINAPI WaffleCopyLibrary(
+WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleCopyLibrary(
     _In_    LPWAFFLE_LIBRARY_ARRAY lpstNewLibrary
     )
 {
@@ -73,7 +73,7 @@ LIBRARY_EXPORT VOID WINAPI WaffleCopyLibrary(
     return;
 }
 
-LIBRARY_EXPORT VOID WINAPI WaffleAddLibrary(
+WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleAddLibrary(
     _In_    HMODULE hModule
     )
 {

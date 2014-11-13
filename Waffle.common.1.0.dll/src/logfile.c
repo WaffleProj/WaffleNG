@@ -1,6 +1,6 @@
 ﻿#include "..\common.h"
 
-LIBRARY_EXPORT VOID WINAPI WaffleWriteLogFileA(
+WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleWriteLogFileA(
     _In_    LPCSTR lpszMessage
     )
 {
@@ -10,7 +10,7 @@ LIBRARY_EXPORT VOID WINAPI WaffleWriteLogFileA(
     WaffleWriteLogFileW(lpuszMessage);
 }
 
-LIBRARY_EXPORT VOID WINAPI WaffleWriteLogFileW(
+WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleWriteLogFileW(
     _In_    LPCWSTR lpszMessage
     )
 {

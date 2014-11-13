@@ -1,7 +1,7 @@
 ﻿#include "..\common.h"
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 
-LIBRARY_EXPORT VOID WINAPI WaffleInitProcessSetting(
+WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleInitProcessSetting(
     _In_    LPWAFFLE_PROCESS_SETTING lpstPS
     )
 {
@@ -30,7 +30,7 @@ LIBRARY_EXPORT VOID WINAPI WaffleInitProcessSetting(
     }
 }
 
-LIBRARY_EXPORT LPWAFFLE_PROCESS_SETTING WINAPI WaffleCreateProcessSetting(void)
+WAFFLE_COMMON_DLL_FUNCTION LPWAFFLE_PROCESS_SETTING WINAPI WaffleCreateProcessSetting(void)
 {
     if (!lpstProcessSetting)
     {
@@ -41,7 +41,7 @@ LIBRARY_EXPORT LPWAFFLE_PROCESS_SETTING WINAPI WaffleCreateProcessSetting(void)
     return lpstProcessSetting;
 }
 
-LIBRARY_EXPORT LPWAFFLE_PROCESS_SETTING WINAPI WaffleShareProcessSetting(void)
+WAFFLE_COMMON_DLL_FUNCTION LPWAFFLE_PROCESS_SETTING WINAPI WaffleShareProcessSetting(void)
 {
     LPWAFFLE_PROCESS_SETTING lpstPS = NULL;
 
@@ -63,7 +63,7 @@ LIBRARY_EXPORT LPWAFFLE_PROCESS_SETTING WINAPI WaffleShareProcessSetting(void)
     return lpstPS;
 }
 
-LIBRARY_EXPORT LPWAFFLE_PROCESS_SETTING WINAPI WaffleOpenProcessSetting(void)
+WAFFLE_COMMON_DLL_FUNCTION LPWAFFLE_PROCESS_SETTING WINAPI WaffleOpenProcessSetting(void)
 {
     if (!lpstProcessSetting)
     {
@@ -99,7 +99,7 @@ LIBRARY_EXPORT LPWAFFLE_PROCESS_SETTING WINAPI WaffleOpenProcessSetting(void)
     return lpstProcessSetting;
 }
 
-LIBRARY_EXPORT VOID WINAPI WaffleResumeMainThread(void)
+WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleResumeMainThread(void)
 {
     HANDLE hThread = OpenThread(THREAD_SUSPEND_RESUME, FALSE, lpstProcessSetting->dwThreadId);
     if (hThread)

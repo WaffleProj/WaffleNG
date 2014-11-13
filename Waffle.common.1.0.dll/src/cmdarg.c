@@ -1,6 +1,6 @@
 ﻿#include "..\common.h"
 
-LIBRARY_EXPORT int WINAPI WaffleArgc(
+WAFFLE_COMMON_DLL_FUNCTION int WINAPI WaffleArgc(
     _In_opt_    LPCTSTR lpCmdLine
     )
 {
@@ -35,7 +35,7 @@ end:
     return intArg;
 }
 
-LIBRARY_EXPORT SIZE_T WINAPI WaffleArgv(
+WAFFLE_COMMON_DLL_FUNCTION SIZE_T WINAPI WaffleArgv(
     _In_opt_            LPCTSTR lpCmdLine,
     _In_                int intPosition,
     _Out_writes_(nSize) LPTSTR lpString,
@@ -110,7 +110,7 @@ end:
     return j + 1;
 }
 
-LIBRARY_EXPORT LPCTSTR WINAPI WaffleArgp(
+WAFFLE_COMMON_DLL_FUNCTION LPCTSTR WINAPI WaffleArgp(
     _In_opt_    LPCTSTR lpCmdLine,
     _In_        int intPosition
     )

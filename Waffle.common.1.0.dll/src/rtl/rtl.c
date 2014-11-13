@@ -1,6 +1,6 @@
 ﻿#include "..\..\common.h"
 
-LIBRARY_EXPORT int WINAPI WafflelstrlenW(
+WAFFLE_COMMON_DLL_FUNCTION int WINAPI WafflelstrlenW(
     _In_    LPCWSTR lpString
     )
 {
@@ -16,7 +16,7 @@ LIBRARY_EXPORT int WINAPI WafflelstrlenW(
     }
 }
 
-LIBRARY_EXPORT int WINAPI WafflelstrlenA(
+WAFFLE_COMMON_DLL_FUNCTION int WINAPI WafflelstrlenA(
     _In_    LPCSTR lpString
     )
 {
@@ -32,7 +32,7 @@ LIBRARY_EXPORT int WINAPI WafflelstrlenA(
     }
 }
 
-LIBRARY_EXPORT LPWSTR WINAPI WafflelstrcatW(
+WAFFLE_COMMON_DLL_FUNCTION LPWSTR WINAPI WafflelstrcatW(
     _In_    LPWSTR lpString1,
     _In_    LPCWSTR lpString2
     )
@@ -50,7 +50,7 @@ LIBRARY_EXPORT LPWSTR WINAPI WafflelstrcatW(
     return lpString1;
 }
 
-LIBRARY_EXPORT LPSTR WINAPI WafflelstrcatA(
+WAFFLE_COMMON_DLL_FUNCTION LPSTR WINAPI WafflelstrcatA(
     _In_    LPSTR lpString1,
     _In_    LPCSTR lpString2
     )
@@ -68,7 +68,7 @@ LIBRARY_EXPORT LPSTR WINAPI WafflelstrcatA(
     return lpString1;
 }
 
-LIBRARY_EXPORT LPWSTR WINAPI WafflelstrcpyW(
+WAFFLE_COMMON_DLL_FUNCTION LPWSTR WINAPI WafflelstrcpyW(
     _In_    LPWSTR lpString1,
     _In_    LPCWSTR lpString2
     )
@@ -85,7 +85,7 @@ LIBRARY_EXPORT LPWSTR WINAPI WafflelstrcpyW(
     return lpString1;
 }
 
-LIBRARY_EXPORT LPSTR WINAPI WafflelstrcpyA(
+WAFFLE_COMMON_DLL_FUNCTION LPSTR WINAPI WafflelstrcpyA(
     _In_    LPSTR lpString1,
     _In_    LPCSTR lpString2
     )
@@ -102,7 +102,7 @@ LIBRARY_EXPORT LPSTR WINAPI WafflelstrcpyA(
     return lpString1;
 }
 
-LIBRARY_EXPORT int WINAPI WafflelstrcmpiW(
+WAFFLE_COMMON_DLL_FUNCTION int WINAPI WafflelstrcmpiW(
     _In_    LPCWSTR lpString1,
     _In_    LPCWSTR lpString2
     )
@@ -119,7 +119,7 @@ LIBRARY_EXPORT int WINAPI WafflelstrcmpiW(
     }
 }
 
-LIBRARY_EXPORT int WINAPI WafflelstrcmpiA(
+WAFFLE_COMMON_DLL_FUNCTION int WINAPI WafflelstrcmpiA(
     _In_    LPCSTR lpString1,
     _In_    LPCSTR lpString2
     )
@@ -136,7 +136,7 @@ LIBRARY_EXPORT int WINAPI WafflelstrcmpiA(
     }
 }
 
-LIBRARY_EXPORT int WINAPI WafflelstrcmpW(
+WAFFLE_COMMON_DLL_FUNCTION int WINAPI WafflelstrcmpW(
     _In_    LPCWSTR lpString1,
     _In_    LPCWSTR lpString2
     )
@@ -153,7 +153,7 @@ LIBRARY_EXPORT int WINAPI WafflelstrcmpW(
     }
 }
 
-LIBRARY_EXPORT int WINAPI WafflelstrcmpA(
+WAFFLE_COMMON_DLL_FUNCTION int WINAPI WafflelstrcmpA(
     _In_    LPCSTR lpString1,
     _In_    LPCSTR lpString2
     )
@@ -169,7 +169,7 @@ LIBRARY_EXPORT int WINAPI WafflelstrcmpA(
         return (int) (lpString1 - lpString2);
     }
 }
-LIBRARY_EXPORT int WINAPI WaffleStrToIntW(
+WAFFLE_COMMON_DLL_FUNCTION int WINAPI WaffleStrToIntW(
     _In_    LPCWSTR lpString,
     _In_    int nDefault
     )
@@ -227,7 +227,7 @@ LIBRARY_EXPORT int WINAPI WaffleStrToIntW(
     }
 }
 
-LIBRARY_EXPORT int WINAPI WaffleStrToIntA(
+WAFFLE_COMMON_DLL_FUNCTION int WINAPI WaffleStrToIntA(
     _In_    LPCSTR lpString,
     _In_    int nDefault
     )
@@ -285,7 +285,7 @@ LIBRARY_EXPORT int WINAPI WaffleStrToIntA(
     }
 }
 
-LIBRARY_EXPORT VOID WINAPI WaffleCreateRWLock(
+WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleCreateRWLock(
     LPWAFFLE_RWLOCK lpstRWLock
     )
 {
@@ -305,7 +305,7 @@ LIBRARY_EXPORT VOID WINAPI WaffleCreateRWLock(
     }
 }
 
-LIBRARY_EXPORT VOID WINAPI WaffleReleaseRWLock(
+WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleReleaseRWLock(
     LPWAFFLE_RWLOCK lpstRWLock
     )
 {
@@ -320,7 +320,7 @@ LIBRARY_EXPORT VOID WINAPI WaffleReleaseRWLock(
 }
 
 _When_(!lpstRWLock->dwReader, _Acquires_lock_(lpstRWLock->csWrite))
-LIBRARY_EXPORT VOID WINAPI WaffleEnterWriterLock(
+WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleEnterWriterLock(
 LPWAFFLE_RWLOCK lpstRWLock
 )
 {
@@ -334,14 +334,14 @@ LPWAFFLE_RWLOCK lpstRWLock
 }
 
 _When_(TRUE, _Releases_lock_(lpstRWLock->csWrite))
-LIBRARY_EXPORT VOID WINAPI WaffleLeaveWriterLock(
+WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleLeaveWriterLock(
 LPWAFFLE_RWLOCK lpstRWLock
 )
 {
     LeaveCriticalSection(&lpstRWLock->csWrite);
 }
 
-LIBRARY_EXPORT VOID WINAPI WaffleEnterReaderLock(
+WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleEnterReaderLock(
     LPWAFFLE_RWLOCK lpstRWLock
     )
 {
@@ -356,7 +356,7 @@ LIBRARY_EXPORT VOID WINAPI WaffleEnterReaderLock(
     LeaveCriticalSection(&lpstRWLock->csRead);
 }
 
-LIBRARY_EXPORT VOID WINAPI WaffleLeaveReaderLock(
+WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleLeaveReaderLock(
     LPWAFFLE_RWLOCK lpstRWLock
     )
 {
@@ -369,7 +369,7 @@ LIBRARY_EXPORT VOID WINAPI WaffleLeaveReaderLock(
     LeaveCriticalSection(&lpstRWLock->csWrite);
 }
 
-LIBRARY_EXPORT LPBYTE WINAPI WaffleGetProcAddressW(
+WAFFLE_COMMON_DLL_FUNCTION LPBYTE WINAPI WaffleGetProcAddressW(
     _In_    HMODULE hModule,
     _In_    LPCWSTR lpszFuncName
     )
@@ -388,7 +388,7 @@ LIBRARY_EXPORT LPBYTE WINAPI WaffleGetProcAddressW(
     return lpFunction;
 }
 
-LIBRARY_EXPORT LPBYTE WINAPI WaffleGetProcAddressA(
+WAFFLE_COMMON_DLL_FUNCTION LPBYTE WINAPI WaffleGetProcAddressA(
     _In_    HMODULE hModule,
     _In_    LPCSTR lpszFuncName
     )
@@ -487,7 +487,7 @@ LIBRARY_EXPORT LPBYTE WINAPI WaffleGetProcAddressA(
     return lpAddress;
 }
 
-LIBRARY_EXPORT VOID WINAPI WaffleIntBox(
+WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleIntBox(
     int i
     )
 {
@@ -496,7 +496,7 @@ LIBRARY_EXPORT VOID WINAPI WaffleIntBox(
     MessageBox(0, szBuf, 0, 0);
 }
 
-LIBRARY_EXPORT VOID WINAPI WaffleHexBox(
+WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleHexBox(
     DWORD i
     )
 {
@@ -505,7 +505,7 @@ LIBRARY_EXPORT VOID WINAPI WaffleHexBox(
     MessageBox(0, szBuf, 0, 0);
 }
 
-LIBRARY_EXPORT DWORD WINAPI WaffleGetImageSize(
+WAFFLE_COMMON_DLL_FUNCTION DWORD WINAPI WaffleGetImageSize(
     HMODULE hModule
     )
 {
@@ -537,7 +537,7 @@ LIBRARY_EXPORT DWORD WINAPI WaffleGetImageSize(
     return 0;
 }
 
-LIBRARY_EXPORT LPVOID WINAPI WaffleAlloc(
+WAFFLE_COMMON_DLL_FUNCTION LPVOID WINAPI WaffleAlloc(
     _In_    SIZE_T dwBytes
     )
 {
@@ -576,7 +576,7 @@ LIBRARY_EXPORT LPVOID WINAPI WaffleAlloc(
     }
 }
 
-LIBRARY_EXPORT LPVOID WINAPI WaffleReAlloc(
+WAFFLE_COMMON_DLL_FUNCTION LPVOID WINAPI WaffleReAlloc(
     _In_    LPVOID lpMemory,
     _In_    SIZE_T dwBytes
     )
@@ -600,7 +600,7 @@ LIBRARY_EXPORT LPVOID WINAPI WaffleReAlloc(
 
 _Ret_maybenull_
 _Success_(return == 0)
-LIBRARY_EXPORT LPVOID WINAPI WaffleFree(
+WAFFLE_COMMON_DLL_FUNCTION LPVOID WINAPI WaffleFree(
 _Frees_ptr_opt_ LPVOID lpMemory
 )
 {
