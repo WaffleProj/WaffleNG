@@ -1,8 +1,8 @@
-NAME    Mojibake.core.1.0.dll
+NAME    Mojibake.dll
 EXPORTS
     ComponentInit
     DetourBaseThreadInitThunk
-    
+
     DetourCreateProcessA
     DetourCreateProcessW
     DetourGetCurrentDirectoryA
@@ -37,7 +37,7 @@ EXPORTS
     DetourRegQueryValueExA
     DetourGetThreadPreferredUILanguages
     DetourGetUserDefaultUILanguage
-    
+
     DetourCreateWindowExA
     DetourDefWindowProcA
     DetourDefDlgProcA

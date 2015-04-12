@@ -49,7 +49,7 @@ int CALLBACK EnumFontFamExFilterW(
                         // Get the default name for localized font name
                         if (TTF_WORD(lpRecord[i].languageID) == TT_LANG_NEUTRAL)
                         {
-                            for (UINT j = 0; (j < n) || (stLogFont.lfFaceName[j] = L'\0'); j++)
+                            for (UINT j = 0; (j < n) || ((stLogFont.lfFaceName[j] = L'\0') != 0); j++)
                             {
                                 stLogFont.lfFaceName[j] = TTF_WORD(lpFullName[j]);
                             }
@@ -58,7 +58,7 @@ int CALLBACK EnumFontFamExFilterW(
                         // Get the localized font name if it has one
                         if (TTF_WORD(lpRecord[i].languageID) == LANGIDFROMLCID(stNewEnvir.ThreadLocale))
                         {
-                            for (UINT j = 0; (j < n) || (stLogFont.lfFaceName[j] = L'\0'); j++)
+                            for (UINT j = 0; (j < n) || ((stLogFont.lfFaceName[j] = L'\0') != 0); j++)
                             {
                                 stLogFont.lfFaceName[j] = TTF_WORD(lpFullName[j]);
                             }

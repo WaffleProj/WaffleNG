@@ -48,15 +48,16 @@
       <DisableSpecificWarnings>4055;4068;4100;4127;4201</DisableSpecificWarnings>
       <BufferSecurityCheck Condition="'$(Configuration)'=='Release'">false</BufferSecurityCheck>
       <RuntimeLibrary Condition="'$(Configuration)'=='Debug'">MultiThreadedDebug</RuntimeLibrary>
+      <DebugInformationFormat Condition="'$(Configuration)'=='Release'">None</DebugInformationFormat>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EntryPointSymbol>DllMain</EntryPointSymbol>
       <ImportLibrary>$(SolutionDir)SDK\Lib\$(PEMachine)\$(TargetName).lib</ImportLibrary>
-      <AdditionalDependencies>Waffle.common.1.0.lib;Kernel32.lib;User32.lib;Gdi32.lib;Advapi32.lib</AdditionalDependencies>
+      <AdditionalDependencies>Waffle.lib;Kernel32.lib;User32.lib;Gdi32.lib;Advapi32.lib</AdditionalDependencies>
       <ModuleDefinitionFile>mojibake.def</ModuleDefinitionFile>
       <AdditionalOptions>/ignore:4197 %(AdditionalOptions)</AdditionalOptions>
-      <GenerateDebugInformation Condition="'$(Configuration)'=='Debug'">true</GenerateDebugInformation>
+      <GenerateDebugInformation Condition="'$(Configuration)'=='Release'">No</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
