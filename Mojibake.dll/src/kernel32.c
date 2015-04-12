@@ -649,3 +649,8 @@ LIBRARY_EXPORT BOOL WINAPI DetourGetThreadPreferredUILanguages(
     }
     return Result;
 }
+
+LIBRARY_EXPORT LANGID WINAPI DetourGetUserDefaultUILanguage(void)
+{
+    return LANGIDFROMLCID(stNewEnvir.ThreadLocale);
+}
