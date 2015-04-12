@@ -135,9 +135,11 @@ WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleExecute(
     WaffleGetFileHash(lpApplicationName, lpstPS->szProcessHash);
 
     TCHAR szInjectDll[MAX_PATH];
-    wsprintf(szInjectDll, TEXT("%s\\Waffle\\%s\\Waffle.common.1.0.dll"), lpstPS->szComponentDirectory, WAFFLE_PORT_MACHINE_STRING);
+    wsprintf(szInjectDll, TEXT("%s\\Waffle\\%s\\Hook.dll"), lpstPS->szComponentDirectory, WAFFLE_PORT_MACHINE_STRING);
     WaffleInjectDll(stProcessInfo.hProcess, stProcessInfo.hThread, szInjectDll);
-    wsprintf(szInjectDll, TEXT("%s\\Waffle\\%s\\Waffle.loader.dll"), lpstPS->szComponentDirectory, WAFFLE_PORT_MACHINE_STRING);
+    wsprintf(szInjectDll, TEXT("%s\\Waffle\\%s\\Waffle.dll"), lpstPS->szComponentDirectory, WAFFLE_PORT_MACHINE_STRING);
+    WaffleInjectDll(stProcessInfo.hProcess, stProcessInfo.hThread, szInjectDll);
+    wsprintf(szInjectDll, TEXT("%s\\Waffle\\%s\\Loader.dll"), lpstPS->szComponentDirectory, WAFFLE_PORT_MACHINE_STRING);
     WaffleInjectDll(stProcessInfo.hProcess, stProcessInfo.hThread, szInjectDll);
 
     CloseHandle(stProcessInfo.hThread);

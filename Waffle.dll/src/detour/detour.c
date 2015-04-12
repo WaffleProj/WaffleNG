@@ -160,7 +160,17 @@ WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleLoadDetourOption(void)
                 DWORD nSizeOfFunction = lstrlen(lpszNextKey);
                 if (lpszNextKey[0] != TEXT('#')) //This is a comment
                 {
+                    // Using Waffle.hook
                     WaffleAddDetour(WaffleGetProcAddress(hLibrary, lpszNextKey), lpszNextKey, WaffleLoadComponent(lpszNextKey + nSizeOfFunction + 1));
+                    /*HMODULE hComponent = WaffleLoadComponent(lpszNextKey + nSizeOfFunction + 1);
+
+                    DWORD nSize = lstrlen(lpszNextKey) + sizeof(TEXT("Detour")) / sizeof(TCHAR);
+                    LPTSTR lpszDetour = (LPTSTR) WaffleAlloc(nSize * sizeof(TCHAR));
+                    wsprintf(lpszDetour, TEXT("Detour%s"), lpszNextKey);
+                    FARPROC lpDetour = WaffleGetProcAddress(hComponent, lpszDetour);
+
+                    WaffleRegisterHookOnAPI(lpszNextSection, lpszNextKey, lpDetour);
+                    */
                 }
             }
         }

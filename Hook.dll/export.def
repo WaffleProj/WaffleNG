@@ -1,6 +1,8 @@
-NAME    Waffle.hook.dll
+NAME    Hook.dll
 EXPORTS
-    
+
     WaffleRegisterHookOnAPI
     WaffleRegisterHookOnCOMOffset
     WaffleUnregisterHook
+
+    WaffleHookDBAddSkipModule

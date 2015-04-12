@@ -12,7 +12,7 @@ BOOL WINAPI DllMain(
         DisableThreadLibraryCalls(hinstDLL);
 
 #ifdef _DEBUG
-        MessageBox(0, TEXT("Please attach the debugger."), TEXT("Waffle.loader.dll"), 0);
+        MessageBox(0, TEXT("Please attach the debugger."), TEXT("Loader.dll"), 0);
         if (IsDebuggerPresent())
         {
             DebugBreak();

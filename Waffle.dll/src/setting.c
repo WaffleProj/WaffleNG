@@ -15,14 +15,14 @@ WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleInitProcessSetting(
 
         lpstPS->lpstComponent = NULL;
         // So we can use WaffleAlloc
-        WaffleAddComponent(TEXT("Waffle.common.1.0.dll"));
+        WaffleAddComponent(TEXT("Waffle.dll"));
         lpstPS->lpstLibrary = NULL;
 
         // So we can use WaffleGetOptionString
         if (!lstrcmp(lpstPS->szComponent, TEXT(""))) lstrcpy(lpstPS->szComponent, TEXT("Waffle"));
         if (!lstrcmp(lpstPS->szComponentDirectory, TEXT("")))
         {
-            WaffleGetModuleDirectory(GetModuleHandle(TEXT("Waffle.common.1.0.dll")), lpstPS->szComponentDirectory, lengthof(lpstPS->szComponentDirectory));
+            WaffleGetModuleDirectory(GetModuleHandle(TEXT("Waffle.dll")), lpstPS->szComponentDirectory, lengthof(lpstPS->szComponentDirectory));
             int i = lstrlen(lpstPS->szComponentDirectory);
             for (i--; lpstPS->szComponentDirectory[i] != TEXT('\\'); i--); lpstPS->szComponentDirectory[i] = TEXT('\0');
             for (i--; lpstPS->szComponentDirectory[i] != TEXT('\\'); i--); lpstPS->szComponentDirectory[i] = TEXT('\0');

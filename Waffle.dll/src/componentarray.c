@@ -50,7 +50,9 @@ WAFFLE_COMMON_DLL_FUNCTION HMODULE WINAPI WaffleLoadComponent(
     }
     else
     {
-        WaffleAddComponent(lpszComponent);
+        // Using Waffle.hook
+        // WaffleAddComponent(lpszComponent);
+        WaffleHookDBAddSkipModule(hComponent);
         ComponentInit(lpstProcessSetting);  //should respect the return value
     }
     return hComponent;
