@@ -27,11 +27,9 @@
     <ClCompile Include="src\IContextMenu.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="shell.def">
+    <ClCompile Include="src\OpenWithWaffle.c">
       <Filter>Source Files</Filter>
-    </None>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="shell.h">
@@ -46,5 +44,13 @@
     <ClInclude Include="src\IContextMenu.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\OpenWithWaffle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shell.def">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

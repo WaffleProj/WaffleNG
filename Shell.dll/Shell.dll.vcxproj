@@ -18,12 +18,10 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
-
   <PropertyGroup Label="Globals">
     <ProjectGuid>{73D9D6EA-66C0-4637-88BA-519215188450}</ProjectGuid>
     <RootNamespace>Shelldll</RootNamespace>
   </PropertyGroup>
-
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <Import Project="$(SolutionDir)\Microsoft.Cpp.props" />
   <PropertyGroup Label="Configuration">
@@ -57,7 +55,7 @@
       <SubSystem>Windows</SubSystem>
       <EntryPointSymbol>DllMain</EntryPointSymbol>
       <ImportLibrary>$(SolutionDir)SDK\Lib\$(PEMachine)\$(TargetName).lib</ImportLibrary>
-      <AdditionalDependencies>Kernel32.lib;User32.lib;Shlwapi.lib;Shell32.lib;Advapi32.lib;Ole32.lib</AdditionalDependencies>
+      <AdditionalDependencies>Waffle.lib;Kernel32.lib;User32.lib;Shlwapi.lib;Shell32.lib;Advapi32.lib;Ole32.lib</AdditionalDependencies>
       <ModuleDefinitionFile>shell.def</ModuleDefinitionFile>
       <AdditionalOptions>/ignore:4197 %(AdditionalOptions)</AdditionalOptions>
       <GenerateDebugInformation Condition="'$(Configuration)'=='Release'">No</GenerateDebugInformation>
@@ -68,15 +66,17 @@
     <ClCompile Include="src\IClassFactory.c" />
     <ClCompile Include="src\IContextMenu.c" />
     <ClCompile Include="src\IShellExtInit.c" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="shell.def" />
+    <ClCompile Include="src\OpenWithWaffle.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="shell.h" />
     <ClInclude Include="src\IClassFactory.h" />
     <ClInclude Include="src\IContextMenu.h" />
     <ClInclude Include="src\IShellExtInit.h" />
+    <ClInclude Include="src\OpenWithWaffle.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="shell.def" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

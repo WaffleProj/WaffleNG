@@ -10,7 +10,9 @@
 #include "src/IClassFactory.h"
 #include "src/IContextMenu.h"
 #include "src/IShellExtInit.h"
+#include "src/OpenWithWaffle.h"
 
+extern HINSTANCE hInstance;
 extern _IWaffleClassFactory IWaffleClassFactoryObject;
 extern _IWaffleContextMenu IWaffleContextMenuObject;
 extern _IWaffleShellExtInit IWaffleShellExtInitObject;

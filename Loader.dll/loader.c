@@ -15,7 +15,15 @@ BOOL WINAPI DllMain(
         MessageBox(0, TEXT("Please attach the debugger."), TEXT("Loader.dll"), 0);
         if (IsDebuggerPresent())
         {
-            DebugBreak();
+			__try
+			{
+				DebugBreak();
+			}
+			__except (GetExceptionCode() == EXCEPTION_BREAKPOINT ?
+				EXCEPTION_EXECUTE_HANDLER : EXCEPTION_CONTINUE_SEARCH)
+			{
+				// Doing nothing
+			}
         }
 #endif // _DEBUG
         HANDLE hThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE) WaffleInit, 0, 0, NULL);
