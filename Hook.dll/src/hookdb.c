@@ -5,13 +5,13 @@ INT WINAPI CompareModule(
     LPWAFFLE_MODULE_NODE Element2
     )
 {
-    if (Element1->hModule == Element1->hModule)
+    if (Element1->hModule == Element2->hModule)
     {
         return 0;
     }
     else
     {
-        return (INT) Element1->hModule - (INT) Element1->hModule;
+        return (INT) Element1->hModule - (INT) Element2->hModule;
     }
 }
 
