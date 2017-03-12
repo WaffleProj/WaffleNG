@@ -48,11 +48,5 @@
     <CustomBuild Include="src\inline_amd64.asm">
       <Filter>Source Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="src\inline_arm.asm">
-      <Filter>Source Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="src\inline_ia64.asm">
-      <Filter>Source Files</Filter>
-    </CustomBuild>
   </ItemGroup>
 </Project>
