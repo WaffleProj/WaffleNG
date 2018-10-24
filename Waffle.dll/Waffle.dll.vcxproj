@@ -31,6 +31,7 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <PropertyGroup>
     <TargetName>Waffle</TargetName>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <OutDir>$(SolutionDir)WaffleNightly\Component\Waffle\$(PEMachine)\</OutDir>
     <IncludePath>$(SolutionDir)SDK\Include;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)SDK\Lib\$(PEMachine);$(LibraryPath)</LibraryPath>
