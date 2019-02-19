@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Label="Configuration">
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v120</PlatformToolset>
+    <WindowsSDKDesktopARMSupport>true</WindowsSDKDesktopARMSupport>
+  </PropertyGroup>
+
+  <PropertyGroup Label="UserMacros">
+    <PEMachine Condition="'$(Platform)'=='Win32'">I386</PEMachine>
+    <PEMachine Condition="'$(Platform)'=='ARM'">ARMNT</PEMachine>
+    <PEMachine Condition="'$(Platform)'=='x64'">AMD64</PEMachine>
+    <PEMachine Condition="'$(Platform)'=='Itanium'">IA64</PEMachine>
+  </PropertyGroup>
+</Project>
