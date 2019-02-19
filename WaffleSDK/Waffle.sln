@@ -30,6 +30,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Loader.dll", "Waffle\Loader
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Shell.dll", "Waffle\Shell.dll\Shell.dll.vcxproj", "{73D9D6EA-66C0-4637-88BA-519215188450}"
+	ProjectSection(ProjectDependencies) = postProject
+		{9DE226A0-8EE0-4F11-83D0-15DB3BA76BCE} = {9DE226A0-8EE0-4F11-83D0-15DB3BA76BCE}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
