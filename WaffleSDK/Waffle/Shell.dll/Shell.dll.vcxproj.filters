@@ -30,6 +30,9 @@
     <ClCompile Include="src\OpenWithWaffle.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\IShellPropSheetExt.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="shell.h">
@@ -45,6 +48,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\OpenWithWaffle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\IShellPropSheetExt.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

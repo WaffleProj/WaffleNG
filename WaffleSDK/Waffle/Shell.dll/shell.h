@@ -10,6 +10,7 @@
 #include "src/IClassFactory.h"
 #include "src/IContextMenu.h"
 #include "src/IShellExtInit.h"
+#include "src/IShellPropSheetExt.h"
 #include "src/OpenWithWaffle.h"
 
 extern HINSTANCE hInstance;

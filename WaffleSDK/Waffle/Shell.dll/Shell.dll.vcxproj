@@ -67,6 +67,7 @@
     <ClCompile Include="src\IClassFactory.c" />
     <ClCompile Include="src\IContextMenu.c" />
     <ClCompile Include="src\IShellExtInit.c" />
+    <ClCompile Include="src\IShellPropSheetExt.c" />
     <ClCompile Include="src\OpenWithWaffle.c" />
   </ItemGroup>
   <ItemGroup>
@@ -74,6 +75,7 @@
     <ClInclude Include="src\IClassFactory.h" />
     <ClInclude Include="src\IContextMenu.h" />
     <ClInclude Include="src\IShellExtInit.h" />
+    <ClInclude Include="src\IShellPropSheetExt.h" />
     <ClInclude Include="src\OpenWithWaffle.h" />
   </ItemGroup>
   <ItemGroup>
