@@ -23,9 +23,9 @@ int WINAPI OpenWithWaffle(
     szDirectory[0] = TEXT('\0');
 
     Wafflelstrcpy(szDirectory, lpszTarget);
-    int i = lstrlen(lpszTarget);
-    for (; szDirectory[i] != TEXT('\\'); i--);
-    szDirectory[i] = TEXT('\0');
+    int len = lstrlen(lpszTarget);
+    for (; szDirectory[len] != TEXT('\\'); len--);
+    szDirectory[len] = TEXT('\0');
 
 	// We should always have a target
 	if (Wafflelstrcmpi(lpszTarget, TEXT("")))
@@ -213,9 +213,9 @@ int WINAPI OpenWithWaffle(
 
 	Wafflelstrcpy(lpstProcessSetting->szComponent, lpszComponent);
 	Wafflelstrcpy(lpstProcessSetting->szComponentDirectory, szPath);
-	i = lstrlen(lpstProcessSetting->szComponentDirectory);
-	for (i--; lpstProcessSetting->szComponentDirectory[i] != TEXT('\\'); i--); lpstProcessSetting->szComponentDirectory[i] = TEXT('\0');
-	for (i--; lpstProcessSetting->szComponentDirectory[i] != TEXT('\\'); i--); lpstProcessSetting->szComponentDirectory[i] = TEXT('\0');
+	len = lstrlen(lpstProcessSetting->szComponentDirectory);
+	for (len--; lpstProcessSetting->szComponentDirectory[len] != TEXT('\\'); len--); lpstProcessSetting->szComponentDirectory[len] = TEXT('\0');
+	for (len--; lpstProcessSetting->szComponentDirectory[len] != TEXT('\\'); len--); lpstProcessSetting->szComponentDirectory[len] = TEXT('\0');
 
 	LPTSTR lpszCommandLine = (LPTSTR)GlobalAlloc(GPTR, (lstrlen(lpszTarget) + lstrlen(lpszArgument) + 3 + 1) * sizeof(TCHAR));
 	if (lpszCommandLine)
