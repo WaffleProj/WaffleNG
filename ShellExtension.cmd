@@ -1,0 +1,1 @@
+@start wscript "%~dp0ShellExtension.vbs"
