@@ -12,7 +12,7 @@ WAFFLE_COMMON_DLL_FUNCTION BOOL WINAPI WaffleCreateProcess(
     _In_opt_    LPCTSTR lpCurrentDirectory,
     _In_opt_    LPSTARTUPINFO lpStartupInfo,
     _Out_opt_   LPPROCESS_INFORMATION lpProcessInformation
-    )
+)
 {
     STARTUPINFO stStartUp;
     PROCESS_INFORMATION stProcessInfo;
@@ -43,14 +43,14 @@ WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleInjectDll(
     _In_    HANDLE hProcess,
     _In_    HANDLE hThread,
     _In_    LPCTSTR lpszDllFull
-    )
+)
 {
-    LPVOID lpszRemoteDll = VirtualAllocEx(hProcess, NULL, MAX_PATH*sizeof(TCHAR), MEM_COMMIT, PAGE_READWRITE);
+    LPVOID lpszRemoteDll = VirtualAllocEx(hProcess, NULL, MAX_PATH * sizeof(TCHAR), MEM_COMMIT, PAGE_READWRITE);
     if (lpszRemoteDll)
     {
         LPTHREAD_START_ROUTINE lpLoadLibrary = (LPTHREAD_START_ROUTINE) WaffleGetProcAddress(GetModuleHandle(TEXT("kernel32.dll")), TEXT("LoadLibraryW"));
 
-        WriteProcessMemory(hProcess, lpszRemoteDll, lpszDllFull, lstrlen(lpszDllFull)*sizeof(TCHAR), NULL);
+        WriteProcessMemory(hProcess, lpszRemoteDll, lpszDllFull, lstrlen(lpszDllFull) * sizeof(TCHAR), NULL);
         HANDLE hRemoteThread = CreateRemoteThread(hProcess, NULL, 0, lpLoadLibrary, lpszRemoteDll, 0, NULL);
         if (!hRemoteThread)
         {
@@ -68,7 +68,7 @@ WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleExecuteTo(
     _In_        HANDLE hProcess,
     _In_        HANDLE hThread,
     _In_        LPBYTE lpProgramCounter
-    )
+)
 {
 #ifdef WAFFLE_PORT_ENTRY_POINT_LOOP
     if (!lpProgramCounter)
@@ -119,7 +119,7 @@ WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleExecute(
     _In_        LPCTSTR lpApplicationName,
     _Inout_opt_ LPTSTR lpCommandLine,
     _In_opt_    LPCTSTR lpCurrentDirectory
-    )
+)
 {
     PROCESS_INFORMATION stProcessInfo;
 

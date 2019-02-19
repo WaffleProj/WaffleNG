@@ -3,7 +3,7 @@
 
 WAFFLE_COMMON_DLL_FUNCTION SIZE_T WINAPI WaffleInit(
     _In_    LPVOID lpReserved
-    )
+)
 {
     TCHAR szExecutable[MAX_PATH];
     if (!GetModuleFileName(NULL, szExecutable, lengthof(szExecutable)))

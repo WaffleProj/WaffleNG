@@ -2,7 +2,7 @@
 
 WAFFLE_COMMON_DLL_FUNCTION int WINAPI WaffleArgc(
     _In_opt_    LPCTSTR lpCmdLine
-    )
+)
 {
     int intArg = 0;
     int i = -1;
@@ -40,7 +40,7 @@ WAFFLE_COMMON_DLL_FUNCTION SIZE_T WINAPI WaffleArgv(
     _In_                int intPosition,
     _Out_writes_(nSize) LPTSTR lpString,
     _In_                int nSize
-    )
+)
 {
     int intArg = 0;
     int i = -1, j = -1;
@@ -113,7 +113,7 @@ end:
 WAFFLE_COMMON_DLL_FUNCTION LPCTSTR WINAPI WaffleArgp(
     _In_opt_    LPCTSTR lpCmdLine,
     _In_        int intPosition
-    )
+)
 {
     int intArg = 0;
     int i = -1;

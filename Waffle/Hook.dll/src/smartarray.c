@@ -2,7 +2,7 @@
 
 WAFFLE_HOOK_DLL_FUNCTION LPWAFFLE_SMART_ARRAY WINAPI WaffleSmartArrayCreate(
     _In_    SIZE_T nSize
-    )
+)
 {
     if (!nSize)
     {
@@ -33,7 +33,7 @@ WAFFLE_HOOK_DLL_FUNCTION LPWAFFLE_SMART_ARRAY WINAPI WaffleSmartArrayCreate(
 
 WAFFLE_HOOK_DLL_FUNCTION BOOL WINAPI WaffleSmartArrayVerify(
     _In_    LPWAFFLE_SMART_ARRAY lpHeader
-    )
+)
 {
     if (!lpHeader || !lpHeader->hHeap || !lpHeader->nSize)
     {
@@ -55,7 +55,7 @@ WAFFLE_HOOK_DLL_FUNCTION BOOL WINAPI WaffleSmartArrayVerify(
 
 WAFFLE_HOOK_DLL_FUNCTION BOOL WINAPI WaffleSmartArrayDestroy(
     _In_    LPWAFFLE_SMART_ARRAY lpHeader
-    )
+)
 {
     if (!lpHeader || !lpHeader->hHeap)
     {
@@ -71,7 +71,7 @@ WAFFLE_HOOK_DLL_FUNCTION BOOL WINAPI WaffleSmartArrayDestroy(
 WAFFLE_HOOK_DLL_FUNCTION LPVOID WINAPI WaffleSmartArrayIndexToAddress(
     _In_    LPWAFFLE_SMART_ARRAY lpHeader,
     _In_    SIZE_T Index
-    )
+)
 {
     return (LPVOID) (((SIZE_T) lpHeader->lpArray) + lpHeader->nSize * Index);
 }
@@ -80,7 +80,7 @@ WAFFLE_HOOK_DLL_FUNCTION WAFFLE_SMART_ARRAY_SEARCH_RESULT WINAPI WaffleSmartArra
     _In_    LPWAFFLE_SMART_ARRAY lpHeader,
     _In_    LPVOID lpElement,
     _In_    LPCOMPARE pCompare
-    )
+)
 {
     WAFFLE_SMART_ARRAY_SEARCH_RESULT stResult;
     stResult.Status = SEARCH_MISSING;
@@ -96,7 +96,7 @@ WAFFLE_HOOK_DLL_FUNCTION WAFFLE_SMART_ARRAY_SEARCH_RESULT WINAPI WaffleSmartArra
 
     for (SIZE_T i = 0; i < lpHeader->nCount - 1; i++)
     {
-        if (!pCompare(lpElement, WaffleSmartArrayIndexToAddress(lpHeader,i)))
+        if (!pCompare(lpElement, WaffleSmartArrayIndexToAddress(lpHeader, i)))
         {
             stResult.Status = SEARCH_SUCCESS;
             stResult.Param1 = i;
@@ -114,7 +114,7 @@ WAFFLE_HOOK_DLL_FUNCTION WAFFLE_SMART_ARRAY_SEARCH_RESULT WINAPI WaffleSmartArra
 WAFFLE_HOOK_DLL_FUNCTION LPVOID WINAPI WaffleSmartArrayAdd(
     _In_    LPWAFFLE_SMART_ARRAY lpHeader,
     _In_    LPVOID lpElement
-    )
+)
 {
     if (!WaffleSmartArrayVerify(lpHeader) || !lpElement)
     {

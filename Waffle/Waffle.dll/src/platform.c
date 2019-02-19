@@ -2,7 +2,7 @@
 
 WAFFLE_COMMON_DLL_FUNCTION WORD WINAPI WaffleGetMachineType(
     _In_    LPCTSTR lpszFile
-    )
+)
 {
     PVOID OldValue = 0;
     WaffleDisableWow64FsRedirection(&OldValue);

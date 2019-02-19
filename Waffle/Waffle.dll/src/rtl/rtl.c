@@ -2,7 +2,7 @@
 
 WAFFLE_COMMON_DLL_FUNCTION int WINAPI WafflelstrlenW(
     _In_    LPCWSTR lpString
-    )
+)
 {
     if (lpString)
     {
@@ -18,7 +18,7 @@ WAFFLE_COMMON_DLL_FUNCTION int WINAPI WafflelstrlenW(
 
 WAFFLE_COMMON_DLL_FUNCTION int WINAPI WafflelstrlenA(
     _In_    LPCSTR lpString
-    )
+)
 {
     if (lpString)
     {
@@ -35,7 +35,7 @@ WAFFLE_COMMON_DLL_FUNCTION int WINAPI WafflelstrlenA(
 WAFFLE_COMMON_DLL_FUNCTION LPWSTR WINAPI WafflelstrcatW(
     _In_    LPWSTR lpString1,
     _In_    LPCWSTR lpString2
-    )
+)
 {
     if (!lpString1)
     {
@@ -53,7 +53,7 @@ WAFFLE_COMMON_DLL_FUNCTION LPWSTR WINAPI WafflelstrcatW(
 WAFFLE_COMMON_DLL_FUNCTION LPSTR WINAPI WafflelstrcatA(
     _In_    LPSTR lpString1,
     _In_    LPCSTR lpString2
-    )
+)
 {
     if (!lpString1)
     {
@@ -71,7 +71,7 @@ WAFFLE_COMMON_DLL_FUNCTION LPSTR WINAPI WafflelstrcatA(
 WAFFLE_COMMON_DLL_FUNCTION LPWSTR WINAPI WafflelstrcpyW(
     _In_    LPWSTR lpString1,
     _In_    LPCWSTR lpString2
-    )
+)
 {
     if (!lpString1)
     {
@@ -88,7 +88,7 @@ WAFFLE_COMMON_DLL_FUNCTION LPWSTR WINAPI WafflelstrcpyW(
 WAFFLE_COMMON_DLL_FUNCTION LPSTR WINAPI WafflelstrcpyA(
     _In_    LPSTR lpString1,
     _In_    LPCSTR lpString2
-    )
+)
 {
     if (!lpString1)
     {
@@ -105,7 +105,7 @@ WAFFLE_COMMON_DLL_FUNCTION LPSTR WINAPI WafflelstrcpyA(
 WAFFLE_COMMON_DLL_FUNCTION int WINAPI WafflelstrcmpiW(
     _In_    LPCWSTR lpString1,
     _In_    LPCWSTR lpString2
-    )
+)
 {
     if (lpString1 && lpString2)
     {
@@ -122,7 +122,7 @@ WAFFLE_COMMON_DLL_FUNCTION int WINAPI WafflelstrcmpiW(
 WAFFLE_COMMON_DLL_FUNCTION int WINAPI WafflelstrcmpiA(
     _In_    LPCSTR lpString1,
     _In_    LPCSTR lpString2
-    )
+)
 {
     if (lpString1 && lpString2)
     {
@@ -139,7 +139,7 @@ WAFFLE_COMMON_DLL_FUNCTION int WINAPI WafflelstrcmpiA(
 WAFFLE_COMMON_DLL_FUNCTION int WINAPI WafflelstrcmpW(
     _In_    LPCWSTR lpString1,
     _In_    LPCWSTR lpString2
-    )
+)
 {
     if (lpString1 && lpString2)
     {
@@ -156,7 +156,7 @@ WAFFLE_COMMON_DLL_FUNCTION int WINAPI WafflelstrcmpW(
 WAFFLE_COMMON_DLL_FUNCTION int WINAPI WafflelstrcmpA(
     _In_    LPCSTR lpString1,
     _In_    LPCSTR lpString2
-    )
+)
 {
     if (lpString1 && lpString2)
     {
@@ -172,7 +172,7 @@ WAFFLE_COMMON_DLL_FUNCTION int WINAPI WafflelstrcmpA(
 WAFFLE_COMMON_DLL_FUNCTION int WINAPI WaffleStrToIntW(
     _In_    LPCWSTR lpString,
     _In_    int nDefault
-    )
+)
 {
     int i = 0;
     BOOL bHex = FALSE;
@@ -230,7 +230,7 @@ WAFFLE_COMMON_DLL_FUNCTION int WINAPI WaffleStrToIntW(
 WAFFLE_COMMON_DLL_FUNCTION int WINAPI WaffleStrToIntA(
     _In_    LPCSTR lpString,
     _In_    int nDefault
-    )
+)
 {
     int i = 0;
     BOOL bHex = FALSE;
@@ -287,7 +287,7 @@ WAFFLE_COMMON_DLL_FUNCTION int WINAPI WaffleStrToIntA(
 
 WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleCreateRWLock(
     LPWAFFLE_RWLOCK lpstRWLock
-    )
+)
 {
     if (!lpstRWLock->hReader)
     {
@@ -307,7 +307,7 @@ WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleCreateRWLock(
 
 WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleReleaseRWLock(
     LPWAFFLE_RWLOCK lpstRWLock
-    )
+)
 {
     if (lpstRWLock->hReader)
     {
@@ -321,7 +321,7 @@ WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleReleaseRWLock(
 
 _When_(!lpstRWLock->dwReader, _Acquires_lock_(lpstRWLock->csWrite))
 WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleEnterWriterLock(
-LPWAFFLE_RWLOCK lpstRWLock
+    LPWAFFLE_RWLOCK lpstRWLock
 )
 {
     EnterCriticalSection(&lpstRWLock->csRead);
@@ -335,7 +335,7 @@ LPWAFFLE_RWLOCK lpstRWLock
 
 _When_(TRUE, _Releases_lock_(lpstRWLock->csWrite))
 WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleLeaveWriterLock(
-LPWAFFLE_RWLOCK lpstRWLock
+    LPWAFFLE_RWLOCK lpstRWLock
 )
 {
     LeaveCriticalSection(&lpstRWLock->csWrite);
@@ -343,7 +343,7 @@ LPWAFFLE_RWLOCK lpstRWLock
 
 WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleEnterReaderLock(
     LPWAFFLE_RWLOCK lpstRWLock
-    )
+)
 {
     EnterCriticalSection(&lpstRWLock->csRead);
     EnterCriticalSection(&lpstRWLock->csWrite);
@@ -358,7 +358,7 @@ WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleEnterReaderLock(
 
 WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleLeaveReaderLock(
     LPWAFFLE_RWLOCK lpstRWLock
-    )
+)
 {
     EnterCriticalSection(&lpstRWLock->csWrite);
     lpstRWLock->dwReader--;
@@ -372,11 +372,11 @@ WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleLeaveReaderLock(
 WAFFLE_COMMON_DLL_FUNCTION LPBYTE WINAPI WaffleGetProcAddressW(
     _In_    HMODULE hModule,
     _In_    LPCWSTR lpszFuncName
-    )
+)
 {
     LPBYTE lpFunction = NULL;
     DWORD nSize = WideCharToMultiByte(CP_ACP, 0, lpszFuncName, -1, NULL, 0, NULL, NULL);
-    LPSTR lpszFunction = (LPSTR) WaffleAlloc(nSize*sizeof(CHAR));
+    LPSTR lpszFunction = (LPSTR) WaffleAlloc(nSize * sizeof(CHAR));
     if (lpszFunction)
     {
         if (WideCharToMultiByte(CP_ACP, 0, lpszFuncName, -1, lpszFunction, nSize, NULL, NULL))
@@ -391,7 +391,7 @@ WAFFLE_COMMON_DLL_FUNCTION LPBYTE WINAPI WaffleGetProcAddressW(
 WAFFLE_COMMON_DLL_FUNCTION LPBYTE WINAPI WaffleGetProcAddressA(
     _In_    HMODULE hModule,
     _In_    LPCSTR lpszFuncName
-    )
+)
 {
     LPBYTE lpAddress = NULL;
 
@@ -489,7 +489,7 @@ WAFFLE_COMMON_DLL_FUNCTION LPBYTE WINAPI WaffleGetProcAddressA(
 
 WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleIntBox(
     int i
-    )
+)
 {
     TCHAR szBuf[32];
     wsprintf(szBuf, TEXT("%i"), i);
@@ -498,7 +498,7 @@ WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleIntBox(
 
 WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleHexBox(
     DWORD i
-    )
+)
 {
     TCHAR szBuf[32];
     wsprintf(szBuf, TEXT("0x%08X"), i);
@@ -507,7 +507,7 @@ WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleHexBox(
 
 WAFFLE_COMMON_DLL_FUNCTION DWORD WINAPI WaffleGetImageSize(
     HMODULE hModule
-    )
+)
 {
     if (!hModule)
     {
@@ -539,7 +539,7 @@ WAFFLE_COMMON_DLL_FUNCTION DWORD WINAPI WaffleGetImageSize(
 
 WAFFLE_COMMON_DLL_FUNCTION LPVOID WINAPI WaffleAlloc(
     _In_    SIZE_T dwBytes
-    )
+)
 {
     if (!lpstProcessSetting)
     {
@@ -579,7 +579,7 @@ WAFFLE_COMMON_DLL_FUNCTION LPVOID WINAPI WaffleAlloc(
 WAFFLE_COMMON_DLL_FUNCTION LPVOID WINAPI WaffleReAlloc(
     _In_    LPVOID lpMemory,
     _In_    SIZE_T dwBytes
-    )
+)
 {
     if (!lpstProcessSetting)
     {
@@ -601,7 +601,7 @@ WAFFLE_COMMON_DLL_FUNCTION LPVOID WINAPI WaffleReAlloc(
 _Ret_maybenull_
 _Success_(return == 0)
 WAFFLE_COMMON_DLL_FUNCTION LPVOID WINAPI WaffleFree(
-_Frees_ptr_opt_ LPVOID lpMemory
+    _Frees_ptr_opt_ LPVOID lpMemory
 )
 {
     if (!lpstProcessSetting)

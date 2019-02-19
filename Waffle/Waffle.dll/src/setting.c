@@ -3,7 +3,7 @@
 
 WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleInitProcessSetting(
     _In_    LPWAFFLE_PROCESS_SETTING lpstPS
-    )
+)
 {
     if (lpstPS)
     {

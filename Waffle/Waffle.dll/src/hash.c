@@ -19,7 +19,7 @@ typedef struct
 
 WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleDestroyHash(
     _In_    LPWAFFLE_HASH hHash
-    )
+)
 {
     if (hHash)
     {
@@ -83,7 +83,7 @@ WAFFLE_COMMON_DLL_FUNCTION BOOL WINAPI WaffleFeedHash(
     _In_    LPWAFFLE_HASH hHash,
     _In_    LPBYTE lpBuffer,
     _In_    DWORD nNumberOfBytesRead
-    )
+)
 {
     return hHash->CryptHashData(hHash->hCryptHash, lpBuffer, nNumberOfBytesRead, 0);
 }
@@ -91,7 +91,7 @@ WAFFLE_COMMON_DLL_FUNCTION BOOL WINAPI WaffleFeedHash(
 WAFFLE_COMMON_DLL_FUNCTION BOOL WINAPI WaffleGetHashString(
     _In_    LPWAFFLE_HASH hHash,
     _Out_   LPTSTR lpszResult
-    )
+)
 {
     lpszResult[0] = TEXT('\0');
 
@@ -115,7 +115,7 @@ WAFFLE_COMMON_DLL_FUNCTION BOOL WINAPI WaffleGetHashString(
 WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleGetFileHash(
     _In_    LPCTSTR lpszFile,
     _Out_   LPTSTR lpszResult
-    )
+)
 {
     LPWAFFLE_HASH hHash = WaffleCreateHash();
 

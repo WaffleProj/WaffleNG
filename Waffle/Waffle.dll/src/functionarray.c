@@ -3,7 +3,7 @@
 WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleAddFunction(
     _In_    LPWAFFLE_FUNCTION_ARRAY lpstNewFunction,
     _In_    HMODULE hDetour
-    )
+)
 {
     //Check argument
     if (!lpstNewFunction->lpSource)
@@ -74,7 +74,7 @@ WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleAddFunction(
 WAFFLE_COMMON_DLL_FUNCTION LPVOID WINAPI WaffleGetBackupAddress(
     _In_    LPCTSTR lpszLibrary,
     _In_    LPCTSTR lpszFunction
-    )
+)
 {
     HMODULE hModule = GetModuleHandle(lpszLibrary);
     if (!hModule)
@@ -101,7 +101,7 @@ WAFFLE_COMMON_DLL_FUNCTION LPVOID WINAPI WaffleGetBackupAddress(
 WAFFLE_COMMON_DLL_FUNCTION SIZE_T WINAPI WaffleFindDetourAddress(
     _In_    PVOID ExceptionAddress,
     _In_    PVOID CallerAddress
-    )
+)
 {
     if (!ExceptionAddress)
     {

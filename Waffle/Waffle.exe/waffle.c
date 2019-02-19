@@ -1,5 +1,6 @@
 ﻿#include <waffle.h>
 #include <Shlwapi.h>
+
 #ifndef ASSOCF_NONE
 #define ASSOCF_NONE 0x00000000
 #endif // !ASSOCF_NONE
@@ -18,25 +19,25 @@ int CALLBACK PropSheetProc(
     _In_        HWND hwndDlg,
     _In_        UINT uMsg,
     _In_opt_    LPARAM lParam
-    )
+)
 {
     switch (uMsg)
     {
-        case PSCB_BUTTONPRESSED:
+    case PSCB_BUTTONPRESSED:
+    {
+        switch (lParam)
         {
-            switch (lParam)
-            {
-                case PSBTN_OK:
-                case PSBTN_CANCEL:
-                case PSBTN_APPLYNOW:
-                case PSBTN_FINISH:
-                    break;
-            }
+        case PSBTN_OK:
+        case PSBTN_CANCEL:
+        case PSBTN_APPLYNOW:
+        case PSBTN_FINISH:
             break;
         }
-        case PSCB_INITIALIZED:
-        case PSCB_PRECREATE:
-            break;
+        break;
+    }
+    case PSCB_INITIALIZED:
+    case PSCB_PRECREATE:
+        break;
     }
 
     return 0;
@@ -47,7 +48,7 @@ INT_PTR CALLBACK DialogProc(
     _In_    UINT uMsg,
     _In_    WPARAM wParam,
     _In_    LPARAM lParam
-    )
+)
 {
     return FALSE;
 }
@@ -88,74 +89,74 @@ int WINAPI Main(void)
     int nArg = WaffleArgc(NULL);
     switch (nArg)
     {
-        case 0:
+    case 0:
+    {
+        // Won't happen, error
+        DEBUG_PRINTF("Cannot get the command line.");
+        ExitProcess(0);
+        break;
+    }
+    case 1:
+    {
+        OPENFILENAME stOpenFile;
+        RtlZeroMemory(&stOpenFile, sizeof(stOpenFile));
+
+        stOpenFile.lStructSize = sizeof(stOpenFile);
+        stOpenFile.lpstrFile = szTarget;
+        stOpenFile.nMaxFile = lengthof(szTarget);
+        stOpenFile.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+
+        // GetOpenFileName will create a bunch of worker threads, so return 0 won't close our process
+        if (!GetOpenFileName(&stOpenFile) || !lstrlen(szTarget))
         {
-            // Won't happen, error
-            DEBUG_PRINTF("Cannot get the command line.");
             ExitProcess(0);
-            break;
         }
-        case 1:
+
+        // Execute with no command line, assume using default plugin to open
+        Wafflelstrcpy(szComponent, TEXT("default"));
+        Wafflelstrcpy(szCommand, TEXT("open"));
+        break;
+    }
+    default:
+    {
+        // 1.Path 2. Command
+        WaffleArgv(NULL, 2, szCommand, lengthof(szCommand));
+
+        if (!Wafflelstrcmpi(szCommand, TEXT("open")))
         {
-            OPENFILENAME stOpenFile;
-            RtlZeroMemory(&stOpenFile, sizeof(stOpenFile));
+            // 3. Plugin 4. Target 5. Other
+            WaffleArgv(NULL, 3, szComponent, lengthof(szComponent));
+            WaffleArgv(NULL, 4, szTarget, lengthof(szTarget));
 
-            stOpenFile.lStructSize = sizeof(stOpenFile);
-            stOpenFile.lpstrFile = szTarget;
-            stOpenFile.nMaxFile = lengthof(szTarget);
-            stOpenFile.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
-
-            // GetOpenFileName will create a bunch of worker threads, so return 0 won't close our process
-            if (!GetOpenFileName(&stOpenFile) || !lstrlen(szTarget))
+            lpszArgument = (LPTSTR) GlobalAlloc(GPTR, (lstrlen(WaffleArgp(NULL, 5)) + 1) * sizeof(TCHAR));
+            if (lpszArgument)
             {
-                ExitProcess(0);
-            }
-
-            // Execute with no command line, assume using default plugin to open
-            Wafflelstrcpy(szComponent, TEXT("default"));
-            Wafflelstrcpy(szCommand, TEXT("open"));
-            break;
-        }
-        default:
-        {
-            // 1.Path 2. Command
-            WaffleArgv(NULL, 2, szCommand, lengthof(szCommand));
-
-            if (!Wafflelstrcmpi(szCommand, TEXT("open")))
-            {
-                // 3. Plugin 4. Target 5. Other
-                WaffleArgv(NULL, 3, szComponent, lengthof(szComponent));
-                WaffleArgv(NULL, 4, szTarget, lengthof(szTarget));
-
-                lpszArgument = (LPTSTR) GlobalAlloc(GPTR, (lstrlen(WaffleArgp(NULL, 5)) + 1) * sizeof(TCHAR));
-                if (lpszArgument)
-                {
-                    Wafflelstrcpy(lpszArgument, WaffleArgp(NULL, 5));
-                }
-                else
-                {
-                    DEBUG_PRINTF("Out of memory.");
-                    ExitProcess(0);
-                }
-            }
-            else if (!Wafflelstrcmpi(szCommand, TEXT("option")))
-            {
-                // 3. Target
-                Wafflelstrcpy(szComponent, TEXT(""));
-                WaffleArgv(NULL, 3, szTarget, lengthof(szTarget));
-            }
-            else if (!Wafflelstrcmpi(szCommand, TEXT("help")))
-            {
-                MessageBox(0, TEXT("You really need help?"), TEXT("Waffle"), 0);
-                ExitProcess(0);
+                Wafflelstrcpy(lpszArgument, WaffleArgp(NULL, 5));
             }
             else
             {
-                MessageBox(0, TEXT("Waffle help\n1. open\nWaffle.vbs open [plugin/default] [target]\n2. option\nWaffle.vbs option [target]\n3. help\nWaffle.vbs help"), TEXT("Waffle"), 0);
+                DEBUG_PRINTF("Out of memory.");
                 ExitProcess(0);
             }
-            break;
         }
+        else if (!Wafflelstrcmpi(szCommand, TEXT("option")))
+        {
+            // 3. Target
+            Wafflelstrcpy(szComponent, TEXT(""));
+            WaffleArgv(NULL, 3, szTarget, lengthof(szTarget));
+        }
+        else if (!Wafflelstrcmpi(szCommand, TEXT("help")))
+        {
+            MessageBox(0, TEXT("You really need help?"), TEXT("Waffle"), 0);
+            ExitProcess(0);
+        }
+        else
+        {
+            MessageBox(0, TEXT("Waffle help\n1. open\nWaffle.vbs open [plugin/default] [target]\n2. option\nWaffle.vbs option [target]\n3. help\nWaffle.vbs help"), TEXT("Waffle"), 0);
+            ExitProcess(0);
+        }
+        break;
+    }
     }
 
     // We should always have a target
@@ -186,38 +187,38 @@ int WINAPI Main(void)
             {
                 switch (lpszShellOpen[++i])
                 {
-                    case TEXT('0'):
-                    case TEXT('1'):
-                    case TEXT('L'):
+                case TEXT('0'):
+                case TEXT('1'):
+                case TEXT('L'):
+                {
+                    nSize += Wafflelstrlen(szTarget);
+                    if (!(lpszCmdLine = (LPTSTR) WaffleReAlloc(lpszCmdLine, nSize * sizeof(TCHAR))))
                     {
-                        nSize += Wafflelstrlen(szTarget);
-                        if (!(lpszCmdLine = (LPTSTR) WaffleReAlloc(lpszCmdLine, nSize * sizeof(TCHAR))))
-                        {
-                            DEBUG_PRINTF("Out of memory.");
-                            ExitProcess(0);
-                        }
-                        Wafflelstrcpy(&lpszCmdLine[j], szTarget);
-                        j = Wafflelstrlen(lpszCmdLine) - 1;
-                        break;
-                    }
-                    case TEXT('*'):
-                    {
-                        nSize += Wafflelstrlen(lpszArgument);
-                        if (!(lpszCmdLine = (LPTSTR) WaffleReAlloc(lpszCmdLine, nSize * sizeof(TCHAR))))
-                        {
-                            DEBUG_PRINTF("Out of memory.");
-                            ExitProcess(0);
-                        }
-                        Wafflelstrcpy(&lpszCmdLine[j], lpszArgument);
-                        j = Wafflelstrlen(lpszCmdLine) - 1;
-                        break;
-                    }
-                    default:
-                    {
-                        DEBUG_PRINTF("Unknown argument:%s.", lpszShellOpen);
+                        DEBUG_PRINTF("Out of memory.");
                         ExitProcess(0);
-                        break;
                     }
+                    Wafflelstrcpy(&lpszCmdLine[j], szTarget);
+                    j = Wafflelstrlen(lpszCmdLine) - 1;
+                    break;
+                }
+                case TEXT('*'):
+                {
+                    nSize += Wafflelstrlen(lpszArgument);
+                    if (!(lpszCmdLine = (LPTSTR) WaffleReAlloc(lpszCmdLine, nSize * sizeof(TCHAR))))
+                    {
+                        DEBUG_PRINTF("Out of memory.");
+                        ExitProcess(0);
+                    }
+                    Wafflelstrcpy(&lpszCmdLine[j], lpszArgument);
+                    j = Wafflelstrlen(lpszCmdLine) - 1;
+                    break;
+                }
+                default:
+                {
+                    DEBUG_PRINTF("Unknown argument:%s.", lpszShellOpen);
+                    ExitProcess(0);
+                    break;
+                }
                 }
             }
         }
@@ -310,38 +311,38 @@ int WINAPI Main(void)
 
         switch (MachineType)
         {
-            case WAFFLE_PORT_MACHINE_I386:
-            {
-                lstrcat(szLoader, TEXT("\\I386\\Waffle.exe"));
-                break;
-            }
-            case WAFFLE_PORT_MACHINE_AMD64:
-            {
-                lstrcat(szLoader, TEXT("\\AMD64\\Waffle.exe"));
-                break;
-            }
-            case WAFFLE_PORT_MACHINE_ARMNT:
-            {
-                lstrcat(szLoader, TEXT("\\ARMNT\\Waffle.exe"));
-                break;
-            }
-            case WAFFLE_PORT_MACHINE_IA64:
-            {
-                lstrcat(szLoader, TEXT("\\IA64\\Waffle.exe"));
-                break;
-            }
-            case WAFFLE_PORT_MACHINE_ERROR:
-            {
-                DEBUG_PRINTF("Unable to open the target.");
-                ExitProcess(0);
-                break;
-            }
-            default:
-            {
-                DEBUG_PRINTF("Unsupported file.");
-                ExitProcess(0);
-                break;
-            }
+        case WAFFLE_PORT_MACHINE_I386:
+        {
+            lstrcat(szLoader, TEXT("\\I386\\Waffle.exe"));
+            break;
+        }
+        case WAFFLE_PORT_MACHINE_AMD64:
+        {
+            lstrcat(szLoader, TEXT("\\AMD64\\Waffle.exe"));
+            break;
+        }
+        case WAFFLE_PORT_MACHINE_ARMNT:
+        {
+            lstrcat(szLoader, TEXT("\\ARMNT\\Waffle.exe"));
+            break;
+        }
+        case WAFFLE_PORT_MACHINE_IA64:
+        {
+            lstrcat(szLoader, TEXT("\\IA64\\Waffle.exe"));
+            break;
+        }
+        case WAFFLE_PORT_MACHINE_ERROR:
+        {
+            DEBUG_PRINTF("Unable to open the target.");
+            ExitProcess(0);
+            break;
+        }
+        default:
+        {
+            DEBUG_PRINTF("Unsupported file.");
+            ExitProcess(0);
+            break;
+        }
         }
 
         LPTSTR lpszCommandLine;

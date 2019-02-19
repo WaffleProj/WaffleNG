@@ -6,7 +6,7 @@ int CALLBACK EnumFontFamExFilterW(
     _In_    const TEXTMETRICW *lpntme,
     _In_    DWORD FontType,
     _In_    LPARAM lParam
-    )
+)
 {
     // Cast lpData
     LPENUM_FONTS_FILTER_DATAW lpFilter = (LPENUM_FONTS_FILTER_DATAW) lParam;
@@ -87,7 +87,7 @@ int CALLBACK EnumFontFamExFilterA(
     _In_    const TEXTMETRICW *lpntme,
     _In_    DWORD FontType,
     _In_    LPARAM lParam
-    )
+)
 {
     // ENUMLOGFONTEXDVW stEnumLogFontExDV;
     LPENUM_FONTS_FILTER_DATAA lpFilter = (LPENUM_FONTS_FILTER_DATAA) lParam;
@@ -119,7 +119,7 @@ LIBRARY_EXPORT int WINAPI DetourEnumFontFamiliesExW(
     _In_    FONTENUMPROCW lpEnumFontFamExProc,
     _In_    LPARAM lParam,
     _In_    DWORD dwFlags
-    )
+)
 {
     static LPENUMFONTFAMILIESEXW BackupEnumFontFamiliesExW;
     if (!BackupEnumFontFamiliesExW)
@@ -143,7 +143,7 @@ LIBRARY_EXPORT int WINAPI DetourEnumFontFamiliesW(
     _In_    LPCWSTR lpszFamily,
     _In_    FONTENUMPROCW lpEnumFontFamProc,
     _In_    LPARAM lParam
-    )
+)
 {
     LOGFONTW stLogFont;
 
@@ -160,7 +160,7 @@ LIBRARY_EXPORT int WINAPI DetourEnumFontsW(
     _In_  LPCWSTR lpFaceName,
     _In_  FONTENUMPROCW lpFontFunc,
     _In_  LPARAM lParam
-    )
+)
 {
     LOGFONTW stLogFont;
 
@@ -178,7 +178,7 @@ LIBRARY_EXPORT int WINAPI DetourEnumFontFamiliesExA(
     _In_    FONTENUMPROCA lpEnumFontFamExProc,
     _In_    LPARAM lParam,
     _In_    DWORD dwFlags
-    )
+)
 {
     LOGFONTW stLogFont;
     RtlMoveMemory(&stLogFont, lpLogfont, offsetof(LOGFONTA, lfFaceName));
@@ -203,7 +203,7 @@ LIBRARY_EXPORT int WINAPI DetourEnumFontFamiliesA(
     _In_    LPCSTR lpszFamily,
     _In_    FONTENUMPROCA lpEnumFontFamProc,
     _In_    LPARAM lParam
-    )
+)
 {
     LOGFONTA stLogFont;
 
@@ -220,7 +220,7 @@ LIBRARY_EXPORT int WINAPI DetourEnumFontsA(
     _In_  LPCSTR lpFaceName,
     _In_  FONTENUMPROCA lpFontFunc,
     _In_  LPARAM lParam
-    )
+)
 {
     LOGFONTA stLogFont;
 
@@ -247,7 +247,7 @@ LIBRARY_EXPORT HFONT WINAPI DetourCreateFontW(
     _In_    DWORD fdwQuality,
     _In_    DWORD fdwPitchAndFamily,
     _In_    LPCWSTR lpszFace
-    )
+)
 {
     static LPCREATEFONTW BackupCreateFontW;
     if (!BackupCreateFontW)
@@ -278,7 +278,7 @@ LIBRARY_EXPORT HFONT WINAPI DetourCreateFontA(
     _In_    DWORD fdwQuality,
     _In_    DWORD fdwPitchAndFamily,
     _In_    LPCSTR lpszFace
-    )
+)
 {
     LPWSTR lpuszFace = AnsiToUnicode(lpszFace);
     if (fdwCharSet == DEFAULT_CHARSET)
@@ -293,7 +293,7 @@ LIBRARY_EXPORT HFONT WINAPI DetourCreateFontA(
 
 LIBRARY_EXPORT HFONT WINAPI DetourCreateFontIndirectW(
     _In_    const LOGFONTW *lplf
-    )
+)
 {
     static LPCREATEFONTINDIRECTW BackupCreateFontIndirectW;
     if (!BackupCreateFontIndirectW)
@@ -314,7 +314,7 @@ LIBRARY_EXPORT HFONT WINAPI DetourCreateFontIndirectW(
 
 LIBRARY_EXPORT HFONT WINAPI DetourCreateFontIndirectA(
     _In_    const LOGFONTA *lplf
-    )
+)
 {
     LOGFONTW lf;
     RtlMoveMemory(&lf, lplf, sizeof(lf));
@@ -328,7 +328,7 @@ LIBRARY_EXPORT HFONT WINAPI DetourCreateFontIndirectA(
 
 LIBRARY_EXPORT HFONT WINAPI DetourCreateFontIndirectExW(
     _In_    const ENUMLOGFONTEXDVW *penumlfex
-    )
+)
 {
     static LPCREATEFONTINDIRECTEXW BackupCreateFontIndirectExW;
     if (!BackupCreateFontIndirectExW)
@@ -349,7 +349,7 @@ LIBRARY_EXPORT HFONT WINAPI DetourCreateFontIndirectExW(
 
 LIBRARY_EXPORT HFONT WINAPI DetourCreateFontIndirectExA(
     _In_    const ENUMLOGFONTEXDVA *penumlfex
-    )
+)
 {
     ENUMLOGFONTEXDVW enumlfex;
     RtlMoveMemory(&enumlfex, penumlfex, sizeof(enumlfex));
@@ -376,7 +376,7 @@ LIBRARY_EXPORT BOOL WINAPI DetourTextOutA(
     _In_    int nYStart,
     _In_    LPCSTR lpString,
     _In_    int cchString
-    )
+)
 {
     LPWSTR lpuszString = AnsiToUnicode(lpString);
     BOOL Result = TextOut(hdc, nXStart, nYStart, lpuszString, cchString);
@@ -387,7 +387,7 @@ LIBRARY_EXPORT BOOL WINAPI DetourTextOutA(
 
 LIBRARY_EXPORT DWORD WINAPI DetourGdiGetCodePage(
     _In_    HDC hdc
-    )
+)
 {
     return stNewEnvir.AnsiCodePage;
 }

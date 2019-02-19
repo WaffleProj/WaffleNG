@@ -2,7 +2,7 @@
 
 WAFFLE_COMMON_DLL_FUNCTION int WINAPI WaffleFindLibrary(
     _In_    LPVOID lpMemory
-    )
+)
 {
     if (!lpstProcessSetting->lpstLibrary)
     {
@@ -22,7 +22,7 @@ WAFFLE_COMMON_DLL_FUNCTION int WINAPI WaffleFindLibrary(
 
 WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleCopyLibrary(
     _In_    LPWAFFLE_LIBRARY_ARRAY lpstNewLibrary
-    )
+)
 {
     if (!lpstNewLibrary)
     {
@@ -75,7 +75,7 @@ WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleCopyLibrary(
 
 WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleAddLibrary(
     _In_    HMODULE hModule
-    )
+)
 {
     //Check argument
     if (!hModule)

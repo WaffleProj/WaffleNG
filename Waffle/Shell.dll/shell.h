@@ -21,6 +21,6 @@ extern _IWaffleShellExtInit IWaffleShellExtInitObject;
 VOID PrintGuid(
     _In_        REFIID riid,
     _In_opt_    LPCTSTR lpszTitle
-    );
+);
 
 #endif // _WAFFLE_SHELL_H_

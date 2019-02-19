@@ -4,9 +4,9 @@ HRESULT STDMETHODCALLTYPE IWaffleContextMenu_QueryInterface(
     _In_    IWaffleContextMenu *this,
     _In_    REFIID riid,
     _In_    void **ppvObject
-    )
+)
 {
-    HRESULT hr = ((_IWaffleContextMenu *)this)->IShellExtInit.lpVtbl->QueryInterface((IWaffleShellExtInit *)&((_IWaffleContextMenu *)this)->IShellExtInit, riid, ppvObject);
+    HRESULT hr = ((_IWaffleContextMenu *) this)->IShellExtInit.lpVtbl->QueryInterface((IWaffleShellExtInit *)&((_IWaffleContextMenu *) this)->IShellExtInit, riid, ppvObject);
     if (SUCCEEDED(hr))
     {
         return hr;
@@ -24,26 +24,26 @@ HRESULT STDMETHODCALLTYPE IWaffleContextMenu_QueryInterface(
 
 ULONG STDMETHODCALLTYPE IWaffleContextMenu_AddRef(
     _In_    IWaffleContextMenu *this
-    )
+)
 {
-    InterlockedIncrement(&((_IWaffleContextMenu *)this)->nRef);
+    InterlockedIncrement(&((_IWaffleContextMenu *) this)->nRef);
 
-    return ((_IWaffleContextMenu *)this)->nRef;
+    return ((_IWaffleContextMenu *) this)->nRef;
 }
 
 ULONG STDMETHODCALLTYPE IWaffleContextMenu_Release(
     _In_    IWaffleContextMenu *this
-    )
+)
 {
-    InterlockedDecrement(&((_IWaffleContextMenu *)this)->nRef);
+    InterlockedDecrement(&((_IWaffleContextMenu *) this)->nRef);
 
-    if (!((_IWaffleContextMenu *)this)->nRef)
+    if (!((_IWaffleContextMenu *) this)->nRef)
     {
         GlobalFree(this);
         InterlockedDecrement(&IWaffleClassFactoryObject.refContextMenu);
         return(0);
     }
-    return ((_IWaffleContextMenu *)this)->nRef;
+    return ((_IWaffleContextMenu *) this)->nRef;
 }
 
 HRESULT STDMETHODCALLTYPE IWaffleContextMenu_GetCommandString(
@@ -53,7 +53,7 @@ HRESULT STDMETHODCALLTYPE IWaffleContextMenu_GetCommandString(
     _In_    UINT *pwReserved,
     _In_    LPSTR pszName,
     _In_    UINT cchMax
-    )
+)
 {
     HRESULT hr = E_INVALIDARG;
 
@@ -63,12 +63,12 @@ HRESULT STDMETHODCALLTYPE IWaffleContextMenu_GetCommandString(
         {
         case GCS_HELPTEXTW:
         {
-            hr = StringCchCopyW((LPWSTR)pszName, cchMax, L"Open this file with Waffle");
+            hr = StringCchCopyW((LPWSTR) pszName, cchMax, L"Open this file with Waffle");
             break;
         }
         case GCS_VERBW:
         {
-            hr = StringCchCopyW((LPWSTR)pszName, cchMax, L"waffle");
+            hr = StringCchCopyW((LPWSTR) pszName, cchMax, L"waffle");
             break;
         }
         }
@@ -79,13 +79,13 @@ HRESULT STDMETHODCALLTYPE IWaffleContextMenu_GetCommandString(
 HRESULT STDMETHODCALLTYPE IWaffleContextMenu_InvokeCommand(
     _In_    IWaffleContextMenu *this,
     _In_    LPCMINVOKECOMMANDINFO pici
-    )
+)
 {
     switch (LOWORD(pici->lpVerb))
     {
     case IDM_WAFFLE_OPEN:
     {
-        LPTSTR lpszFileName = InterlockedExchangePointer(&((_IWaffleContextMenu *)this)->IShellExtInit.lpszFileName, NULL);
+        LPTSTR lpszFileName = InterlockedExchangePointer(&((_IWaffleContextMenu *) this)->IShellExtInit.lpszFileName, NULL);
         MessageBox(pici->hwnd, lpszFileName, TEXT("Waffle"), MB_OK | MB_ICONINFORMATION);
         GlobalFree(lpszFileName);
         break;
@@ -111,9 +111,9 @@ HRESULT STDMETHODCALLTYPE IWaffleContextMenu_QueryContextMenu(
     _In_    UINT idCmdFirst,
     _In_    UINT idCmdLast,
     _In_    UINT uFlags
-    )
+)
 {
-    if (!(uFlags & CMF_DEFAULTONLY) && ((_IWaffleContextMenu *)this)->IShellExtInit.lpszFileName)
+    if (!(uFlags & CMF_DEFAULTONLY) && ((_IWaffleContextMenu *) this)->IShellExtInit.lpszFileName)
     {
         MENUITEMINFO mii;
         mii.cbSize = sizeof(mii);
@@ -125,7 +125,7 @@ HRESULT STDMETHODCALLTYPE IWaffleContextMenu_QueryContextMenu(
         AppendMenu(mii.hSubMenu, MF_STRING, idCmdFirst + IDM_WAFFLE_OPEN, TEXT("&Open"));
         AppendMenu(mii.hSubMenu, MF_STRING, idCmdFirst + IDM_WAFFLE_SETTING, TEXT("&Setting"));
         //InsertMenuItem(hmenu, 0, TRUE, &mii);
-        InsertMenu(hmenu, indexMenu, MF_POPUP | MF_BYPOSITION, (UINT_PTR)mii.hSubMenu, TEXT("&Waffle"));
+        InsertMenu(hmenu, indexMenu, MF_POPUP | MF_BYPOSITION, (UINT_PTR) mii.hSubMenu, TEXT("&Waffle"));
 
         return MAKE_HRESULT(SEVERITY_SUCCESS, 0, IDM_WAFFLE_LAST + 1);
     }

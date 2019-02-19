@@ -6,7 +6,7 @@ ENVIRONMENT_SETTING stNewEnvir;
 
 WAFFLE_COMPONENT_FUNCTION SIZE_T WINAPI DetourBaseThreadInitThunk(
     _In_    LPWAFFLE_THREAD_CONTEXT lpstThread
-    )
+)
 {
     //SetThreadLocale(stNewEnvir.ThreadLocale);
     return 0;
@@ -14,7 +14,7 @@ WAFFLE_COMPONENT_FUNCTION SIZE_T WINAPI DetourBaseThreadInitThunk(
 
 WAFFLE_COMPONENT_FUNCTION SIZE_T WINAPI ComponentInit(
     _In_    LPWAFFLE_PROCESS_SETTING lpstProcessSetting
-    )
+)
 {
     //Read config files
     stOldEnvir.AnsiCodePage = GetACP();
@@ -39,7 +39,7 @@ BOOL WINAPI DllMain(
     _In_    HINSTANCE hinstDLL,
     _In_    DWORD fdwReason,
     _In_    LPVOID lpvReserved
-    )
+)
 {
     if (fdwReason == DLL_PROCESS_ATTACH)
     {

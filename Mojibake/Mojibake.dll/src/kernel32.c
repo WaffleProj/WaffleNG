@@ -2,16 +2,16 @@
 
 _Success_(return)
 LIBRARY_EXPORT BOOL WINAPI DetourCreateProcessW(
-_In_opt_    LPCWSTR lpApplicationName,
-_Inout_opt_ LPWSTR lpCommandLine,
-_In_opt_    LPSECURITY_ATTRIBUTES lpProcessAttributes,
-_In_opt_    LPSECURITY_ATTRIBUTES lpThreadAttributes,
-_In_        BOOL bInheritHandles,
-_In_        DWORD dwCreationFlags,
-_In_opt_    LPVOID lpEnvironment,
-_In_opt_    LPCWSTR lpCurrentDirectory,
-_In_opt_    LPSTARTUPINFOW lpStartupInfo,
-_Out_       LPPROCESS_INFORMATION lpProcessInformation
+    _In_opt_    LPCWSTR lpApplicationName,
+    _Inout_opt_ LPWSTR lpCommandLine,
+    _In_opt_    LPSECURITY_ATTRIBUTES lpProcessAttributes,
+    _In_opt_    LPSECURITY_ATTRIBUTES lpThreadAttributes,
+    _In_        BOOL bInheritHandles,
+    _In_        DWORD dwCreationFlags,
+    _In_opt_    LPVOID lpEnvironment,
+    _In_opt_    LPCWSTR lpCurrentDirectory,
+    _In_opt_    LPSTARTUPINFOW lpStartupInfo,
+    _Out_       LPPROCESS_INFORMATION lpProcessInformation
 )
 {
     static LPCREATEPROCESSW BackupCreateProcessW;
@@ -35,16 +35,16 @@ _Out_       LPPROCESS_INFORMATION lpProcessInformation
 
 _Success_(return)
 LIBRARY_EXPORT BOOL WINAPI DetourCreateProcessA(
-_In_opt_    LPCSTR lpApplicationName,
-_Inout_opt_ LPSTR lpCommandLine,
-_In_opt_    LPSECURITY_ATTRIBUTES lpProcessAttributes,
-_In_opt_    LPSECURITY_ATTRIBUTES lpThreadAttributes,
-_In_        BOOL bInheritHandles,
-_In_        DWORD dwCreationFlags,
-_In_opt_    LPVOID lpEnvironment,
-_In_opt_    LPCSTR lpCurrentDirectory,
-_In_opt_    LPSTARTUPINFOA lpStartupInfo,
-_Out_       LPPROCESS_INFORMATION lpProcessInformation
+    _In_opt_    LPCSTR lpApplicationName,
+    _Inout_opt_ LPSTR lpCommandLine,
+    _In_opt_    LPSECURITY_ATTRIBUTES lpProcessAttributes,
+    _In_opt_    LPSECURITY_ATTRIBUTES lpThreadAttributes,
+    _In_        BOOL bInheritHandles,
+    _In_        DWORD dwCreationFlags,
+    _In_opt_    LPVOID lpEnvironment,
+    _In_opt_    LPCSTR lpCurrentDirectory,
+    _In_opt_    LPSTARTUPINFOA lpStartupInfo,
+    _Out_       LPPROCESS_INFORMATION lpProcessInformation
 )
 {
     LPWSTR lpuszApplicationName = NULL;
@@ -98,13 +98,13 @@ _Out_       LPPROCESS_INFORMATION lpProcessInformation
 
 LIBRARY_EXPORT DWORD WINAPI DetourGetCurrentDirectoryA(
     _In_    DWORD nBufferLength,
-    _Out_writes_to_opt_(nBufferLength, (return + 1))   LPSTR lpBuffer
-    )
+    _Out_writes_to_opt_(nBufferLength, (return +1))   LPSTR lpBuffer
+)
 {
     DWORD Result = 0;
     if (lpBuffer)
     {
-        LPWSTR lpuBuffer = (LPWSTR) WaffleAlloc((nBufferLength + 1)*sizeof(lpuBuffer[0]));
+        LPWSTR lpuBuffer = (LPWSTR) WaffleAlloc((nBufferLength + 1) * sizeof(lpuBuffer[0]));
         if (lpuBuffer)
         {
             Result = GetCurrentDirectory(nBufferLength, lpuBuffer);
@@ -124,7 +124,7 @@ LIBRARY_EXPORT DWORD WINAPI DetourGetCurrentDirectoryA(
 
 LIBRARY_EXPORT BOOL WINAPI DetourSetCurrentDirectoryA(
     _In_    LPCSTR lpPathName
-    )
+)
 {
     LPWSTR lpuszPathName = AnsiToUnicode(lpPathName);
     BOOL Result = SetCurrentDirectory(lpuszPathName);
@@ -136,7 +136,7 @@ LIBRARY_EXPORT BOOL WINAPI DetourSetCurrentDirectoryA(
 LIBRARY_EXPORT BOOL WINAPI DetourCreateDirectoryA(
     _In_        LPCSTR lpPathName,
     _In_opt_    LPSECURITY_ATTRIBUTES lpSecurityAttributes
-    )
+)
 {
     LPWSTR lpuszPathName = AnsiToUnicode(lpPathName);
     BOOL Result = CreateDirectory(lpuszPathName, lpSecurityAttributes);
@@ -153,7 +153,7 @@ LIBRARY_EXPORT HANDLE WINAPI DetourCreateFileA(
     _In_        DWORD dwCreationDisposition,
     _In_        DWORD dwFlagsAndAttributes,
     _In_opt_    HANDLE hTemplateFile
-    )
+)
 {
     LPWSTR lpuszFileName = AnsiToUnicode(lpFileName);
     //MessageBox(0,lpuszFileName,TEXT("DetourCreateFileA"),0);
@@ -165,7 +165,7 @@ LIBRARY_EXPORT HANDLE WINAPI DetourCreateFileA(
 
 LIBRARY_EXPORT BOOL WINAPI DetourDeleteFileA(
     _In_    LPCSTR lpFileName
-    )
+)
 {
     LPWSTR lpuszFileName = AnsiToUnicode(lpFileName);
     BOOL Result = DeleteFile(lpuszFileName);
@@ -177,7 +177,7 @@ LIBRARY_EXPORT BOOL WINAPI DetourDeleteFileA(
 LIBRARY_EXPORT HANDLE WINAPI DetourFindFirstFileA(
     _In_    LPCSTR lpFileName,
     _Out_   LPWIN32_FIND_DATAA lpFindFileData
-    )
+)
 {
     LPWSTR lpuszFileName = AnsiToUnicode(lpFileName);
     WIN32_FIND_DATA FindFileData;
@@ -197,7 +197,7 @@ LIBRARY_EXPORT HANDLE WINAPI DetourFindFirstFileA(
 LIBRARY_EXPORT BOOL WINAPI DetourFindNextFileA(
     _In_    HANDLE hFindFile,
     _Out_   LPWIN32_FIND_DATAA lpFindFileData
-    )
+)
 {
     WIN32_FIND_DATA FindFileData;
     BOOL Result = FindNextFile(hFindFile, &FindFileData);
@@ -214,7 +214,7 @@ LIBRARY_EXPORT BOOL WINAPI DetourFindNextFileA(
 
 LIBRARY_EXPORT DWORD WINAPI DetourGetFileAttributesA(
     _In_    LPCSTR lpFileName
-    )
+)
 {
     LPWSTR lpuszFileName = AnsiToUnicode(lpFileName);
     DWORD Result = GetFileAttributes(lpuszFileName);
@@ -226,7 +226,7 @@ LIBRARY_EXPORT DWORD WINAPI DetourGetFileAttributesA(
 LIBRARY_EXPORT BOOL WINAPI DetourSetFileAttributesA(
     _In_    LPCSTR lpFileName,
     _In_    DWORD dwFileAttributes
-    )
+)
 {
     LPWSTR lpuszFileName = AnsiToUnicode(lpFileName);
     BOOL Result = SetFileAttributes(lpuszFileName, dwFileAttributes);
@@ -240,7 +240,7 @@ LIBRARY_EXPORT DWORD WINAPI DetourGetFullPathNameA(
     _In_    DWORD nBufferLength,
     _Out_   LPSTR lpBuffer,
     _Out_   LPSTR *lpFilePart
-    )
+)
 {
     LPWSTR lpuszFileName = AnsiToUnicode(lpFileName);
     LPWSTR lpuBuffer = (LPWSTR) WaffleAlloc(sizeof(WCHAR) * nBufferLength);
@@ -281,7 +281,7 @@ LIBRARY_EXPORT DWORD WINAPI DetourGetModuleFileNameA(
     _In_opt_    HMODULE hModule,
     _Out_       LPSTR lpFilename,
     _In_        DWORD nSize
-    )
+)
 {
     LPWSTR lpuszFilename = (LPWSTR) WaffleAlloc(sizeof(WCHAR) * nSize);
 
@@ -297,7 +297,7 @@ LIBRARY_EXPORT DWORD WINAPI DetourGetModuleFileNameA(
 
 LIBRARY_EXPORT HMODULE WINAPI DetourGetModuleHandleA(
     _In_opt_    LPCSTR lpModuleName
-    )
+)
 {
     LPWSTR lpuszModuleName = NULL;
     if (lpModuleName)
@@ -315,7 +315,7 @@ LIBRARY_EXPORT HMODULE WINAPI DetourGetModuleHandleA(
 
 LIBRARY_EXPORT HMODULE WINAPI DetourLoadLibraryA(
     _In_    LPCSTR lpFileName
-    )
+)
 {
     LPWSTR lpuszFileName = AnsiToUnicode(lpFileName);
     HMODULE Result = LoadLibrary(lpuszFileName);
@@ -328,7 +328,7 @@ LIBRARY_EXPORT HMODULE WINAPI DetourLoadLibraryExA(
     _In_        LPCSTR lpFileName,
     _Reserved_  HANDLE hFile,
     _In_        DWORD dwFlags
-    )
+)
 {
     LPWSTR lpuszFileName = AnsiToUnicode(lpFileName);
     HMODULE Result = LoadLibraryEx(lpuszFileName, hFile, dwFlags);
@@ -363,7 +363,7 @@ LIBRARY_EXPORT UINT WINAPI DetourGetOEMCP(void)
 LIBRARY_EXPORT BOOL WINAPI DetourGetCPInfo(
     _In_    UINT CodePage,
     _Out_   LPCPINFO lpCPInfo
-    )
+)
 {
     static LPGETCPINFO BackupGetCPInfo;
     if (!BackupGetCPInfo)
@@ -373,12 +373,12 @@ LIBRARY_EXPORT BOOL WINAPI DetourGetCPInfo(
 
     switch (CodePage)
     {
-        case CP_ACP:
-            CodePage = stNewEnvir.AnsiCodePage;
-            break;
-        case CP_OEMCP:
-            CodePage = stNewEnvir.OemCodePage;
-            break;
+    case CP_ACP:
+        CodePage = stNewEnvir.AnsiCodePage;
+        break;
+    case CP_OEMCP:
+        CodePage = stNewEnvir.OemCodePage;
+        break;
     }
 
     return BackupGetCPInfo(CodePage, lpCPInfo);
@@ -416,7 +416,7 @@ LIBRARY_EXPORT int WINAPI DetourMultiByteToWideChar(
     _In_        int cbMultiByte,
     _Out_opt_   LPWSTR lpWideCharStr,
     _In_        int cchWideChar
-    )
+)
 {
     static LPMULTIBYTETOWIDECHAR BackupMultiByteToWideChar;
     if (!BackupMultiByteToWideChar)
@@ -426,12 +426,12 @@ LIBRARY_EXPORT int WINAPI DetourMultiByteToWideChar(
 
     switch (CodePage)
     {
-        case CP_ACP:
-            CodePage = stNewEnvir.AnsiCodePage;
-            break;
-        case CP_OEMCP:
-            CodePage = stNewEnvir.OemCodePage;
-            break;
+    case CP_ACP:
+        CodePage = stNewEnvir.AnsiCodePage;
+        break;
+    case CP_OEMCP:
+        CodePage = stNewEnvir.OemCodePage;
+        break;
     }
 
     return BackupMultiByteToWideChar(CodePage, dwFlags, lpMultiByteStr, cbMultiByte, lpWideCharStr, cchWideChar);
@@ -446,7 +446,7 @@ LIBRARY_EXPORT int WINAPI DetourWideCharToMultiByte(
     _In_        int cbMultiByte,
     _In_opt_    LPCSTR lpDefaultChar,
     _Out_opt_   LPBOOL lpUsedDefaultChar
-    )
+)
 {
     static LPWIDECHARTOMULTIBYTE BackupWideCharToMultiByte;
     if (!BackupWideCharToMultiByte)
@@ -456,12 +456,12 @@ LIBRARY_EXPORT int WINAPI DetourWideCharToMultiByte(
 
     switch (CodePage)
     {
-        case CP_ACP:
-            CodePage = stNewEnvir.AnsiCodePage;
-            break;
-        case CP_OEMCP:
-            CodePage = stNewEnvir.OemCodePage;
-            break;
+    case CP_ACP:
+        CodePage = stNewEnvir.AnsiCodePage;
+        break;
+    case CP_OEMCP:
+        CodePage = stNewEnvir.OemCodePage;
+        break;
     }
 
     return BackupWideCharToMultiByte(CodePage, dwFlags, lpWideCharStr, cchWideChar, lpMultiByteStr, cbMultiByte, lpDefaultChar, lpUsedDefaultChar);
@@ -498,7 +498,7 @@ return Result;
 LIBRARY_EXPORT BOOL WINAPI DetourIsDBCSLeadByteEx(
     _In_    UINT CodePage,
     _In_    BYTE TestChar
-    )
+)
 {
     static LPISDBCSLEADBYTEEX BackupIsDBCSLeadByteEx;
     if (!BackupIsDBCSLeadByteEx)
@@ -508,12 +508,12 @@ LIBRARY_EXPORT BOOL WINAPI DetourIsDBCSLeadByteEx(
 
     switch (CodePage)
     {
-        case CP_ACP:
-            CodePage = stNewEnvir.AnsiCodePage;
-            break;
-        case CP_OEMCP:
-            CodePage = stNewEnvir.OemCodePage;
-            break;
+    case CP_ACP:
+        CodePage = stNewEnvir.AnsiCodePage;
+        break;
+    case CP_OEMCP:
+        CodePage = stNewEnvir.OemCodePage;
+        break;
     }
 
     return BackupIsDBCSLeadByteEx(CodePage, TestChar);
@@ -521,7 +521,7 @@ LIBRARY_EXPORT BOOL WINAPI DetourIsDBCSLeadByteEx(
 
 LIBRARY_EXPORT BOOL WINAPI DetourIsDBCSLeadByte(
     _In_    BYTE TestChar
-    )
+)
 {
     return DetourIsDBCSLeadByteEx(stNewEnvir.AnsiCodePage, TestChar);
 }
@@ -531,7 +531,7 @@ LIBRARY_EXPORT UINT WINAPI DetourGetPrivateProfileIntA(
     _In_    LPCSTR lpKeyName,
     _In_    INT nDefault,
     _In_    LPCSTR lpFileName
-    )
+)
 {
     static LPGETPRIVATEPROFILEINTA BackupGetPrivateProfileIntA;
     if (!BackupGetPrivateProfileIntA)
@@ -554,7 +554,7 @@ LIBRARY_EXPORT DWORD WINAPI DetourGetPrivateProfileStringA(
     _Out_   LPSTR lpReturnedString,
     _In_    DWORD nSize,
     _In_    LPCSTR lpFileName
-    )
+)
 {
     static LPGETPRIVATEPROFILESTRINGA BackupGetPrivateProfileStringA;
     if (!BackupGetPrivateProfileStringA)
@@ -577,7 +577,7 @@ LIBRARY_EXPORT LONG WINAPI DetourRegQueryValueExA(
     _Out_opt_   LPDWORD lpType,
     _Out_opt_   LPBYTE lpData,
     _Inout_opt_ LPDWORD lpcbData
-    )
+)
 {
     LPWSTR lpuszValueName = AnsiToUnicode(lpValueName);
     DWORD cbData = 0;
@@ -586,7 +586,7 @@ LIBRARY_EXPORT LONG WINAPI DetourRegQueryValueExA(
     if (lpcbData)
     {
         cbData = *lpcbData;
-        *lpcbData = *lpcbData  * sizeof(WCHAR);
+        *lpcbData = *lpcbData * sizeof(WCHAR);
         lpuData = (LPBYTE) WaffleAlloc((cbData + 1) * sizeof(lpuData[0]));
         if (!lpuData)
         {
@@ -609,7 +609,7 @@ LIBRARY_EXPORT LONG WINAPI DetourRegQueryValueExA(
     }
     if (lpData)
     {
-        RtlMoveMemory(lpData, lpcData, cbData*sizeof(lpData[0]));
+        RtlMoveMemory(lpData, lpcData, cbData * sizeof(lpData[0]));
     }
 
     MojibakeFree(lpuszValueName);
@@ -628,7 +628,7 @@ LIBRARY_EXPORT BOOL WINAPI DetourGetThreadPreferredUILanguages(
     _Out_       PULONG pulNumLanguages,
     _Out_opt_   PZZWSTR pwszLanguagesBuffer,
     _Inout_     PULONG pcchLanguagesBuffer
-    )
+)
 {
     static LPGETTHREADPREFERREDUILANGUAGES BackupGetThreadPreferredUILanguages;
     if (!BackupGetThreadPreferredUILanguages)

@@ -2,7 +2,7 @@
 
 WAFFLE_COMMON_DLL_FUNCTION HMODULE WINAPI WaffleLoadComponent(
     _In_    LPCTSTR lpszComponent
-    )
+)
 {
     HMODULE hComponent = GetModuleHandle(lpszComponent);
     if (hComponent)
@@ -60,7 +60,7 @@ WAFFLE_COMMON_DLL_FUNCTION HMODULE WINAPI WaffleLoadComponent(
 
 WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleAddComponent(
     _In_    LPCTSTR lpszComponent
-    )
+)
 {
     WAFFLE_COMPONENT_ARRAY stNewComponent;
     RtlZeroMemory(&stNewComponent, sizeof(WAFFLE_COMPONENT_ARRAY));
@@ -105,7 +105,7 @@ WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleAddComponent(
 
 WAFFLE_COMMON_DLL_FUNCTION int WINAPI WaffleFindComponent(
     _In_    LPVOID lpMemory
-    )
+)
 {
     int i;
     for (i = lpstProcessSetting->lpstComponent[0].dwBehind; i >= 0; i--)

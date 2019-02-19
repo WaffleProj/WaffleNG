@@ -4,7 +4,7 @@ WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleGetModuleDirectory(
     _In_opt_            HMODULE hModule,
     _Out_writes_(nSize) LPTSTR lpFilename,
     _In_                DWORD nSize
-    )
+)
 {
     if (!lpFilename)
     {
@@ -25,7 +25,7 @@ WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleGetModuleDirectory(
 
 WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleDisableWow64FsRedirection(
     _Inout_ PVOID *OldValue
-    )
+)
 {
     HMODULE hKernel32 = GetModuleHandle(TEXT("kernel32.dll"));
     if (hKernel32)
@@ -40,7 +40,7 @@ WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleDisableWow64FsRedirection(
 
 WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleRevertWow64FsRedirection(
     _In_    PVOID OldValue
-    )
+)
 {
     HMODULE hKernel32 = GetModuleHandle(TEXT("kernel32.dll"));
     if (hKernel32)

@@ -3,7 +3,7 @@
 INT WINAPI CompareModule(
     LPWAFFLE_MODULE_NODE Element1,
     LPWAFFLE_MODULE_NODE Element2
-    )
+)
 {
     if (Element1->hModule == Element2->hModule)
     {
@@ -17,7 +17,7 @@ INT WINAPI CompareModule(
 
 WAFFLE_HOOK_DLL_FUNCTION DWORD WINAPI WaffleGetModuleSize(
     HMODULE hModule
-    )
+)
 {
     if (!hModule)
     {
@@ -49,7 +49,7 @@ WAFFLE_HOOK_DLL_FUNCTION DWORD WINAPI WaffleGetModuleSize(
 
 WAFFLE_HOOK_DLL_FUNCTION BOOL WINAPI WaffleGetModuleInfo(
     _In_    LPWAFFLE_MODULE_NODE lpstModule
-    )
+)
 {
     if (!lpstModule || !lpstModule->hModule)
     {
@@ -82,7 +82,7 @@ WAFFLE_HOOK_DLL_FUNCTION BOOL WINAPI WaffleGetModuleInfo(
 
 WAFFLE_HOOK_DLL_FUNCTION BOOL WINAPI WaffleCopyModule(
     _In_    LPWAFFLE_MODULE_NODE lpstModule
-    )
+)
 {
     if (!WaffleGetModuleInfo(lpstModule))
     {
@@ -118,7 +118,7 @@ WAFFLE_HOOK_DLL_FUNCTION BOOL WINAPI WaffleCopyModule(
 
 WAFFLE_HOOK_DLL_FUNCTION LPWAFFLE_MODULE_NODE WINAPI WaffleHookDBAddModule(
     _In_    HMODULE hModule
-    )
+)
 {
     WAFFLE_MODULE_NODE stModule;
     stModule.hModule = hModule;
@@ -149,7 +149,7 @@ WAFFLE_HOOK_DLL_FUNCTION LPWAFFLE_MODULE_NODE WINAPI WaffleHookDBAddModule(
 
 WAFFLE_HOOK_DLL_FUNCTION LPWAFFLE_MODULE_NODE WINAPI WaffleHookDBAddSkipModule(
     _In_    HMODULE hModule
-    )
+)
 {
     WAFFLE_MODULE_NODE stModule;
     stModule.hModule = hModule;
@@ -175,7 +175,7 @@ WAFFLE_HOOK_DLL_FUNCTION LPWAFFLE_MODULE_NODE WINAPI WaffleHookDBAddSkipModule(
 INT WINAPI CompareFunction(
     LPWAFFLE_FUNCTION_NODE Element1,
     LPWAFFLE_FUNCTION_NODE Element2
-    )
+)
 {
     if (Element1->lpOldFunction == Element1->lpOldFunction)
     {
@@ -190,7 +190,7 @@ INT WINAPI CompareFunction(
 WAFFLE_HOOK_DLL_FUNCTION LPWAFFLE_FUNCTION_NODE WINAPI WaffleHookDBAddFunction(
     _In_    FARPROC lpOldFunction,
     _In_    FARPROC lpNewFunction
-    )
+)
 {
     if (!lpOldFunction)
     {
@@ -202,7 +202,7 @@ WAFFLE_HOOK_DLL_FUNCTION LPWAFFLE_FUNCTION_NODE WINAPI WaffleHookDBAddFunction(
     {
         return NULL;
     }
-    
+
     LPWAFFLE_MODULE_NODE lpstModule = WaffleHookDBAddModule(hModule);
     if (!lpstModule)
     {
@@ -214,7 +214,7 @@ WAFFLE_HOOK_DLL_FUNCTION LPWAFFLE_FUNCTION_NODE WINAPI WaffleHookDBAddFunction(
     stFunction.lpOldFunction = (SIZE_T) lpOldFunction;
     stFunction.lpNewFunction = (SIZE_T) lpNewFunction;
     stFunction.lpBackupFunction = (SIZE_T) lpOldFunction + lpstModule->Offset;
-    
+
     WAFFLE_SMART_ARRAY_SEARCH_RESULT stResult = WaffleSmartArraySearch(lpstModule->lpstFunction, &stFunction, (LPCOMPARE) CompareFunction);
 
     LPWAFFLE_FUNCTION_NODE lpstFunction = NULL;
@@ -235,7 +235,7 @@ WAFFLE_HOOK_DLL_FUNCTION LPWAFFLE_FUNCTION_NODE WINAPI WaffleHookDBAddFunction(
 INT WINAPI CompareFunctionToModule(
     LPWAFFLE_MODULE_NODE Element1,
     LPWAFFLE_MODULE_NODE Element2
-    )
+)
 {
     if (Element1->ModuleStart >= Element1->ModuleStart && Element1->ModuleStart <= Element1->ModuleEnd)
     {
@@ -250,7 +250,7 @@ INT WINAPI CompareFunctionToModule(
 WAFFLE_HOOK_DLL_FUNCTION SIZE_T WINAPI WaffleHookDBLookup(
     _In_    SIZE_T ExceptionAddress,
     _In_    SIZE_T CallerAddress
-    )
+)
 {
     WAFFLE_MODULE_NODE stModule;
     WAFFLE_FUNCTION_NODE stFunction;
@@ -258,7 +258,7 @@ WAFFLE_HOOK_DLL_FUNCTION SIZE_T WINAPI WaffleHookDBLookup(
 
     LPWAFFLE_MODULE_NODE lpstModule = NULL;
     LPWAFFLE_FUNCTION_NODE lpstFunction = NULL;
-    
+
     // Check if the function is belong to a module we know (and thus we have a backup)
     stModule.ModuleStart = ExceptionAddress;
     stResult = WaffleSmartArraySearch(lpstLibrary, &stModule, (LPCOMPARE) CompareFunctionToModule);

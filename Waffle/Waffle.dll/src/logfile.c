@@ -2,7 +2,7 @@
 
 WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleWriteLogFileA(
     _In_    LPCSTR lpszMessage
-    )
+)
 {
     LPWSTR lpuszMessage = (LPWSTR) WaffleAlloc((WafflelstrlenA(lpszMessage) + 1) * 2);
     int i;
@@ -12,7 +12,7 @@ WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleWriteLogFileA(
 
 WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleWriteLogFileW(
     _In_    LPCWSTR lpszMessage
-    )
+)
 {
     static HANDLE hLogFile;
     static CRITICAL_SECTION csLogFile;

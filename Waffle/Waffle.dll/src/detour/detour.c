@@ -2,7 +2,7 @@
 
 WAFFLE_COMMON_DLL_FUNCTION BOOL WINAPI WaffleJumpDetection(
     _In_    LPBYTE lpSource
-    )
+)
 {
 #if (WAFFLE_PORT_MACHINE == WAFFLE_PORT_MACHINE_AMD64) || (WAFFLE_PORT_MACHINE == WAFFLE_PORT_MACHINE_I386)
     if ((lpSource[0] & 0xF0) == 0x70)
@@ -11,40 +11,40 @@ WAFFLE_COMMON_DLL_FUNCTION BOOL WINAPI WaffleJumpDetection(
     }
     switch (lpSource[0])
     {
-        case 0x0F:
+    case 0x0F:
+    {
+        switch (lpSource[1])
         {
-            switch (lpSource[1])
-            {
-                case 0x83:
-                case 0x87:
-                {
-                    return TRUE;
-                    break;
-                }
-            }
+        case 0x83:
+        case 0x87:
+        {
+            return TRUE;
             break;
         }
-        case 0xE3:
-        case 0xE9:
-        case 0xEB:
-        case 0xEA:
+        }
+        break;
+    }
+    case 0xE3:
+    case 0xE9:
+    case 0xEB:
+    case 0xEA:
+    case 0xFF:
+    {
+        return TRUE;
+        break;
+    }
+    default:
+    {
+        switch (lpSource[1])
+        {
         case 0xFF:
         {
             return TRUE;
             break;
         }
-        default:
-        {
-            switch (lpSource[1])
-            {
-                case 0xFF:
-                {
-                    return TRUE;
-                    break;
-                }
-            }
-            break;
         }
+        break;
+    }
     }
 #elif (WAFFLE_PORT_MACHINE == WAFFLE_PORT_MACHINE_ARMNT)
     WORD WordInst = ((LPWORD) lpSource)[0];
@@ -68,7 +68,7 @@ WAFFLE_COMMON_DLL_FUNCTION BOOL WINAPI WaffleJumpDetection(
 WAFFLE_COMMON_DLL_FUNCTION BOOL WINAPI WaffleSetDetour(
     _In_    DWORD dwLibrary,
     _In_    DWORD dwFunction
-    )
+)
 {
     BOOL bDetour = FALSE;
 
@@ -112,7 +112,7 @@ WAFFLE_COMMON_DLL_FUNCTION BOOL WINAPI WaffleAddDetour(
     _In_    LPBYTE lpSource,
     _In_    LPCTSTR lpszFunction,
     _In_    HMODULE hDetour
-    )
+)
 {
     HMODULE hModule;
     if (!GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, (LPCTSTR) lpSource, &hModule))

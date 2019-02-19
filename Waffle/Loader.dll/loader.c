@@ -5,7 +5,7 @@ BOOL WINAPI DllMain(
     _In_    HINSTANCE hinstDLL,
     _In_    DWORD fdwReason,
     _In_    LPVOID lpvReserved
-    )
+)
 {
     if (fdwReason == DLL_PROCESS_ATTACH)
     {
@@ -15,15 +15,15 @@ BOOL WINAPI DllMain(
         MessageBox(0, TEXT("Please attach the debugger."), TEXT("Loader.dll"), 0);
         if (IsDebuggerPresent())
         {
-			__try
-			{
-				DebugBreak();
-			}
-			__except (GetExceptionCode() == EXCEPTION_BREAKPOINT ?
-				EXCEPTION_EXECUTE_HANDLER : EXCEPTION_CONTINUE_SEARCH)
-			{
-				// Doing nothing
-			}
+            __try
+            {
+                DebugBreak();
+            }
+            __except (GetExceptionCode() == EXCEPTION_BREAKPOINT ?
+                      EXCEPTION_EXECUTE_HANDLER : EXCEPTION_CONTINUE_SEARCH)
+            {
+                // Doing nothing
+            }
         }
 #endif // _DEBUG
         HANDLE hThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE) WaffleInit, 0, 0, NULL);

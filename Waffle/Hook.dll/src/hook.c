@@ -3,7 +3,7 @@
 
 WAFFLE_HOOK_DLL_FUNCTION BOOL WINAPI WaffleJumpDetection(
     _In_    FARPROC lpFunction
-    )
+)
 {
     LPBYTE lpSource = (LPBYTE) (SIZE_T) lpFunction;
 #if (WAFFLE_PORT_MACHINE == WAFFLE_PORT_MACHINE_AMD64) || (WAFFLE_PORT_MACHINE == WAFFLE_PORT_MACHINE_I386)
@@ -13,40 +13,40 @@ WAFFLE_HOOK_DLL_FUNCTION BOOL WINAPI WaffleJumpDetection(
     }
     switch (lpSource[0])
     {
-        case 0x0F:
+    case 0x0F:
+    {
+        switch (lpSource[1])
         {
-            switch (lpSource[1])
-            {
-                case 0x83:
-                case 0x87:
-                {
-                    return TRUE;
-                    break;
-                }
-            }
+        case 0x83:
+        case 0x87:
+        {
+            return TRUE;
             break;
         }
-        case 0xE3:
-        case 0xE9:
-        case 0xEB:
-        case 0xEA:
+        }
+        break;
+    }
+    case 0xE3:
+    case 0xE9:
+    case 0xEB:
+    case 0xEA:
+    case 0xFF:
+    {
+        return TRUE;
+        break;
+    }
+    default:
+    {
+        switch (lpSource[1])
+        {
         case 0xFF:
         {
             return TRUE;
             break;
         }
-        default:
-        {
-            switch (lpSource[1])
-            {
-                case 0xFF:
-                {
-                    return TRUE;
-                    break;
-                }
-            }
-            break;
         }
+        break;
+    }
     }
 #elif (WAFFLE_PORT_MACHINE == WAFFLE_PORT_MACHINE_ARMNT)
     WORD WordInst = ((LPWORD) lpSource)[0];
@@ -70,7 +70,7 @@ WAFFLE_HOOK_DLL_FUNCTION BOOL WINAPI WaffleJumpDetection(
 WAFFLE_HOOK_DLL_FUNCTION FARPROC WINAPI WaffleRegisterHookOnAddress(
     _In_    FARPROC lpOldFunction,
     _In_    FARPROC lpNewFunction
-    )
+)
 {
     if (!WaffleHookDBAddFunction(lpOldFunction, lpNewFunction))
     {
@@ -100,7 +100,7 @@ WAFFLE_HOOK_DLL_FUNCTION FARPROC WINAPI WaffleRegisterHookOnAPI(
     _In_opt_    LPCWSTR lpModuleName,
     _In_        LPCSTR lpProcName,
     _In_        FARPROC lpNewFunction
-    )
+)
 {
     HMODULE hModule = GetModuleHandleW(lpModuleName);
     if (!hModule)
@@ -126,7 +126,7 @@ WAFFLE_HOOK_DLL_FUNCTION FARPROC WINAPI WaffleRegisterHookOnCOMOffset(
     _In_    REFIID riid,
     _In_    SIZE_T vtableOffset,
     _In_    FARPROC lpNewFunction
-    )
+)
 {
     LPCOCREATEINSTANCE _CoCreateInstance = NULL;
     HMODULE hOle32 = LoadLibrary(TEXT("Ole32.dll"));
@@ -159,7 +159,7 @@ WAFFLE_HOOK_DLL_FUNCTION FARPROC WINAPI WaffleRegisterHookOnCOMOffset(
 
 WAFFLE_HOOK_DLL_FUNCTION FARPROC WINAPI WaffleUnregisterHook(
     _In_    FARPROC lpOldFunction
-    )
+)
 {
     return NULL;
 }

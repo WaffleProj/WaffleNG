@@ -2,7 +2,7 @@
 
 WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleCheckOptionEncoding(
     _In_    LPCTSTR lpFileName
-    )
+)
 {
     HANDLE hFile = CreateFile(lpFileName, GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
     if (hFile)
@@ -11,21 +11,21 @@ WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleCheckOptionEncoding(
         WORD wBOM = 0xFEFF;
         switch (GetLastError())
         {
-            case ERROR_ALREADY_EXISTS:
-                if (!ReadFile(hFile, &wBOM, 2, &dwFile, NULL))
-                {
-                    MessageBox(0, TEXT("FIXME:Unable to read the option file."), 0, 0);
-                    break;
-                }
-                if (wBOM != 0xFEFF && wBOM != 0xFFFE)
-                {
-                    MessageBox(0, TEXT("FIXME:At least one of your config file is in the multibyte character set. Please use UTF-16."), 0, 0);
-                    break;
-                }
+        case ERROR_ALREADY_EXISTS:
+            if (!ReadFile(hFile, &wBOM, 2, &dwFile, NULL))
+            {
+                MessageBox(0, TEXT("FIXME:Unable to read the option file."), 0, 0);
                 break;
-            case ERROR_SUCCESS:
-                WriteFile(hFile, &wBOM, 2, &dwFile, NULL);
+            }
+            if (wBOM != 0xFEFF && wBOM != 0xFFFE)
+            {
+                MessageBox(0, TEXT("FIXME:At least one of your config file is in the multibyte character set. Please use UTF-16."), 0, 0);
                 break;
+            }
+            break;
+        case ERROR_SUCCESS:
+            WriteFile(hFile, &wBOM, 2, &dwFile, NULL);
+            break;
         }
         CloseHandle(hFile);
     }
@@ -38,7 +38,7 @@ WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleGetOptionString(
     _Out_       LPTSTR lpszValue,
     _In_        DWORD nSize,
     _In_opt_    LPCTSTR lpszDefaultValue
-    )
+)
 {
     if (!lpszSectionName)
     {
@@ -86,7 +86,7 @@ WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleSetOptionString(
     _In_        LPCTSTR lpszKeyName,
     _In_        LPCTSTR lpszValue,
     _In_        BOOL bGlobal
-    )
+)
 {
     if (!lpszSectionName)
     {
@@ -132,7 +132,7 @@ WAFFLE_COMMON_DLL_FUNCTION int WINAPI WaffleGetOptionInt(
     _In_opt_    LPCTSTR lpszSectionName,
     _In_        LPCTSTR lpszKeyName,
     _In_opt_    int nDefaultValue
-    )
+)
 {
     TCHAR szValue[256];
     WaffleGetOptionString(lpszFileName, lpszSectionName, lpszKeyName, szValue, lengthof(szValue), NULL);
@@ -145,7 +145,7 @@ WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleSetOptionInt(
     _In_        LPCTSTR lpszKeyName,
     _In_        int nValue,
     _In_        BOOL bGlobal
-    )
+)
 {
     TCHAR szValue[256];
     wsprintf(szValue, TEXT("%i"), nValue);
@@ -155,7 +155,7 @@ WAFFLE_COMMON_DLL_FUNCTION VOID WINAPI WaffleSetOptionInt(
 
 WAFFLE_COMMON_DLL_FUNCTION int WINAPI WaffleGetOptionStringNumber(
     _In_    LPCTSTR lpszString
-    )
+)
 {
     int nString = 0;
     DWORD nSizeOfString = lstrlen(lpszString);
@@ -170,14 +170,14 @@ WAFFLE_COMMON_DLL_FUNCTION int WINAPI WaffleGetOptionStringNumber(
 
 WAFFLE_COMMON_DLL_FUNCTION LPTSTR WINAPI WaffleGetOptionSectionNames(
     _In_    LPCTSTR lpszOption
-    )
+)
 {
     TCHAR szOption[MAX_PATH];
     wsprintf(szOption, TEXT("%s\\%s\\Config\\%s"), lpstProcessSetting->szComponentDirectory, lpstProcessSetting->szComponent, lpszOption);
 
     LPTSTR lpszSection;
     DWORD nSizeOfSection = 4;
-    lpszSection = (LPTSTR) WaffleAlloc(nSizeOfSection*sizeof(TCHAR));
+    lpszSection = (LPTSTR) WaffleAlloc(nSizeOfSection * sizeof(TCHAR));
     if (!lpszSection)
     {
         return NULL;
@@ -187,7 +187,7 @@ WAFFLE_COMMON_DLL_FUNCTION LPTSTR WINAPI WaffleGetOptionSectionNames(
     while (GetPrivateProfileSectionNames(lpszSection, nSizeOfSection, szOption) == nSizeOfSection - 2)
     {
         nSizeOfSection = nSizeOfSection * 2;
-        HGLOBAL lpszSectionRealloc = WaffleReAlloc(lpszSection, nSizeOfSection*sizeof(TCHAR));
+        HGLOBAL lpszSectionRealloc = WaffleReAlloc(lpszSection, nSizeOfSection * sizeof(TCHAR));
         if (!lpszSectionRealloc)
         {
             WaffleFree(lpszSection);
@@ -204,14 +204,14 @@ WAFFLE_COMMON_DLL_FUNCTION LPTSTR WINAPI WaffleGetOptionSectionNames(
 WAFFLE_COMMON_DLL_FUNCTION LPTSTR WINAPI WaffleGetOptionSectionKeys(
     _In_    LPCTSTR lpszOption,
     _In_    LPCTSTR lpszSection
-    )
+)
 {
     TCHAR szOption[MAX_PATH];
     wsprintf(szOption, TEXT("%s\\%s\\Config\\%s"), lpstProcessSetting->szComponentDirectory, lpstProcessSetting->szComponent, lpszOption);
 
     LPTSTR lpszKey;
     DWORD nSizeOfKey = 4;
-    lpszKey = (LPTSTR) WaffleAlloc(nSizeOfKey*sizeof(TCHAR));
+    lpszKey = (LPTSTR) WaffleAlloc(nSizeOfKey * sizeof(TCHAR));
     if (!lpszKey)
     {
         return NULL;
@@ -226,7 +226,7 @@ WAFFLE_COMMON_DLL_FUNCTION LPTSTR WINAPI WaffleGetOptionSectionKeys(
             WaffleFree(lpszKey);
             return NULL;
         }
-        HGLOBAL lpszKeyRealloc = WaffleReAlloc(lpszKey, nSizeOfKey*sizeof(TCHAR));
+        HGLOBAL lpszKeyRealloc = WaffleReAlloc(lpszKey, nSizeOfKey * sizeof(TCHAR));
         if (!lpszKeyRealloc)
         {
             WaffleFree(lpszKey);

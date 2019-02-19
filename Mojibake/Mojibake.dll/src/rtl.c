@@ -3,7 +3,7 @@
 LPWSTR WINAPI MBCSToUnicode(
     _In_        UINT AnsiCodePage,
     _In_opt_    LPCSTR lpszText
-    )
+)
 {
     if (lpszText)
     {
@@ -30,7 +30,7 @@ LPSTR WINAPI MBCSToMBCS(
     _In_        UINT FromCodePage,
     _In_        UINT ToCodePage,
     _In_opt_    LPCSTR lpszText
-    )
+)
 {
     if (lpszText)
     {
@@ -50,7 +50,7 @@ LPSTR WINAPI MBCSToMBCS(
 
 LPWSTR WINAPI AnsiToUnicode(
     _In_opt_    LPCSTR lpszText
-    )
+)
 {
     if (lpszText)
     {
@@ -75,7 +75,7 @@ LPWSTR WINAPI AnsiToUnicode(
 
 LPSTR WINAPI UnicodeToAnsi(
     _In_opt_    LPCWSTR lpuszText
-    )
+)
 {
     if (lpuszText)
     {
@@ -100,7 +100,7 @@ LPSTR WINAPI UnicodeToAnsi(
 
 LPSTR WINAPI ProgramCPToWindowsCP(
     _In_opt_    LPCSTR lpszText
-    )
+)
 {
     if (lpszText)
     {
@@ -121,7 +121,7 @@ LPSTR WINAPI ProgramCPToWindowsCP(
 _Ret_maybenull_
 _Success_(return == 0)
 LPVOID WINAPI MojibakeFree(
-_In_opt_    LPVOID lpMem
+    _In_opt_    LPVOID lpMem
 )
 {
     if (lpMem)
