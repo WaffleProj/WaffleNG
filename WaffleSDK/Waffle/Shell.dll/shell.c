@@ -33,9 +33,9 @@ STDAPI DllGetClassObject(
 	}
 }
 
+__control_entrypoint(DllExport)
 STDAPI DllCanUnloadNow(void)
 {
-
 	if (!IWaffleClassFactoryObject.nLock && !IWaffleClassFactoryObject.refClassFactory && !IWaffleClassFactoryObject.refContextMenu)
 	{
 		return S_OK;
