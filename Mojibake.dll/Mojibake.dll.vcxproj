@@ -1,0 +1,84 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{A12814BB-9FAF-40CD-ADEE-95D58D092B3B}</ProjectGuid>
+    <RootNamespace>Mojibake</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <Import Project="$(SolutionDir)\Microsoft.Cpp.props" />
+  <PropertyGroup Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <PropertyGroup>
+    <TargetName>Mojibake</TargetName>
+    <OutDir>$(SolutionDir)WaffleNightly\Component\Mojibake\$(PEMachine)\</OutDir>
+    <IncludePath>$(SolutionDir)SDK\Include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)SDK\Lib\$(PEMachine);$(LibraryPath)</LibraryPath>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <ExecutablePath Condition="'$(Platform)'=='Itanium'">C:\Program Files (x86)\Microsoft Visual Studio 10.0\Common7\IDE;$(ExecutablePath)</ExecutablePath>
+    <RunCodeAnalysis Condition="'$(Configuration)'=='Debug'And'$(Platform)'!= 'Itanium'">true</RunCodeAnalysis>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)'=='Debug'And'$(Platform)'!= 'Itanium'">AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <CompileAs>CompileAsC</CompileAs>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <MinimalRebuild>false</MinimalRebuild>
+      <DisableSpecificWarnings>4055;4068;4100;4127;4201</DisableSpecificWarnings>
+      <BufferSecurityCheck Condition="'$(Configuration)'=='Release'">false</BufferSecurityCheck>
+      <RuntimeLibrary Condition="'$(Configuration)'=='Debug'">MultiThreadedDebug</RuntimeLibrary>
+      <DebugInformationFormat Condition="'$(Configuration)'=='Release'">None</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EntryPointSymbol>DllMain</EntryPointSymbol>
+      <ImportLibrary>$(SolutionDir)SDK\Lib\$(PEMachine)\$(TargetName).lib</ImportLibrary>
+      <AdditionalDependencies>Waffle.lib;Kernel32.lib;User32.lib;Gdi32.lib;Advapi32.lib</AdditionalDependencies>
+      <ModuleDefinitionFile>mojibake.def</ModuleDefinitionFile>
+      <AdditionalOptions>/ignore:4197 %(AdditionalOptions)</AdditionalOptions>
+      <GenerateDebugInformation Condition="'$(Configuration)'=='Release'">No</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="mojibake.h" />
+    <ClInclude Include="src\rtl.h" />
+    <ClInclude Include="src\subclass.h" />
+    <ClInclude Include="src\ttf.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="mojibake.c" />
+    <ClCompile Include="src\gdi32.c" />
+    <ClCompile Include="src\kernel32.c" />
+    <ClCompile Include="src\rtl.c" />
+    <ClCompile Include="src\subclass.c" />
+    <ClCompile Include="src\user32.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="mojibake.def" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
