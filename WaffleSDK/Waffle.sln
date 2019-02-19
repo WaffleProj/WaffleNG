@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28010.2046
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Waffle.exe", "..\Waffle\Waffle.exe\Waffle.exe.vcxproj", "{BDFFB373-FB80-4470-8DDE-14E906A5CBC2}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Waffle.exe", "Waffle\Waffle.exe\Waffle.exe.vcxproj", "{BDFFB373-FB80-4470-8DDE-14E906A5CBC2}"
 	ProjectSection(ProjectDependencies) = postProject
 		{9DE226A0-8EE0-4F11-83D0-15DB3BA76BCE} = {9DE226A0-8EE0-4F11-83D0-15DB3BA76BCE}
 	EndProjectSection
@@ -12,24 +12,24 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Mojibake", "Mojibake", "{4F
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Waffle", "Waffle", "{DB498AAF-B98F-4670-818A-54BA22A9D976}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Mojibake.dll", "..\Mojibake\Mojibake.dll\Mojibake.dll.vcxproj", "{A12814BB-9FAF-40CD-ADEE-95D58D092B3B}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Mojibake.dll", "Mojibake\Mojibake.dll\Mojibake.dll.vcxproj", "{A12814BB-9FAF-40CD-ADEE-95D58D092B3B}"
 	ProjectSection(ProjectDependencies) = postProject
 		{9DE226A0-8EE0-4F11-83D0-15DB3BA76BCE} = {9DE226A0-8EE0-4F11-83D0-15DB3BA76BCE}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Waffle.dll", "..\Waffle\Waffle.dll\Waffle.dll.vcxproj", "{9DE226A0-8EE0-4F11-83D0-15DB3BA76BCE}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Waffle.dll", "Waffle\Waffle.dll\Waffle.dll.vcxproj", "{9DE226A0-8EE0-4F11-83D0-15DB3BA76BCE}"
 	ProjectSection(ProjectDependencies) = postProject
 		{20A73023-A85A-41FC-9CC8-B572097598C9} = {20A73023-A85A-41FC-9CC8-B572097598C9}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Hook.dll", "..\Waffle\Hook.dll\Hook.dll.vcxproj", "{20A73023-A85A-41FC-9CC8-B572097598C9}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Hook.dll", "Waffle\Hook.dll\Hook.dll.vcxproj", "{20A73023-A85A-41FC-9CC8-B572097598C9}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Loader.dll", "..\Waffle\Loader.dll\Loader.dll.vcxproj", "{73C4DE97-A94E-4FB2-91B2-D71BD6E24C34}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Loader.dll", "Waffle\Loader.dll\Loader.dll.vcxproj", "{73C4DE97-A94E-4FB2-91B2-D71BD6E24C34}"
 	ProjectSection(ProjectDependencies) = postProject
 		{9DE226A0-8EE0-4F11-83D0-15DB3BA76BCE} = {9DE226A0-8EE0-4F11-83D0-15DB3BA76BCE}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Shell.dll", "..\Waffle\Shell.dll\Shell.dll.vcxproj", "{73D9D6EA-66C0-4637-88BA-519215188450}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Shell.dll", "Waffle\Shell.dll\Shell.dll.vcxproj", "{73D9D6EA-66C0-4637-88BA-519215188450}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
