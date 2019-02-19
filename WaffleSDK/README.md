@@ -1,4 +1,0 @@
-WaffleSDK
-=========
-
-Waffle for developer
