@@ -89,13 +89,7 @@
     <CustomBuild Include="src\detour\inline_i386.asm">
       <Filter>Source Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="src\detour\inline_arm.asm">
-      <Filter>Source Files</Filter>
-    </CustomBuild>
     <CustomBuild Include="src\detour\inline_amd64.asm">
-      <Filter>Source Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="src\detour\inline_ia64.asm">
       <Filter>Source Files</Filter>
     </CustomBuild>
   </ItemGroup>
