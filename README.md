@@ -1,4 +1,1 @@
-WaffleNG
-=========
-
-Unified Waffle
+# WaffleNG
