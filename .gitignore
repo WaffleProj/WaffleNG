@@ -4,3 +4,8 @@
 */Itanium/
 
 *.aps
+
+Win32/
+x64/
+ARM/
+Itanium/
