@@ -1,4 +1,2 @@
-*.pdb
-*.lastcodeanalysissucceeded
-*.exp
-*.ilk
+*.exe
+*.dll
