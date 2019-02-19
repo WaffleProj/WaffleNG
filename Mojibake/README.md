@@ -1,0 +1,4 @@
+Mojibake
+========
+
+Another Locale Switcher
