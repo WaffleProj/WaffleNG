@@ -1,0 +1,107 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{9DE226A0-8EE0-4F11-83D0-15DB3BA76BCE}</ProjectGuid>
+    <RootNamespace>Waffledll</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <Import Project="$(SolutionDir)\Microsoft.Cpp.props" />
+  <PropertyGroup Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <PropertyGroup>
+    <TargetName>Waffle</TargetName>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <OutDir>$(SolutionDir)WaffleNightly\Component\Waffle\$(PEMachine)\</OutDir>
+    <IncludePath>$(SolutionDir)SDK\Include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)SDK\Lib\$(PEMachine);$(LibraryPath)</LibraryPath>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <WarningLevel>Level4</WarningLevel>
+      <CompileAs>CompileAsC</CompileAs>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <MinimalRebuild>false</MinimalRebuild>
+      <DisableSpecificWarnings>4055;4068;4100;4127;4201</DisableSpecificWarnings>
+      <BufferSecurityCheck Condition="'$(Configuration)'=='Release'">false</BufferSecurityCheck>
+      <DebugInformationFormat Condition="'$(Configuration)'=='Release'">None</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EntryPointSymbol>DllMain</EntryPointSymbol>
+      <ImportLibrary>$(SolutionDir)SDK\Lib\$(PEMachine)\$(TargetName).lib</ImportLibrary>
+      <AdditionalDependencies>Kernel32.lib;User32.lib;Hook.lib</AdditionalDependencies>
+      <ModuleDefinitionFile>common.def</ModuleDefinitionFile>
+      <AdditionalOptions>/ignore:4197 %(AdditionalOptions)</AdditionalOptions>
+      <GenerateDebugInformation Condition="'$(Configuration)'=='Release'">No</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="common.h" />
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="common.c" />
+    <ClCompile Include="src\componentarray.c" />
+    <ClCompile Include="src\detour\detour.c" />
+    <ClCompile Include="src\detour\veh.c" />
+    <ClCompile Include="src\libraryarray.c" />
+    <ClCompile Include="src\cmdarg.c" />
+    <ClCompile Include="src\filesystem.c" />
+    <ClCompile Include="src\functionarray.c" />
+    <ClCompile Include="src\hash.c" />
+    <ClCompile Include="src\init.c" />
+    <ClCompile Include="src\inject.c" />
+    <ClCompile Include="src\logfile.c" />
+    <ClCompile Include="src\option.c" />
+    <ClCompile Include="src\platform.c" />
+    <ClCompile Include="src\rtl\rtl.c" />
+    <ClCompile Include="src\rtl\smartarray.c" />
+    <ClCompile Include="src\setting.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="common.def" />
+    <CustomBuild Include="src\detour\inline_i386.asm">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">ml /nologo /c /coff /safeseh /Zi /Fo "$(ProjectDir)$(IntermediateOutputPath)%(FileName).obj" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)$(IntermediateOutputPath)%(FileName).obj</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">ml /nologo /c /coff /safeseh /Fo "$(ProjectDir)$(IntermediateOutputPath)%(FileName).obj" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)$(IntermediateOutputPath)%(FileName).obj</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="src\detour\inline_amd64.asm">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">ml64 /nologo /c /Zi /Fo "$(ProjectDir)$(IntermediateOutputPath)%(FileName).obj" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)$(IntermediateOutputPath)%(FileName).obj</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">ml64 /nologo /c /Fo "$(ProjectDir)$(IntermediateOutputPath)%(FileName).obj" "%(FullPath)"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjectDir)$(IntermediateOutputPath)%(FileName).obj</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="common.rc" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

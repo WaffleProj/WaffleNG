@@ -1,0 +1,11 @@
+*/Win32/
+*/x64/
+*/ARM/
+*/Itanium/
+
+*.aps
+
+Win32/
+x64/
+ARM/
+Itanium/

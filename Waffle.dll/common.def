@@ -1,0 +1,86 @@
+NAME    Waffle.dll
+EXPORTS
+    WaffleArgc
+    WaffleArgvW
+    WaffleArgpW
+
+    WaffleFindLibrary
+    WaffleCopyLibraryW
+    WaffleAddDetour
+    WaffleSetDetour
+    WaffleLoadDetourOption
+    WaffleAddFunctionW
+    WaffleAddLibraryW
+    WaffleGetBackupAddressW
+    WaffleFindDetourAddress
+
+    WaffleInlineDetour
+    WaffleInlineHandler
+    WaffleExceptionDetour
+    WaffleExceptionHandler
+
+    WaffleGetModuleDirectoryW
+    WaffleDisableWow64FsRedirection
+    WaffleRevertWow64FsRedirection
+
+    WaffleGetFileHashW
+
+    WaffleInit
+
+    WaffleLoadComponentW
+    WaffleAddComponentW
+    WaffleFindComponent
+
+    WaffleCreateProcessW
+    WaffleInjectDllW
+    WaffleExecuteTo
+    WaffleExecuteW
+
+    WaffleWriteLogFileA
+    WaffleWriteLogFileW
+
+    WaffleCheckOptionEncodingW
+    WaffleGetOptionStringW
+    WaffleSetOptionStringW
+    WaffleGetOptionIntW
+    WaffleSetOptionIntW
+    WaffleGetOptionSectionKeysW
+    WaffleGetOptionSectionNamesW
+    WaffleGetOptionStringNumberW
+
+    WaffleGetMachineTypeW
+
+    WafflelstrlenW
+    WafflelstrlenA
+    WafflelstrcatW
+    WafflelstrcatA
+    WafflelstrcpyW
+    WafflelstrcpyA
+    WafflelstrcmpiW
+    WafflelstrcmpiA
+    WafflelstrcmpW
+    WafflelstrcmpA
+
+    WaffleStrToIntW
+    WaffleStrToIntA
+    WaffleGetProcAddressW
+    WaffleGetProcAddressA
+    WaffleIntBox
+    WaffleHexBox
+    WaffleGetImageSize
+    WaffleAlloc
+    WaffleReAlloc
+    WaffleFree
+
+    WaffleCreateRWLock
+    WaffleEnterReaderLock
+    WaffleEnterWriterLock
+    WaffleLeaveReaderLock
+    WaffleLeaveWriterLock
+    WaffleReleaseRWLock
+
+    WaffleOpenProcessSettingW
+    WaffleCreateProcessSettingW
+    WaffleShareProcessSettingW
+    WaffleInitProcessSettingW
+    WaffleResumeMainThread
